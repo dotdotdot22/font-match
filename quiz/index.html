@@ -516,10 +516,22 @@ const HEART_PATH = "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7
 --------------------------------------------------------- */
 const params = new URLSearchParams(location.search);
 const incomingVs = params.get("vs");
+const incomingName = params.get("who") || "";
+
 let challenger = null;
-if (incomingVs) {
-  try { challenger = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(incomingVs))))); }
-  catch(e){ challenger = null; }
+
+if (incomingVs && /^[i1]+$/.test(incomingVs) && incomingVs.length === ROUNDS.length) {
+  challenger = {
+    n: incomingName,
+    a: incomingVs.split("").map((code, i) => {
+      const picked = code === "i" ? ROUNDS[i].a : ROUNDS[i].b;
+      return {
+        font: picked.font,
+        cat: picked.cat,
+        word: ROUNDS[i].word
+      };
+    })
+  };
 }
 
 const state = {
@@ -532,9 +544,10 @@ const state = {
 // sitting, so a person only has to type their name once per visit.
 let myName = "";
 
-function encodeAnswers(answers, name){
-  const payload = JSON.stringify({ a: answers, n: name || "" });
-  return encodeURIComponent(btoa(unescape(encodeURIComponent(payload))));
+function encodeAnswers(answers){
+  return answers.map((ans, i) =>
+    ans.font === ROUNDS[i].a.font ? "i" : "1"
+  ).join("");
 }
 
 function buildShareLink(answers, name){
