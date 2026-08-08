@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Font Match — do your typefaces agree?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@700&family=DM+Sans:wght@700&family=Space+Mono:wght@700&family=Cormorant+Garamond:wght@600&family=Bebas+Neue&family=Libre+Baskerville:wght@700&family=Righteous&family=EB+Garamond:wght@600&family=Archivo+Black&family=Crimson+Pro:wght@600&family=Caveat:wght@700&family=Oswald:wght@600&family=Abril+Fatface&family=Work+Sans:wght@600&family=IBM+Plex+Mono:wght@600&family=Lora:wght@600&family=Pacifico&family=Inter:wght@700&family=Bungee&family=Source+Serif+4:wght@600&family=Zilla+Slab:wght@600&family=Poppins:wght@700&family=Anton&family=Merriweather:wght@700&family=Dancing+Script:wght@700&family=Barlow:wght@700&family=Staatliches&family=PT+Serif:wght@700&family=Courier+Prime:wght@700&family=Vollkorn:wght@700&family=Alfa+Slab+One&family=Nunito+Sans:wght@700&family=Sacramento&family=Rubik:wght@700&family=Fjalla+One&family=Cardo:wght@700&family=Amatic+SC:wght@700&family=Karla:wght@700&family=Big+Shoulders+Display:wght@700&family=Spectral:wght@600&family=Permanent+Marker&family=Manrope:wght@700&family=Special+Elite&family=Domine:wght@600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F6F3;
+    --paper-shade:#ECEBE5;
+    --ink:#16151A;
+    --ink-soft:#5B5A56;
+    --line:#D9D7CF;
+    --accent:#2A4DE0;
+    --accent-soft:#E8ECFC;
+    --match:#E63462;
+    --match-soft:#FCE9EE;
+    --radius:4px;
+    --display: 'Fraunces', serif;
+    --body: 'Space Grotesk', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--body);
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  a{color:var(--accent);}
+  button{font-family:inherit;}
+  button:focus-visible, a:focus-visible, input:focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:3px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important; transition:none !important;}
+  }
+
+  .frame{
+    max-width:720px;
+    margin:0 auto;
+    padding:28px 20px 60px;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .topline{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    padding-bottom:16px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:36px;
+  }
+  .topline .mark{position:relative; width:14px; height:14px;}
+  .topline .mark::before,.topline .mark::after{
+    content:"";
+    position:absolute;
+    background:var(--ink-soft);
+  }
+  .topline .mark::before{ left:50%; top:0; width:1px; height:100%; transform:translateX(-50%);}
+  .topline .mark::after{ top:50%; left:0; height:1px; width:100%; transform:translateY(-50%);}
+
+  #app{flex:1; display:flex; flex-direction:column; justify-content:center;}
+
+  /* ---------- Landing ---------- */
+  .landing h1{
+    font-family:var(--display);
+    font-weight:600;
+    font-size:clamp(40px,9vw,64px);
+    line-height:1.02;
+    margin:0 0 20px;
+    letter-spacing:-0.01em;
+  }
+  .landing p.lede{
+    font-size:17px;
+    line-height:1.55;
+    color:var(--ink-soft);
+    max-width:46ch;
+    margin:0 0 32px;
+  }
+  .cta{
+    font-family:var(--body);
+    font-weight:600;
+    font-size:15px;
+    background:var(--ink);
+    color:var(--paper);
+    border:none;
+    padding:15px 26px;
+    border-radius:var(--radius);
+    cursor:pointer;
+    letter-spacing:0.01em;
+    transition:transform .15s ease, background .15s ease;
+  }
+  .cta:hover{background:var(--accent);}
+  .cta:active{transform:translateY(1px);}
+  .cta.ghost{
+    background:transparent;
+    color:var(--ink);
+    border:1px solid var(--ink);
+  }
+  .cta.ghost:hover{background:var(--ink); color:var(--paper);}
+
+  .challenge-banner{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    color:var(--accent);
+    background:var(--accent-soft);
+    display:inline-block;
+    padding:6px 10px;
+    border-radius:var(--radius);
+    margin-bottom:18px;
+  }
+
+  /* ---------- Quiz ---------- */
+  .ruler{
+    display:flex;
+    gap:3px;
+    margin-bottom:28px;
+    flex-wrap:wrap;
+  }
+  .tick{
+    flex:1;
+    min-width:6px;
+    height:4px;
+    background:var(--line);
+    border-radius:2px;
+    transition:background .2s ease;
+  }
+  .tick.done{background:var(--ink);}
+  .tick.current{background:var(--accent);}
+
+  .round-label{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+  }
+  .round-word{
+    font-family:var(--mono);
+    font-size:13px;
+    color:var(--ink-soft);
+    margin-bottom:22px;
+  }
+  .round-word b{color:var(--ink); font-weight:600;}
+
+  .specimens{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  @media (max-width:560px){
+    .specimens{grid-template-columns:1fr;}
+  }
+  .specimen{
+    background:var(--paper-shade);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:26px 18px 16px;
+    cursor:pointer;
+    text-align:center;
+    position:relative;
+    min-height:180px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .specimen:hover{border-color:var(--ink);}
+  .specimen.chosen{
+    background:var(--accent-soft);
+    border-color:var(--accent);
+  }
+  .specimen .word{
+    word-break:break-word;
+    line-height:1.05;
+  }
+  .specimen .pt{
+    font-family:var(--mono);
+    font-size:10px;
+    color:var(--ink-soft);
+    letter-spacing:0.06em;
+    margin-top:14px;
+  }
+
+  /* ---------- Results (shared) ---------- */
+  .result-kicker{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+    text-align:center;
+  }
+  .result-sub{
+    font-size:16px;
+    color:var(--ink-soft);
+    margin-bottom:28px;
+    text-align:center;
+  }
+  .result-sub b{color:var(--ink);}
+
+  .profile-tag{
+    font-family:var(--display);
+    font-style:italic;
+    font-size:22px;
+    margin:0 0 28px;
+  }
+
+  /* ---------- Match layout: them | heart | you ---------- */
+  .match-layout{
+    display:grid;
+    grid-template-columns:1fr 128px 1fr;
+    gap:16px;
+    align-items:stretch;
+    margin-bottom:12px;
+  }
+  .match-col{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    min-width:0;
+  }
+  .match-col .col-label{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:2px;
+  }
+  .match-col.them .col-label{text-align:left;}
+  .match-col.you .col-label{text-align:right;}
+
+  .match-entry{
+    padding:9px 11px;
+    border-radius:var(--radius);
+    border:1px solid var(--line);
+    font-size:12px;
+    line-height:1.25;
+    overflow-wrap:anywhere;
+  }
+  .match-col.them .match-entry{text-align:left;}
+  .match-col.you .match-entry{text-align:right;}
+  .match-entry.match{background:var(--match-soft); border-color:var(--match); color:var(--match); font-weight:600;}
+  .match-entry .w{
+    display:block;
+    font-family:var(--mono);
+    font-size:9px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:2px;
+  }
+  .match-entry.match .w{color:var(--match);}
+
+  .match-center{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:12px 0;
+  }
+  .heart-wrap{
+    position:relative;
+    width:88px;
+    height:88px;
+    transform:scale(0.15);
+    opacity:0;
+    transition:transform .7s cubic-bezier(.32,1.6,.5,1), opacity .5s ease;
+  }
+  .heart-wrap.grown{
+    transform:scale(var(--heart-scale, 1));
+    opacity:1;
+  }
+  .heart-svg{position:absolute; inset:0; width:100%; height:100%;}
+  .heart-outline path{fill:none; stroke:var(--match); stroke-width:1.1;}
+  .heart-fill path{fill:var(--match); transition:opacity .8s ease .2s;}
+  .match-pct{
+    margin-top:14px;
+    font-family:var(--display);
+    font-weight:600;
+    font-size:36px;
+    color:var(--ink);
+    line-height:1;
+  }
+  .match-statement{
+    margin-top:10px;
+    font-size:12.5px;
+    line-height:1.4;
+    color:var(--ink-soft);
+    max-width:20ch;
+  }
+
+  @media (max-width:640px){
+    .match-layout{grid-template-columns:1fr;}
+    .match-center{order:-1; padding-bottom:20px;}
+    .match-col.you .col-label,
+    .match-col.you .match-entry{text-align:left;}
+  }
+
+  .name-box{margin-bottom:12px;}
+  .name-box input{
+    width:100%;
+    font-family:var(--body);
+    font-size:14px;
+    padding:12px 14px;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    background:var(--paper);
+    color:var(--ink);
+  }
+  .name-box input::placeholder{color:var(--ink-soft);}
+
+  .share-box{
+    display:flex;
+    gap:8px;
+    margin-bottom:14px;
+  }
+  .share-box input{
+    flex:1;
+    font-family:var(--mono);
+    font-size:12px;
+    padding:12px 12px;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    background:var(--paper-shade);
+    color:var(--ink-soft);
+  }
+  .copy-note{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--accent);
+    height:16px;
+    margin-bottom:20px;
+  }
+
+  .btn-row{display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:6px;}
+
+  .affiliate-line{
+    margin-top:36px;
+    padding-top:18px;
+    border-top:1px solid var(--line);
+    font-size:13px;
+    color:var(--ink-soft);
+    text-align:center;
+  }
+
+  .stats-link{
+    text-align:center;
+    margin-top:14px;
+    font-size:13px;
+  }
+
+  /* ---------- Group stats page ---------- */
+  .stats-loading{
+    text-align:center;
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--ink-soft);
+    padding:60px 0;
+  }
+  .stats-total{
+    font-family:var(--display);
+    font-weight:600;
+    font-size:28px;
+    text-align:center;
+    margin:4px 0 32px;
+  }
+  .stats-section{margin-bottom:28px;}
+  .stats-heading{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:12px;
+  }
+  .stats-bar-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:9px;
+    font-size:13px;
+  }
+  .stats-bar-label{width:150px; flex-shrink:0;}
+  .stats-bar-track{
+    flex:1;
+    height:8px;
+    background:var(--paper-shade);
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .stats-bar-fill{height:100%; background:var(--accent); border-radius:4px;}
+  .stats-bar-pct{width:38px; text-align:right; font-family:var(--mono); font-size:11px; color:var(--ink-soft);}
+  .stats-callout{
+    background:var(--accent-soft);
+    border-radius:var(--radius);
+    padding:14px 16px;
+    font-size:13px;
+    margin-bottom:28px;
+  }
+  .stats-round-row{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    padding:9px 11px;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    font-size:12px;
+    margin-bottom:6px;
+  }
+  .stats-round-row .w{font-family:var(--mono); color:var(--ink-soft); text-transform:uppercase; font-size:10px;}
+  .stats-round-row .pick{text-align:right; color:var(--ink-soft);}
+
+  footer{
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    text-align:center;
+    padding-top:40px;
+  }
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="topline">
+    <span>Font Match — Specimen No. 01</span>
+    <span class="mark" aria-hidden="true"></span>
+  </div>
+  <div id="app"></div>
+  <footer>A stack of words. Two typefaces each round. One verdict.</footer>
+</div>
+
+<script>
+/* ---------------------------------------------------------
+   ROUND DATA
+   22 rounds, 44 distinct Google Fonts (two per round). "size"
+   is the real rendered point size, shown as a specimen
+   annotation under the card.
+--------------------------------------------------------- */
+const ROUNDS = [
+  { word:"Wanderlust", a:{font:"'Playfair Display'", size:44, cat:"serif"},   b:{font:"'DM Sans'", size:38, cat:"sans"} },
+  { word:"Nocturne",    a:{font:"'Space Mono'", size:34, cat:"mono"},         b:{font:"'Cormorant Garamond'", size:46, cat:"serif"} },
+  { word:"QUICKSILVER", a:{font:"'Bebas Neue'", size:40, cat:"display"},      b:{font:"'Libre Baskerville'", size:30, cat:"serif"} },
+  { word:"Velvet",      a:{font:"'Righteous'", size:38, cat:"display"},       b:{font:"'EB Garamond'", size:44, cat:"serif"} },
+  { word:"Static",      a:{font:"'Archivo Black'", size:36, cat:"display"},   b:{font:"'Crimson Pro'", size:42, cat:"serif"} },
+  { word:"Marigold",    a:{font:"'Caveat'", size:50, cat:"script"},           b:{font:"'Oswald'", size:36, cat:"sans"} },
+  { word:"Echo",        a:{font:"'Abril Fatface'", size:38, cat:"display"},   b:{font:"'Work Sans'", size:36, cat:"sans"} },
+  { word:"Paradox",     a:{font:"'IBM Plex Mono'", size:32, cat:"mono"},      b:{font:"'Lora'", size:38, cat:"serif"} },
+  { word:"Feral",       a:{font:"'Pacifico'", size:38, cat:"script"},         b:{font:"'Inter'", size:36, cat:"sans"} },
+  { word:"Solstice",    a:{font:"'Bungee'", size:30, cat:"display"},          b:{font:"'Source Serif 4'", size:38, cat:"serif"} },
+  { word:"Mirage",      a:{font:"'Zilla Slab'", size:36, cat:"slab"},         b:{font:"'Poppins'", size:36, cat:"sans"} },
+  { word:"Tundra",      a:{font:"'Anton'", size:36, cat:"display"},           b:{font:"'Merriweather'", size:34, cat:"serif"} },
+  { word:"Halcyon",     a:{font:"'Dancing Script'", size:46, cat:"script"},   b:{font:"'Barlow'", size:36, cat:"sans"} },
+  { word:"Obsidian",    a:{font:"'Staatliches'", size:34, cat:"display"},     b:{font:"'PT Serif'", size:38, cat:"serif"} },
+  { word:"Cascade",     a:{font:"'Courier Prime'", size:32, cat:"mono"},      b:{font:"'Vollkorn'", size:38, cat:"serif"} },
+  { word:"Ember",       a:{font:"'Alfa Slab One'", size:32, cat:"slab"},      b:{font:"'Nunito Sans'", size:34, cat:"sans"} },
+  { word:"Whisper",     a:{font:"'Sacramento'", size:44, cat:"script"},       b:{font:"'Rubik'", size:36, cat:"sans"} },
+  { word:"Meridian",    a:{font:"'Fjalla One'", size:36, cat:"display"},      b:{font:"'Cardo'", size:38, cat:"serif"} },
+  { word:"Lantern",     a:{font:"'Amatic SC'", size:48, cat:"display"},       b:{font:"'Karla'", size:36, cat:"sans"} },
+  { word:"Cobalt",      a:{font:"'Big Shoulders Display'", size:36, cat:"display"}, b:{font:"'Spectral'", size:38, cat:"serif"} },
+  { word:"Driftwood",   a:{font:"'Permanent Marker'", size:34, cat:"script"}, b:{font:"'Manrope'", size:36, cat:"sans"} },
+  { word:"Zenith",      a:{font:"'Special Elite'", size:32, cat:"mono"},      b:{font:"'Domine'", size:36, cat:"serif"} },
+];
+
+const TAG_LABEL = {
+  serif:"Classic & Serif-Leaning",
+  sans:"Clean & Modern",
+  display:"Bold & Maximalist",
+  script:"Playful & Expressive",
+  mono:"Technical & Precise",
+  slab:"Sturdy & Slab-Serif",
+};
+
+const CATEGORY_PHRASE = {
+  serif:"serif type",
+  sans:"clean sans-serif type",
+  display:"bold display type",
+  script:"playful script type",
+  mono:"technical monospace type",
+  slab:"sturdy slab type",
+};
+
+function matchStatement(myCat, theirCat, theirName){
+  if (myCat === theirCat){
+    return `You both preferred ${CATEGORY_PHRASE[myCat]}.`;
+  }
+  return `${theirName} preferred ${CATEGORY_PHRASE[theirCat]} more than you did.`;
+}
+
+const HEART_PATH = "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z";
+
+/* ---------------------------------------------------------
+   STATE
+--------------------------------------------------------- */
+const params = new URLSearchParams(location.search);
+const incomingVs = params.get("vs");
+let challenger = null;
+if (incomingVs) {
+  try { challenger = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(incomingVs))))); }
+  catch(e){ challenger = null; }
+}
+
+const state = {
+  mode: challenger ? "intro-challenge" : "landing",
+  round: 0,
+  answers: [],
+};
+
+// Carries across "take it again" / "challenge someone else" in the same
+// sitting, so a person only has to type their name once per visit.
+let myName = "";
+
+function encodeAnswers(answers, name){
+  const payload = JSON.stringify({ a: answers, n: name || "" });
+  return encodeURIComponent(btoa(unescape(encodeURIComponent(payload))));
+}
+
+function buildShareLink(answers, name){
+  const url = new URL(location.href);
+  url.search = "";
+  url.searchParams.set("vs", encodeAnswers(answers, name));
+  if (name) url.searchParams.set("who", name);
+  return url.toString();
+}
+
+function tagCounts(answers){
+  const counts = {};
+  answers.forEach(pick => { counts[pick.cat] = (counts[pick.cat]||0) + 1; });
+  let best = "serif", bestCount = -1;
+  Object.keys(counts).forEach(k => { if (counts[k] > bestCount){ best = k; bestCount = counts[k]; } });
+  return best;
+}
+
+/* ---------------------------------------------------------
+   RENDER
+--------------------------------------------------------- */
+const app = document.getElementById("app");
+
+function render(){
+  if (state.mode === "landing") return renderLanding();
+  if (state.mode === "intro-challenge") return renderChallengeIntro();
+  if (state.mode === "quiz") return renderQuiz();
+  if (state.mode === "results-solo") return renderResultsSolo();
+  if (state.mode === "results-challenge") return renderResultsChallenge();
+  if (state.mode === "stats") return renderStats();
+}
+
+function goToStats(){
+  state.mode = "stats";
+  render();
+}
+
+function renderLanding(){
+  app.innerHTML = `
+    <div class="landing">
+      <h1>Do your fonts&nbsp;match?</h1>
+      <p class="lede">${ROUNDS.length} words. Two typefaces each round. Pick the one that feels right — then send the link and see if someone else's taste lines up with yours.</p>
+      <button class="cta" id="start-btn">Start the specimen test</button>
+      <div class="stats-link"><a href="#" id="stats-link">See how everyone else has answered →</a></div>
+    </div>
+  `;
+  document.getElementById("start-btn").addEventListener("click", () => {
+    state.mode = "quiz";
+    state.round = 0;
+    state.answers = [];
+    render();
+  });
+  document.getElementById("stats-link").addEventListener("click", (e) => { e.preventDefault(); goToStats(); });
+}
+
+function renderChallengeIntro(){
+  const name = challenger.n && challenger.n.trim() ? challenger.n.trim() : "Someone";
+  app.innerHTML = `
+    <div class="landing">
+      <div class="challenge-banner">Incoming challenge</div>
+      <h1>${escapeHtml(name)} wants to know if your fonts match.</h1>
+      <p class="lede">Same ${ROUNDS.length} words, same ${ROUNDS.length * 2} typefaces. Pick your favorites and we'll show you a compatibility score, plus exactly where you agree.</p>
+      <button class="cta" id="start-btn">Take the specimen test</button>
+    </div>
+  `;
+  document.getElementById("start-btn").addEventListener("click", () => {
+    state.mode = "quiz";
+    state.round = 0;
+    state.answers = [];
+    render();
+  });
+}
+
+function renderQuiz(){
+  const r = ROUNDS[state.round];
+  const ticks = ROUNDS.map((_, i) => {
+    let cls = "tick";
+    if (i < state.round) cls += " done";
+    else if (i === state.round) cls += " current";
+    return `<div class="${cls}"></div>`;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="ruler">${ticks}</div>
+    <div class="round-label">Specimen ${String(state.round+1).padStart(2,"0")} / ${ROUNDS.length}</div>
+    <div class="round-word">Which setting of <b>“${r.word}”</b> feels more like you?</div>
+    <div class="specimens">
+      <div class="specimen" data-choice="a" tabindex="0" role="button" aria-label="Choose this typeface">
+        <div class="word" style="font-family:${r.a.font}; font-size:${r.a.size}px;">${escapeHtml(r.word)}</div>
+        <div class="pt">${r.a.size}pt</div>
+      </div>
+      <div class="specimen" data-choice="b" tabindex="0" role="button" aria-label="Choose this typeface">
+        <div class="word" style="font-family:${r.b.font}; font-size:${r.b.size}px;">${escapeHtml(r.word)}</div>
+        <div class="pt">${r.b.size}pt</div>
+      </div>
+    </div>
+  `;
+
+  const cards = app.querySelectorAll(".specimen");
+  cards.forEach(card => {
+    const pick = () => choose(card.dataset.choice);
+    card.addEventListener("click", pick);
+    card.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
+  });
+}
+
+function choose(which){
+  const r = ROUNDS[state.round];
+  const picked = which === "a" ? r.a : r.b;
+  state.answers.push({ font: picked.font, cat: picked.cat, word: r.word });
+
+  const chosenCard = app.querySelector(`.specimen[data-choice="${which}"]`);
+  if (chosenCard) chosenCard.classList.add("chosen");
+
+  setTimeout(() => {
+    state.round += 1;
+    if (state.round < ROUNDS.length){
+      renderQuiz();
+    } else {
+      submitResult(state.answers);
+      state.mode = challenger ? "results-challenge" : "results-solo";
+      render();
+    }
+  }, 220);
+}
+
+function buildPicksPayload(answers){
+  return answers.map((ans, i) => ({
+    round: i,
+    choice: ans.font === ROUNDS[i].a.font ? "a" : "b",
+  }));
+}
+
+function submitResult(answers){
+  // Best-effort: adds one anonymous tally to the group results page.
+  // If the site isn't deployed with its database yet (e.g. you're just
+  // opening this file locally), this silently does nothing — the quiz
+  // itself never depends on it.
+  try {
+    fetch("/api/submit", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        picks: buildPicksPayload(answers),
+        category: tagCounts(answers),
+      }),
+    }).catch(() => {});
+  } catch (e) {}
+}
+
+function renderResultsSolo(){
+  const tag = tagCounts(state.answers);
+  app.innerHTML = `
+    <div class="result-kicker">Specimen profile complete</div>
+    <div class="profile-tag" style="text-align:center;">You lean ${TAG_LABEL[tag]}.</div>
+    <p class="result-sub">That's just your half of the picture. Add your name, send the link below to a friend — once they finish their own ${ROUNDS.length} picks, you'll both see a compatibility score. They can then pass it straight on to someone else, and the chain keeps going without anyone redoing the test.</p>
+    <div class="name-box">
+      <input id="name-input" type="text" maxlength="24" placeholder="Your name (shown on the link)" value="${escapeHtml(myName)}">
+    </div>
+    <div class="share-box">
+      <input id="share-input" type="text" readonly value="">
+      <button class="cta" id="copy-btn">Copy link</button>
+    </div>
+    <div class="copy-note" id="copy-note"></div>
+    <div class="btn-row">
+      <button class="cta ghost" id="again-btn">Take it again</button>
+    </div>
+    <div class="affiliate-line">
+      Curious about the typefaces you picked? <a id="explore-link" href="https://fonts.google.com" target="_blank" rel="noopener">Explore more type →</a>
+      <!-- AFFILIATE SLOT: once you're accepted into a font marketplace's affiliate program
+           (e.g. Adobe Fonts, Creative Market, MyFonts), swap the href above for your
+           affiliate link. Consider making it specific to the fonts they picked. -->
+    </div>
+    <div class="stats-link"><a href="#" id="stats-link">See how everyone else has answered →</a></div>
+  `;
+  wireShare(state.answers);
+  document.getElementById("again-btn").addEventListener("click", () => {
+    state.mode = "quiz"; state.round = 0; state.answers = [];
+    render();
+  });
+  document.getElementById("stats-link").addEventListener("click", (e) => { e.preventDefault(); goToStats(); });
+}
+
+function renderResultsChallenge(){
+  const matches = state.answers.filter((ans, i) => challenger.a[i] && challenger.a[i].font === ans.font);
+  const pct = Math.round((matches.length / ROUNDS.length) * 100);
+  const name = challenger.n && challenger.n.trim() ? challenger.n.trim() : "Them";
+  const heartScale = (0.55 + (pct / 100) * 0.65).toFixed(2);
+
+  const myCat = tagCounts(state.answers);
+  const theirCat = tagCounts(challenger.a);
+  const statement = matchStatement(myCat, theirCat, name);
+
+  const theirEntries = ROUNDS.map((r, i) => {
+    const theirs = challenger.a[i];
+    const isMatch = theirs && theirs.font === state.answers[i].font;
+    const short = theirs ? theirs.font.replace(/'/g,"") : "?";
+    return `
+      <div class="match-entry ${isMatch ? "match" : ""}">
+        <span class="w">${escapeHtml(r.word)}</span>${escapeHtml(short)}
+      </div>
+    `;
+  }).join("");
+
+  const yourEntries = ROUNDS.map((r, i) => {
+    const mine = state.answers[i];
+    const theirs = challenger.a[i];
+    const isMatch = theirs && theirs.font === mine.font;
+    const short = mine.font.replace(/'/g,"");
+    return `
+      <div class="match-entry ${isMatch ? "match" : ""}">
+        <span class="w">${escapeHtml(r.word)}</span>${escapeHtml(short)}
+      </div>
+    `;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="result-kicker">Type match</div>
+    <div class="match-layout">
+      <div class="match-col them">
+        <div class="col-label">${escapeHtml(name)}</div>
+        ${theirEntries}
+      </div>
+      <div class="match-center">
+        <div class="heart-wrap" id="heart-wrap" style="--heart-scale:${heartScale};">
+          <svg class="heart-svg heart-outline" viewBox="0 0 24 24" aria-hidden="true"><path d="${HEART_PATH}"/></svg>
+          <svg class="heart-svg heart-fill" viewBox="0 0 24 24" aria-hidden="true" style="opacity:${pct/100};"><path d="${HEART_PATH}"/></svg>
+        </div>
+        <div class="match-pct">${pct}%</div>
+        <div class="match-statement">${escapeHtml(statement)}</div>
+      </div>
+      <div class="match-col you">
+        <div class="col-label">You</div>
+        ${yourEntries}
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="cta" id="own-challenge-btn">Challenge someone else!</button>
+      <button class="cta ghost" id="again-btn">Take it again</button>
+    </div>
+    <div class="affiliate-line">
+      Curious about the typefaces you picked? <a href="https://fonts.google.com" target="_blank" rel="noopener">Explore more type →</a>
+    </div>
+    <div class="stats-link"><a href="#" id="stats-link">See how everyone else has answered →</a></div>
+  `;
+
+  requestAnimationFrame(() => {
+    const hw = document.getElementById("heart-wrap");
+    if (hw) requestAnimationFrame(() => hw.classList.add("grown"));
+  });
+
+  document.getElementById("again-btn").addEventListener("click", () => {
+    state.mode = "quiz"; state.round = 0; state.answers = [];
+    render();
+  });
+  document.getElementById("own-challenge-btn").addEventListener("click", () => {
+    challenger = null;
+    history.replaceState(null, "", location.pathname);
+    state.mode = "results-solo";
+    render();
+  });
+  document.getElementById("stats-link").addEventListener("click", (e) => { e.preventDefault(); goToStats(); });
+}
+
+function renderStats(){
+  app.innerHTML = `<div class="stats-loading">Tallying everyone's picks…</div>`;
+
+  fetch("/api/stats")
+    .then(r => { if (!r.ok) throw new Error("bad response"); return r.json(); })
+    .then(renderStatsData)
+    .catch(() => {
+      app.innerHTML = `
+        <div class="result-kicker">Group results</div>
+        <p class="result-sub">This page isn't connected to the results database yet. Once the site is deployed with D1 set up, it fills in on its own — nothing else to change here.</p>
+        <div class="btn-row"><button class="cta ghost" id="back-btn">Back</button></div>
+      `;
+      document.getElementById("back-btn").addEventListener("click", () => {
+        state.mode = challenger ? "intro-challenge" : "landing";
+        render();
+      });
+    });
+}
+
+function renderStatsData(data){
+  const totalPlayers = data.totalPlayers || 0;
+
+  // counts[i|choice] = number of picks
+  const counts = {};
+  (data.rounds || []).forEach(row => { counts[row.round_index + "|" + row.choice] = row.count; });
+
+  const roundResults = ROUNDS.map((r, i) => {
+    const aCount = counts[i + "|a"] || 0;
+    const bCount = counts[i + "|b"] || 0;
+    const total = aCount + bCount;
+    const aWins = aCount >= bCount;
+    const winnerFont = (aWins ? r.a.font : r.b.font).replace(/'/g, "");
+    const pct = total ? Math.round((Math.max(aCount, bCount) / total) * 100) : 0;
+    return { word: r.word, fontName: winnerFont, pct, total };
+  });
+
+  const landslide = roundResults.reduce((best, cur) => (cur.total && cur.pct > (best ? best.pct : -1)) ? cur : best, null);
+
+  const totalCategoryVotes = (data.categories || []).reduce((sum, c) => sum + c.count, 0);
+  const categoryBars = (data.categories || []).map(c => {
+    const pct = totalCategoryVotes ? Math.round((c.count / totalCategoryVotes) * 100) : 0;
+    return `
+      <div class="stats-bar-row">
+        <div class="stats-bar-label">${escapeHtml(TAG_LABEL[c.category] || c.category)}</div>
+        <div class="stats-bar-track"><div class="stats-bar-fill" style="width:${pct}%"></div></div>
+        <div class="stats-bar-pct">${pct}%</div>
+      </div>
+    `;
+  }).join("");
+
+  const roundRows = roundResults.map(r => `
+    <div class="stats-round-row">
+      <div class="w">${escapeHtml(r.word)}</div>
+      <div class="pick">${r.total ? `${escapeHtml(r.fontName)} — ${r.pct}%` : "No data yet"}</div>
+    </div>
+  `).join("");
+
+  app.innerHTML = `
+    <div class="result-kicker">Group results</div>
+    <div class="stats-total">${totalPlayers} ${totalPlayers === 1 ? "person has" : "people have"} taken the test</div>
+
+    ${totalCategoryVotes ? `
+      <div class="stats-section">
+        <div class="stats-heading">Type personalities so far</div>
+        ${categoryBars}
+      </div>
+    ` : ""}
+
+    ${landslide && landslide.total ? `
+      <div class="stats-callout">
+        <b>Least controversial round:</b> in “${escapeHtml(landslide.word)},” ${landslide.pct}% of people picked ${escapeHtml(landslide.fontName)}.
+      </div>
+    ` : ""}
+
+    <div class="stats-section">
+      <div class="stats-heading">Every round, so far</div>
+      ${roundRows}
+    </div>
+
+    <div class="btn-row"><button class="cta ghost" id="back-btn">Back</button></div>
+  `;
+
+  document.getElementById("back-btn").addEventListener("click", () => {
+    state.mode = challenger ? "intro-challenge" : "landing";
+    render();
+  });
+}
+
+function wireShare(answers){
+  const nameInput = document.getElementById("name-input");
+  const shareInput = document.getElementById("share-input");
+
+  function refreshLink(){
+    myName = nameInput.value.trim();
+    shareInput.value = buildShareLink(answers, myName);
+  }
+  refreshLink();
+  nameInput.addEventListener("input", refreshLink);
+
+  document.getElementById("copy-btn").addEventListener("click", async () => {
+    const note = document.getElementById("copy-note");
+    try {
+      await navigator.clipboard.writeText(shareInput.value);
+      note.textContent = "Link copied.";
+    } catch (e) {
+      shareInput.select();
+      note.textContent = "Press Ctrl/Cmd+C to copy.";
+    }
+    setTimeout(() => { note.textContent = ""; }, 2500);
+  });
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, c => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  }[c]));
+}
+
+render();
+
+/* ---------------------------------------------------------
+   AD SLOT
+   Once you're approved by an ad network (AdSense, Ezoic, etc.),
+   paste that network's script tag just before </body> in the
+   real deployed file — not here in the logic section.
+--------------------------------------------------------- */
+</script>
+</body>
+</html>
