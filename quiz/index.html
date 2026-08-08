@@ -199,6 +199,55 @@
     margin-top:14px;
   }
 
+  .specimen-badge{
+    font-family:var(--mono);
+    font-size:9px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:10px;
+  }
+  .specimen.chosen .specimen-badge{color:var(--accent);}
+
+  .neutral-btn{
+    display:block;
+    margin:16px auto 0;
+    font-family:var(--body);
+    font-size:13px;
+    color:var(--ink-soft);
+    background:transparent;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:10px 18px;
+    cursor:pointer;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .neutral-btn:hover{border-color:var(--ink); color:var(--ink);}
+
+  .champion-showcase{
+    text-align:center;
+    margin-bottom:20px;
+  }
+  .champion-label{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:10px;
+  }
+  .champion-word{
+    font-size:52px;
+    line-height:1.05;
+    word-break:break-word;
+  }
+  .champion-name{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:10px;
+  }
+
   /* ---------- Results (shared) ---------- */
   .result-kicker{
     font-family:var(--mono);
@@ -445,43 +494,39 @@
 <body>
 <div class="frame">
   <div class="topline">
-    <span>Font Match — Specimen No. 01</span>
+    <span>Font Match — Tournament</span>
     <span class="mark" aria-hidden="true"></span>
   </div>
   <div id="app"></div>
-  <footer>A stack of words. Two typefaces each round. One verdict.</footer>
+  <footer>One bracket. One favorite. See who agrees with you.</footer>
 </div>
 
 <script>
 /* ---------------------------------------------------------
-   ROUND DATA
-   22 rounds, 44 distinct Google Fonts (two per round). "size"
-   is the real rendered point size, shown as a specimen
-   annotation under the card.
+   FONT POOL
+   16 fonts, each tied to a word, drawn from the original 22
+   pairs (kept the same visual "specimen" idea: both fonts in
+   a battle render the same word). Fixed order — every visitor
+   sees the same sequence, which is what makes the share link
+   and the group stats possible.
 --------------------------------------------------------- */
-const ROUNDS = [
-  { word:"Wanderlust", a:{font:"'Playfair Display'", size:44, cat:"serif"},   b:{font:"'DM Sans'", size:38, cat:"sans"} },
-  { word:"Nocturne",    a:{font:"'Space Mono'", size:34, cat:"mono"},         b:{font:"'Cormorant Garamond'", size:46, cat:"serif"} },
-  { word:"QUICKSILVER", a:{font:"'Bebas Neue'", size:40, cat:"display"},      b:{font:"'Libre Baskerville'", size:30, cat:"serif"} },
-  { word:"Velvet",      a:{font:"'Righteous'", size:38, cat:"display"},       b:{font:"'EB Garamond'", size:44, cat:"serif"} },
-  { word:"Static",      a:{font:"'Archivo Black'", size:36, cat:"display"},   b:{font:"'Crimson Pro'", size:42, cat:"serif"} },
-  { word:"Marigold",    a:{font:"'Caveat'", size:50, cat:"script"},           b:{font:"'Oswald'", size:36, cat:"sans"} },
-  { word:"Echo",        a:{font:"'Abril Fatface'", size:38, cat:"display"},   b:{font:"'Work Sans'", size:36, cat:"sans"} },
-  { word:"Paradox",     a:{font:"'IBM Plex Mono'", size:32, cat:"mono"},      b:{font:"'Lora'", size:38, cat:"serif"} },
-  { word:"Feral",       a:{font:"'Pacifico'", size:38, cat:"script"},         b:{font:"'Inter'", size:36, cat:"sans"} },
-  { word:"Solstice",    a:{font:"'Bungee'", size:30, cat:"display"},          b:{font:"'Source Serif 4'", size:38, cat:"serif"} },
-  { word:"Mirage",      a:{font:"'Zilla Slab'", size:36, cat:"slab"},         b:{font:"'Poppins'", size:36, cat:"sans"} },
-  { word:"Tundra",      a:{font:"'Anton'", size:36, cat:"display"},           b:{font:"'Merriweather'", size:34, cat:"serif"} },
-  { word:"Halcyon",     a:{font:"'Dancing Script'", size:46, cat:"script"},   b:{font:"'Barlow'", size:36, cat:"sans"} },
-  { word:"Obsidian",    a:{font:"'Staatliches'", size:34, cat:"display"},     b:{font:"'PT Serif'", size:38, cat:"serif"} },
-  { word:"Cascade",     a:{font:"'Courier Prime'", size:32, cat:"mono"},      b:{font:"'Vollkorn'", size:38, cat:"serif"} },
-  { word:"Ember",       a:{font:"'Alfa Slab One'", size:32, cat:"slab"},      b:{font:"'Nunito Sans'", size:34, cat:"sans"} },
-  { word:"Whisper",     a:{font:"'Sacramento'", size:44, cat:"script"},       b:{font:"'Rubik'", size:36, cat:"sans"} },
-  { word:"Meridian",    a:{font:"'Fjalla One'", size:36, cat:"display"},      b:{font:"'Cardo'", size:38, cat:"serif"} },
-  { word:"Lantern",     a:{font:"'Amatic SC'", size:48, cat:"display"},       b:{font:"'Karla'", size:36, cat:"sans"} },
-  { word:"Cobalt",      a:{font:"'Big Shoulders Display'", size:36, cat:"display"}, b:{font:"'Spectral'", size:38, cat:"serif"} },
-  { word:"Driftwood",   a:{font:"'Permanent Marker'", size:34, cat:"script"}, b:{font:"'Manrope'", size:36, cat:"sans"} },
-  { word:"Zenith",      a:{font:"'Special Elite'", size:32, cat:"mono"},      b:{font:"'Domine'", size:36, cat:"serif"} },
+const FONT_POOL = [
+  { word:"Wanderlust", font:"'Playfair Display'", size:44, cat:"serif" },
+  { word:"Wanderlust", font:"'DM Sans'", size:38, cat:"sans" },
+  { word:"Nocturne", font:"'Space Mono'", size:34, cat:"mono" },
+  { word:"Nocturne", font:"'Cormorant Garamond'", size:46, cat:"serif" },
+  { word:"QUICKSILVER", font:"'Bebas Neue'", size:40, cat:"display" },
+  { word:"QUICKSILVER", font:"'Libre Baskerville'", size:30, cat:"serif" },
+  { word:"Marigold", font:"'Caveat'", size:50, cat:"script" },
+  { word:"Marigold", font:"'Oswald'", size:36, cat:"sans" },
+  { word:"Paradox", font:"'IBM Plex Mono'", size:32, cat:"mono" },
+  { word:"Paradox", font:"'Lora'", size:38, cat:"serif" },
+  { word:"Ember", font:"'Alfa Slab One'", size:32, cat:"slab" },
+  { word:"Ember", font:"'Nunito Sans'", size:34, cat:"sans" },
+  { word:"Halcyon", font:"'Dancing Script'", size:46, cat:"script" },
+  { word:"Halcyon", font:"'Barlow'", size:36, cat:"sans" },
+  { word:"Cobalt", font:"'Big Shoulders Display'", size:36, cat:"display" },
+  { word:"Cobalt", font:"'Spectral'", size:38, cat:"serif" },
 ];
 
 const TAG_LABEL = {
@@ -502,14 +547,102 @@ const CATEGORY_PHRASE = {
   slab:"sturdy slab type",
 };
 
-function matchStatement(myCat, theirCat, theirName){
-  if (myCat === theirCat){
-    return `You both preferred ${CATEGORY_PHRASE[myCat]}.`;
-  }
-  return `${theirName} preferred ${CATEGORY_PHRASE[theirCat]} more than you did.`;
+const HEART_PATH = "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z";
+
+/* ---------------------------------------------------------
+   TOURNAMENT ENGINE
+   Font 0 starts as champion. Each font after it, in order,
+   challenges the current champion. Winner stays on. A neutral
+   pick leaves the champion in place and drops the challenger
+   out of that person's ranking entirely (no opinion recorded).
+
+   "outcomes" is an array of single-character codes, one per
+   battle: 'c' = champion kept it, 'x' = challenger won,
+   'n' = neutral. Replaying the same outcomes against the same
+   FONT_POOL always reproduces the same result — that's what
+   makes the compact share link possible.
+--------------------------------------------------------- */
+function simulateRun(outcomes){
+  const wins = new Array(FONT_POOL.length).fill(0);
+  const status = new Array(FONT_POOL.length).fill("pending");
+  const eliminatedAt = new Array(FONT_POOL.length).fill(null);
+  let championIndex = 0;
+
+  outcomes.forEach((code, idx) => {
+    const battle = idx + 1;
+    const challengerIndex = battle;
+    if (code === "c") {
+      wins[championIndex] += 1;
+      status[challengerIndex] = "eliminated";
+      eliminatedAt[challengerIndex] = battle;
+    } else if (code === "x") {
+      status[championIndex] = "eliminated";
+      eliminatedAt[championIndex] = battle;
+      championIndex = challengerIndex;
+    } else {
+      status[challengerIndex] = "neutral";
+    }
+  });
+
+  status[championIndex] = "champion";
+  return { wins, status, eliminatedAt, championIndex };
 }
 
-const HEART_PATH = "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z";
+function buildFontRecords(result){
+  return FONT_POOL.map((f, i) => ({
+    key: f.font,
+    cat: f.cat,
+    wins: result.wins[i],
+    status: result.status[i],
+    eliminatedAt: result.eliminatedAt[i],
+  }));
+}
+
+// Best → worst, excluding anything marked neutral.
+function computeRanking(records){
+  return records
+    .map((r, i) => ({
+      i,
+      wins: r.wins,
+      elim: r.eliminatedAt === null ? Infinity : r.eliminatedAt,
+      status: r.status,
+    }))
+    .filter(r => r.status !== "neutral")
+    .sort((a, b) => b.wins - a.wins || b.elim - a.elim)
+    .map(r => r.i);
+}
+
+// Weighted rank agreement over whatever fonts both people actually
+// ranked (fonts either person marked neutral are left out of the
+// comparison for both). Agreement on a highly-ranked font counts for
+// much more than agreement further down the list.
+function computeCompatibility(mine, theirs){
+  const myRank = computeRanking(mine);
+  const theirRank = computeRanking(theirs);
+  const theirSet = new Set(theirRank);
+  const common = myRank.filter(i => theirSet.has(i));
+  const commonSet = new Set(common);
+  const myCommon = myRank.filter(i => commonSet.has(i));
+  const theirCommon = theirRank.filter(i => commonSet.has(i));
+  const M = myCommon.length;
+  if (M === 0) return null;
+
+  const myPos = {}, theirPos = {};
+  myCommon.forEach((idx, pos) => { myPos[idx] = pos + 1; });
+  theirCommon.forEach((idx, pos) => { theirPos[idx] = pos + 1; });
+
+  let weightedSum = 0, weightTotal = 0;
+  commonSet.forEach(idx => {
+    const rA = myPos[idx], rB = theirPos[idx];
+    const diff = Math.abs(rA - rB);
+    const similarity = M > 1 ? 1 - diff / (M - 1) : 1;
+    const weight = (M + 1) - Math.min(rA, rB);
+    weightedSum += similarity * weight;
+    weightTotal += weight;
+  });
+
+  return { pct: Math.round((weightedSum / weightTotal) * 100), M };
+}
 
 /* ---------------------------------------------------------
    STATE
@@ -519,24 +652,20 @@ const incomingVs = params.get("vs");
 const incomingName = params.get("who") || "";
 
 let challenger = null;
-
-if (incomingVs && /^[i1]+$/.test(incomingVs) && incomingVs.length === ROUNDS.length) {
+if (incomingVs && /^[cxn]+$/.test(incomingVs) && incomingVs.length === FONT_POOL.length - 1) {
+  const result = simulateRun(incomingVs.split(""));
   challenger = {
     n: incomingName,
-    a: incomingVs.split("").map((code, i) => {
-      const picked = code === "i" ? ROUNDS[i].a : ROUNDS[i].b;
-      return {
-        font: picked.font,
-        cat: picked.cat,
-        word: ROUNDS[i].word
-      };
-    })
+    answers: buildFontRecords(result),
+    championIndex: result.championIndex,
   };
 }
 
 const state = {
   mode: challenger ? "intro-challenge" : "landing",
-  round: 0,
+  battle: 1,
+  championIndex: 0,
+  outcomes: [],
   answers: [],
 };
 
@@ -544,26 +673,12 @@ const state = {
 // sitting, so a person only has to type their name once per visit.
 let myName = "";
 
-function encodeAnswers(answers){
-  return answers.map((ans, i) =>
-    ans.font === ROUNDS[i].a.font ? "i" : "1"
-  ).join("");
-}
-
-function buildShareLink(answers, name){
+function buildShareLink(outcomes, name){
   const url = new URL(location.href);
   url.search = "";
-  url.searchParams.set("vs", encodeAnswers(answers, name));
+  url.searchParams.set("vs", outcomes.join(""));
   if (name) url.searchParams.set("who", name);
   return url.toString();
-}
-
-function tagCounts(answers){
-  const counts = {};
-  answers.forEach(pick => { counts[pick.cat] = (counts[pick.cat]||0) + 1; });
-  let best = "serif", bestCount = -1;
-  Object.keys(counts).forEach(k => { if (counts[k] > bestCount){ best = k; bestCount = counts[k]; } });
-  return best;
 }
 
 /* ---------------------------------------------------------
@@ -585,21 +700,25 @@ function goToStats(){
   render();
 }
 
+function startQuiz(){
+  state.mode = "quiz";
+  state.battle = 1;
+  state.championIndex = 0;
+  state.outcomes = [];
+  state.answers = [];
+  render();
+}
+
 function renderLanding(){
   app.innerHTML = `
     <div class="landing">
       <h1>Do your fonts&nbsp;match?</h1>
-      <p class="lede">${ROUNDS.length} words. Two typefaces each round. Pick the one that feels right — then send the link and see if someone else's taste lines up with yours.</p>
-      <button class="cta" id="start-btn">Start the specimen test</button>
+      <p class="lede">${FONT_POOL.length} fonts, one bracket. Your favorite stays on to face the next challenger — see which one survives, then send the link and find out who agrees with you.</p>
+      <button class="cta" id="start-btn">Start the tournament</button>
       <div class="stats-link"><a href="#" id="stats-link">See how everyone else has answered →</a></div>
     </div>
   `;
-  document.getElementById("start-btn").addEventListener("click", () => {
-    state.mode = "quiz";
-    state.round = 0;
-    state.answers = [];
-    render();
-  });
+  document.getElementById("start-btn").addEventListener("click", startQuiz);
   document.getElementById("stats-link").addEventListener("click", (e) => { e.preventDefault(); goToStats(); });
 }
 
@@ -609,41 +728,41 @@ function renderChallengeIntro(){
     <div class="landing">
       <div class="challenge-banner">Incoming challenge</div>
       <h1>${escapeHtml(name)} wants to know if your fonts match.</h1>
-      <p class="lede">Same ${ROUNDS.length} words, same ${ROUNDS.length * 2} typefaces. Pick your favorites and we'll show you a compatibility score, plus exactly where you agree.</p>
-      <button class="cta" id="start-btn">Take the specimen test</button>
+      <p class="lede">Same ${FONT_POOL.length} fonts, same bracket. Pick your favorites and we'll show you a compatibility score based on how closely your taste actually lines up.</p>
+      <button class="cta" id="start-btn">Take the tournament</button>
     </div>
   `;
-  document.getElementById("start-btn").addEventListener("click", () => {
-    state.mode = "quiz";
-    state.round = 0;
-    state.answers = [];
-    render();
-  });
+  document.getElementById("start-btn").addEventListener("click", startQuiz);
 }
 
 function renderQuiz(){
-  const r = ROUNDS[state.round];
-  const ticks = ROUNDS.map((_, i) => {
+  const champion = FONT_POOL[state.championIndex];
+  const challengerFont = FONT_POOL[state.battle];
+  const word = challengerFont.word;
+  const totalBattles = FONT_POOL.length - 1;
+  const ticks = Array.from({ length: totalBattles }, (_, i) => {
+    const battleNum = i + 1;
     let cls = "tick";
-    if (i < state.round) cls += " done";
-    else if (i === state.round) cls += " current";
+    if (battleNum < state.battle) cls += " done";
+    else if (battleNum === state.battle) cls += " current";
     return `<div class="${cls}"></div>`;
   }).join("");
 
   app.innerHTML = `
     <div class="ruler">${ticks}</div>
-    <div class="round-label">Specimen ${String(state.round+1).padStart(2,"0")} / ${ROUNDS.length}</div>
-    <div class="round-word">Which setting of <b>“${r.word}”</b> feels more like you?</div>
+    <div class="round-label">Battle ${String(state.battle).padStart(2,"0")} / ${totalBattles}</div>
+    <div class="round-word">Which setting of <b>“${word}”</b> feels more like you?</div>
     <div class="specimens">
-      <div class="specimen" data-choice="a" tabindex="0" role="button" aria-label="Choose this typeface">
-        <div class="word" style="font-family:${r.a.font}; font-size:${r.a.size}px;">${escapeHtml(r.word)}</div>
-        <div class="pt">${r.a.size}pt</div>
+      <div class="specimen" data-choice="champion" tabindex="0" role="button" aria-label="Keep the current favorite">
+        <div class="specimen-badge">Your favorite so far</div>
+        <div class="word" style="font-family:${champion.font}; font-size:${champion.size}px;">${escapeHtml(word)}</div>
       </div>
-      <div class="specimen" data-choice="b" tabindex="0" role="button" aria-label="Choose this typeface">
-        <div class="word" style="font-family:${r.b.font}; font-size:${r.b.size}px;">${escapeHtml(r.word)}</div>
-        <div class="pt">${r.b.size}pt</div>
+      <div class="specimen" data-choice="challenger" tabindex="0" role="button" aria-label="Switch to the new challenger">
+        <div class="specimen-badge">New challenger</div>
+        <div class="word" style="font-family:${challengerFont.font}; font-size:${challengerFont.size}px;">${escapeHtml(word)}</div>
       </div>
     </div>
+    <button class="neutral-btn" id="neutral-btn">No strong preference</button>
   `;
 
   const cards = app.querySelectorAll(".specimen");
@@ -652,58 +771,75 @@ function renderQuiz(){
     card.addEventListener("click", pick);
     card.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
   });
+  document.getElementById("neutral-btn").addEventListener("click", () => choose("neutral"));
 }
 
-function choose(which){
-  const r = ROUNDS[state.round];
-  const picked = which === "a" ? r.a : r.b;
-  state.answers.push({ font: picked.font, cat: picked.cat, word: r.word });
+function choose(outcome){
+  const code = outcome === "champion" ? "c" : outcome === "challenger" ? "x" : "n";
+  state.outcomes.push(code);
+  if (outcome === "challenger") state.championIndex = state.battle;
 
-  const chosenCard = app.querySelector(`.specimen[data-choice="${which}"]`);
+  const chosenCard = outcome !== "neutral" ? app.querySelector(`.specimen[data-choice="${outcome}"]`) : null;
   if (chosenCard) chosenCard.classList.add("chosen");
 
   setTimeout(() => {
-    state.round += 1;
-    if (state.round < ROUNDS.length){
+    state.battle += 1;
+    if (state.battle < FONT_POOL.length){
       renderQuiz();
     } else {
-      submitResult(state.answers);
-      state.mode = challenger ? "results-challenge" : "results-solo";
-      render();
+      finishRun();
     }
   }, 220);
 }
 
-function buildPicksPayload(answers){
-  return answers.map((ans, i) => ({
-    round: i,
-    choice: ans.font === ROUNDS[i].a.font ? "a" : "b",
-  }));
+function finishRun(){
+  const result = simulateRun(state.outcomes);
+  state.answers = buildFontRecords(result);
+  state.championIndex = result.championIndex;
+  submitResult(state.answers, state.championIndex);
+  state.mode = challenger ? "results-challenge" : "results-solo";
+  render();
 }
 
-function submitResult(answers){
-  // Best-effort: adds one anonymous tally to the group results page.
-  // If the site isn't deployed with its database yet (e.g. you're just
-  // opening this file locally), this silently does nothing — the quiz
-  // itself never depends on it.
+function submitResult(answers, championIndex){
+  // Best-effort: adds this run's results to the anonymous group tallies.
+  // If the site isn't deployed with its database yet, this silently
+  // does nothing — the quiz itself never depends on it.
+  const champion = answers[championIndex];
+  const fonts = answers
+    .filter(a => a.status !== "neutral")
+    .map(a => ({
+      key: a.key.replace(/'/g, ""),
+      wins: a.wins,
+      isChampion: a.status === "champion",
+    }));
   try {
     fetch("/api/submit", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
-        picks: buildPicksPayload(answers),
-        category: tagCounts(answers),
+        fonts,
+        championKey: champion.key.replace(/'/g, ""),
+        category: champion.cat,
       }),
     }).catch(() => {});
   } catch (e) {}
 }
 
 function renderResultsSolo(){
-  const tag = tagCounts(state.answers);
+  const champion = state.answers[state.championIndex];
+  const championFont = FONT_POOL[state.championIndex];
+  const championName = champion.key.replace(/'/g, "");
+
   app.innerHTML = `
-    <div class="result-kicker">Specimen profile complete</div>
-    <div class="profile-tag" style="text-align:center;">You lean ${TAG_LABEL[tag]}.</div>
-    <p class="result-sub">That's just your half of the picture. Add your name, send the link below to a friend — once they finish their own ${ROUNDS.length} picks, you'll both see a compatibility score. They can then pass it straight on to someone else, and the chain keeps going without anyone redoing the test.</p>
+    <div class="result-kicker">Tournament complete</div>
+    <div class="champion-showcase">
+      <div class="champion-label">Your favorite</div>
+      <div class="champion-word" style="font-family:${champion.key};">${escapeHtml(championFont.word)}</div>
+      <div class="champion-name">${escapeHtml(championName)}</div>
+    </div>
+    <div class="profile-tag" style="text-align:center;">You lean ${TAG_LABEL[champion.cat]}.</div>
+    <p class="result-sub">That's just your half of the picture. Add your name, send the link below to a friend — once they finish their own bracket, you'll both see a compatibility score based on how closely your whole rankings agree, not just the winner.</p>
     <div class="name-box">
       <input id="name-input" type="text" maxlength="24" placeholder="Your name (shown on the link)" value="${escapeHtml(myName)}">
     </div>
@@ -723,46 +859,58 @@ function renderResultsSolo(){
     </div>
     <div class="stats-link"><a href="#" id="stats-link">See how everyone else has answered →</a></div>
   `;
-  wireShare(state.answers);
-  document.getElementById("again-btn").addEventListener("click", () => {
-    state.mode = "quiz"; state.round = 0; state.answers = [];
-    render();
-  });
+  wireShare(state.outcomes);
+  document.getElementById("again-btn").addEventListener("click", startQuiz);
   document.getElementById("stats-link").addEventListener("click", (e) => { e.preventDefault(); goToStats(); });
 }
 
+function buildStatement(myChampion, theirChampion, myChampionName, theirChampionName, theirPersonName){
+  if (myChampion.key === theirChampion.key){
+    return `You both fell hardest for ${myChampionName}.`;
+  }
+  if (myChampion.cat === theirChampion.cat){
+    return `Different favorites, but you're both ${CATEGORY_PHRASE[myChampion.cat]} people at heart.`;
+  }
+  return `${theirPersonName}'s favorite was ${theirChampionName}; yours was ${myChampionName}.`;
+}
+
 function renderResultsChallenge(){
-  const matches = state.answers.filter((ans, i) => challenger.a[i] && challenger.a[i].font === ans.font);
-  const pct = Math.round((matches.length / ROUNDS.length) * 100);
+  const compat = computeCompatibility(state.answers, challenger.answers);
+  const pct = compat ? compat.pct : 0;
   const name = challenger.n && challenger.n.trim() ? challenger.n.trim() : "Them";
   const heartScale = (0.55 + (pct / 100) * 0.65).toFixed(2);
 
-  const myCat = tagCounts(state.answers);
-  const theirCat = tagCounts(challenger.a);
-  const statement = matchStatement(myCat, theirCat, name);
+  const myChampion = state.answers[state.championIndex];
+  const theirChampion = challenger.answers[challenger.championIndex];
+  const myChampionName = myChampion.key.replace(/'/g, "");
+  const theirChampionName = theirChampion.key.replace(/'/g, "");
+  const statement = compat
+    ? buildStatement(myChampion, theirChampion, myChampionName, theirChampionName, name)
+    : "Too many no-strong-preference picks between you to compare — try being a little more decisive next time.";
 
-  const theirEntries = ROUNDS.map((r, i) => {
-    const theirs = challenger.a[i];
-    const isMatch = theirs && theirs.font === state.answers[i].font;
-    const short = theirs ? theirs.font.replace(/'/g,"") : "?";
-    return `
-      <div class="match-entry ${isMatch ? "match" : ""}">
-        <span class="w">${escapeHtml(r.word)}</span>${escapeHtml(short)}
-      </div>
-    `;
-  }).join("");
+  const myRank = computeRanking(state.answers);
+  const theirRank = computeRanking(challenger.answers);
 
-  const yourEntries = ROUNDS.map((r, i) => {
-    const mine = state.answers[i];
-    const theirs = challenger.a[i];
-    const isMatch = theirs && theirs.font === mine.font;
-    const short = mine.font.replace(/'/g,"");
-    return `
-      <div class="match-entry ${isMatch ? "match" : ""}">
-        <span class="w">${escapeHtml(r.word)}</span>${escapeHtml(short)}
-      </div>
-    `;
-  }).join("");
+  function renderRankList(rankOrder, records, otherRankOrder){
+    const otherPos = {};
+    otherRankOrder.forEach((idx, pos) => { otherPos[idx] = pos + 1; });
+    return rankOrder.map((idx, pos) => {
+      const myPos = pos + 1;
+      const rec = records[idx];
+      const font = FONT_POOL[idx];
+      const fontName = rec.key.replace(/'/g, "");
+      const otherRank = otherPos[idx];
+      const closelyMatched = otherRank !== undefined && Math.abs(otherRank - myPos) <= 2;
+      return `
+        <div class="match-entry ${closelyMatched ? "match" : ""}">
+          <span class="w">#${myPos} · ${escapeHtml(font.word)}</span>${escapeHtml(fontName)}
+        </div>
+      `;
+    }).join("");
+  }
+
+  const theirEntries = renderRankList(theirRank, challenger.answers, myRank);
+  const yourEntries = renderRankList(myRank, state.answers, theirRank);
 
   app.innerHTML = `
     <div class="result-kicker">Type match</div>
@@ -799,10 +947,7 @@ function renderResultsChallenge(){
     if (hw) requestAnimationFrame(() => hw.classList.add("grown"));
   });
 
-  document.getElementById("again-btn").addEventListener("click", () => {
-    state.mode = "quiz"; state.round = 0; state.answers = [];
-    render();
-  });
+  document.getElementById("again-btn").addEventListener("click", startQuiz);
   document.getElementById("own-challenge-btn").addEventListener("click", () => {
     challenger = null;
     history.replaceState(null, "", location.pathname);
@@ -833,22 +978,18 @@ function renderStats(){
 
 function renderStatsData(data){
   const totalPlayers = data.totalPlayers || 0;
+  const fontRows = data.fonts || [];
 
-  // counts[i|choice] = number of picks
-  const counts = {};
-  (data.rounds || []).forEach(row => { counts[row.round_index + "|" + row.choice] = row.count; });
+  const leaderboard = fontRows
+    .map(f => {
+      const battles = f.wins + f.losses;
+      const winRate = battles ? Math.round((f.wins / battles) * 100) : 0;
+      return { key: f.font_key, wins: f.wins, losses: f.losses, championCount: f.champion_count, winRate, battles };
+    })
+    .filter(f => f.battles > 0)
+    .sort((a, b) => b.winRate - a.winRate || b.battles - a.battles);
 
-  const roundResults = ROUNDS.map((r, i) => {
-    const aCount = counts[i + "|a"] || 0;
-    const bCount = counts[i + "|b"] || 0;
-    const total = aCount + bCount;
-    const aWins = aCount >= bCount;
-    const winnerFont = (aWins ? r.a.font : r.b.font).replace(/'/g, "");
-    const pct = total ? Math.round((Math.max(aCount, bCount) / total) * 100) : 0;
-    return { word: r.word, fontName: winnerFont, pct, total };
-  });
-
-  const landslide = roundResults.reduce((best, cur) => (cur.total && cur.pct > (best ? best.pct : -1)) ? cur : best, null);
+  const topFavorite = [...fontRows].sort((a, b) => b.champion_count - a.champion_count)[0];
 
   const totalCategoryVotes = (data.categories || []).reduce((sum, c) => sum + c.count, 0);
   const categoryBars = (data.categories || []).map(c => {
@@ -862,10 +1003,10 @@ function renderStatsData(data){
     `;
   }).join("");
 
-  const roundRows = roundResults.map(r => `
+  const leaderboardRows = leaderboard.slice(0, 8).map(f => `
     <div class="stats-round-row">
-      <div class="w">${escapeHtml(r.word)}</div>
-      <div class="pick">${r.total ? `${escapeHtml(r.fontName)} — ${r.pct}%` : "No data yet"}</div>
+      <div class="w" style="font-family:'${escapeHtml(f.key)}'; text-transform:none; font-size:13px; color:var(--ink);">${escapeHtml(f.key)}</div>
+      <div class="pick">${f.winRate}% win rate</div>
     </div>
   `).join("");
 
@@ -875,21 +1016,23 @@ function renderStatsData(data){
 
     ${totalCategoryVotes ? `
       <div class="stats-section">
-        <div class="stats-heading">Type personalities so far</div>
+        <div class="stats-heading">Favorite type personalities so far</div>
         ${categoryBars}
       </div>
     ` : ""}
 
-    ${landslide && landslide.total ? `
+    ${topFavorite && topFavorite.champion_count > 0 ? `
       <div class="stats-callout">
-        <b>Least controversial round:</b> in “${escapeHtml(landslide.word)},” ${landslide.pct}% of people picked ${escapeHtml(landslide.fontName)}.
+        <b>Most common favorite:</b> ${escapeHtml(topFavorite.font_key)} has won the whole bracket for ${topFavorite.champion_count} ${topFavorite.champion_count === 1 ? "person" : "people"} so far.
       </div>
     ` : ""}
 
-    <div class="stats-section">
-      <div class="stats-heading">Every round, so far</div>
-      ${roundRows}
-    </div>
+    ${leaderboardRows ? `
+      <div class="stats-section">
+        <div class="stats-heading">Font win rates, so far</div>
+        ${leaderboardRows}
+      </div>
+    ` : ""}
 
     <div class="btn-row"><button class="cta ghost" id="back-btn">Back</button></div>
   `;
@@ -900,13 +1043,13 @@ function renderStatsData(data){
   });
 }
 
-function wireShare(answers){
+function wireShare(outcomes){
   const nameInput = document.getElementById("name-input");
   const shareInput = document.getElementById("share-input");
 
   function refreshLink(){
     myName = nameInput.value.trim();
-    shareInput.value = buildShareLink(answers, myName);
+    shareInput.value = buildShareLink(outcomes, myName);
   }
   refreshLink();
   nameInput.addEventListener("input", refreshLink);
@@ -938,6 +1081,7 @@ render();
    paste that network's script tag just before </body> in the
    real deployed file — not here in the logic section.
 --------------------------------------------------------- */
+
 </script>
 </body>
 </html>
