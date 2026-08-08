@@ -128,6 +128,17 @@
     margin-bottom:18px;
   }
 
+  .comeback-note{
+    background:var(--accent-soft);
+    border-radius:var(--radius);
+    padding:12px 14px;
+    font-size:13px;
+    line-height:1.4;
+    color:var(--ink-soft);
+    margin-bottom:20px;
+  }
+  .comeback-note b{color:var(--ink);}
+
   /* ---------- Quiz ---------- */
   .ruler{
     display:flex;
@@ -840,7 +851,7 @@ function computeRanking(records){
       elim: r.eliminatedAt === null ? Infinity : r.eliminatedAt,
       status: r.status,
     }))
-    .filter(r => r.status !== "neutral")
+    .filter(r => r.status !== "neutral" && r.status !== "pending")
     .sort((a, b) => b.pickCount - a.pickCount || b.fairness - a.fairness || b.elim - a.elim || a.i - b.i)
     .map(r => r.i);
 }
@@ -946,6 +957,7 @@ function startQuiz(){
   state.answers = [];
   state.finalsPool = [];
   state.finalsStep = 1;
+  state.comebackNote = null;
   render();
 }
 
@@ -988,7 +1000,15 @@ function renderQuiz(){
     return `<div class="${cls}"></div>`;
   }).join("");
 
+  const comebackHtml = state.comebackNote !== null ? `
+    <div class="comeback-note">
+      <b>${escapeHtml(FONT_POOL[state.comebackNote].font.replace(/'/g, ""))}</b> just lost, but you've picked it enough that it's still in your top 3 so far — it'll get another shot in the final round if that holds.
+    </div>
+  ` : "";
+  state.comebackNote = null;
+
   app.innerHTML = `
+    ${comebackHtml}
     <div class="ruler">${ticks}</div>
     <div class="round-label">Battle ${String(state.battle).padStart(2,"0")} / ${totalBattles}</div>
     <div class="round-word">Which one feels more like you?</div>
@@ -1022,9 +1042,21 @@ function choose(outcome){
   if (chosenCard) chosenCard.classList.add("chosen");
   if (otherCard) otherCard.classList.add("not-chosen");
 
+  const before = simulateRun(state.outcomes);
+  const eliminatedIdx = outcome === "champion" ? before.nextChallengerIndex : before.championIndex;
+
   setTimeout(() => {
     state.outcomes.push(code);
     state.battle += 1;
+
+    // If the font that just lost is still doing well enough to be in the
+    // running for the final three, flag it so the next screen can say so —
+    // losing a battle here doesn't mean it's out of the results.
+    const after = simulateRun(state.outcomes);
+    const eliminatedPicks = after.pickCount[eliminatedIdx];
+    const stillContending = eliminatedPicks > 0 && computeRanking(buildFontRecords(after)).slice(0, 3).includes(eliminatedIdx);
+    state.comebackNote = stillContending ? eliminatedIdx : null;
+
     if (state.battle < FONT_POOL.length){
       renderQuiz();
     } else {
