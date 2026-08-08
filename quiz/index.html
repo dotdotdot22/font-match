@@ -559,42 +559,42 @@
    and the group stats possible.
 --------------------------------------------------------- */
 const FONT_POOL = [
-  { word:"Wanderlust", font:"'Playfair Display'", size:44, cat:"serif" },
-  { word:"Wanderlust", font:"'DM Sans'", size:38, cat:"sans" },
-  { word:"Nocturne", font:"'Space Mono'", size:34, cat:"mono" },
-  { word:"Nocturne", font:"'Cormorant Garamond'", size:46, cat:"serif" },
   { word:"QUICKSILVER", font:"'Bebas Neue'", size:40, cat:"display" },
-  { word:"QUICKSILVER", font:"'Libre Baskerville'", size:30, cat:"serif" },
   { word:"Marigold", font:"'Caveat'", size:50, cat:"script" },
-  { word:"Marigold", font:"'Oswald'", size:36, cat:"sans" },
-  { word:"Paradox", font:"'IBM Plex Mono'", size:32, cat:"mono" },
-  { word:"Paradox", font:"'Lora'", size:38, cat:"serif" },
-  { word:"Ember", font:"'Alfa Slab One'", size:32, cat:"slab" },
-  { word:"Ember", font:"'Nunito Sans'", size:34, cat:"sans" },
-  { word:"Halcyon", font:"'Dancing Script'", size:46, cat:"script" },
-  { word:"Halcyon", font:"'Barlow'", size:36, cat:"sans" },
   { word:"Cobalt", font:"'Big Shoulders Display'", size:36, cat:"display" },
-  { word:"Cobalt", font:"'Spectral'", size:38, cat:"serif" },
-  { word:"Vanguard", font:"'UnifrakturMaguntia'", size:36, cat:"blackletter" },
-  { word:"Wraith", font:"'Pirata One'", size:34, cat:"blackletter" },
-  { word:"Cherish", font:"'Great Vibes'", size:46, cat:"script" },
-  { word:"Reverie", font:"'Parisienne'", size:44, cat:"script" },
-  { word:"Elysian", font:"'Tangerine'", size:54, cat:"script" },
-  { word:"Breezy", font:"'Satisfy'", size:40, cat:"script" },
-  { word:"Velour", font:"'Alex Brush'", size:44, cat:"script" },
-  { word:"Sunbeam", font:"'Yellowtail'", size:38, cat:"script" },
-  { word:"Rustic", font:"'Rock Salt'", size:34, cat:"script" },
+  { word:"Halcyon", font:"'Dancing Script'", size:46, cat:"script" },
   { word:"Neon", font:"'Monoton'", size:30, cat:"display" },
+  { word:"Cherish", font:"'Great Vibes'", size:46, cat:"script" },
   { word:"Kaboom", font:"'Bangers'", size:38, cat:"display" },
+  { word:"Reverie", font:"'Parisienne'", size:44, cat:"script" },
+  { word:"Wanderlust", font:"'Playfair Display'", size:44, cat:"serif" },
   { word:"Zephyr", font:"'Lobster'", size:36, cat:"display" },
+  { word:"Wanderlust", font:"'DM Sans'", size:38, cat:"sans" },
+  { word:"Elysian", font:"'Tangerine'", size:54, cat:"script" },
+  { word:"Nocturne", font:"'Cormorant Garamond'", size:46, cat:"serif" },
   { word:"Vortex", font:"'Orbitron'", size:32, cat:"display" },
+  { word:"Nocturne", font:"'Space Mono'", size:34, cat:"mono" },
+  { word:"Marigold", font:"'Oswald'", size:36, cat:"sans" },
+  { word:"Breezy", font:"'Satisfy'", size:40, cat:"script" },
+  { word:"QUICKSILVER", font:"'Libre Baskerville'", size:30, cat:"serif" },
   { word:"Carnival", font:"'Shrikhand'", size:34, cat:"display" },
+  { word:"Paradox", font:"'IBM Plex Mono'", size:32, cat:"mono" },
+  { word:"Ember", font:"'Nunito Sans'", size:34, cat:"sans" },
+  { word:"Velour", font:"'Alex Brush'", size:44, cat:"script" },
+  { word:"Paradox", font:"'Lora'", size:38, cat:"serif" },
+  { word:"Vanguard", font:"'UnifrakturMaguntia'", size:36, cat:"blackletter" },
   { word:"Fracture", font:"'Unbounded'", size:30, cat:"display" },
-  { word:"Bubblegum", font:"'Chewy'", size:34, cat:"display" },
-  { word:"Cloudy", font:"'Comfortaa'", size:34, cat:"sans" },
-  { word:"Vogue", font:"'Bodoni Moda'", size:40, cat:"serif" },
   { word:"Pixel", font:"'Silkscreen'", size:28, cat:"mono" },
+  { word:"Halcyon", font:"'Barlow'", size:36, cat:"sans" },
+  { word:"Sunbeam", font:"'Yellowtail'", size:38, cat:"script" },
+  { word:"Cobalt", font:"'Spectral'", size:38, cat:"serif" },
+  { word:"Wraith", font:"'Pirata One'", size:34, cat:"blackletter" },
+  { word:"Bubblegum", font:"'Chewy'", size:34, cat:"display" },
   { word:"Vintage", font:"'Cutive Mono'", size:32, cat:"mono" },
+  { word:"Cloudy", font:"'Comfortaa'", size:34, cat:"sans" },
+  { word:"Rustic", font:"'Rock Salt'", size:34, cat:"script" },
+  { word:"Vogue", font:"'Bodoni Moda'", size:40, cat:"serif" },
+  { word:"Ember", font:"'Alfa Slab One'", size:32, cat:"slab" },
 ];
 
 const TAG_LABEL = {
@@ -672,6 +672,7 @@ function simulateRun(outcomes){
   const wins = new Array(FONT_POOL.length).fill(0);
   const status = new Array(FONT_POOL.length).fill("pending");
   const eliminatedAt = new Array(FONT_POOL.length).fill(null);
+  const eliminatedBy = new Array(FONT_POOL.length).fill(null);
   let championIndex = 0;
 
   const mainBattleCount = FONT_POOL.length - 1;
@@ -685,14 +686,27 @@ function simulateRun(outcomes){
       wins[championIndex] += 1;
       status[challengerIndex] = "eliminated";
       eliminatedAt[challengerIndex] = battle;
+      eliminatedBy[challengerIndex] = championIndex;
     } else if (code === "x") {
       status[championIndex] = "eliminated";
       eliminatedAt[championIndex] = battle;
+      eliminatedBy[championIndex] = challengerIndex;
       championIndex = challengerIndex;
     } else {
       status[challengerIndex] = "neutral";
     }
   });
+
+  // A font that loses to a strong, battle-tested opponent shouldn't rank
+  // below one that got lucky and lost to a font that never won anything.
+  // Fairness score = your own wins, plus the final win total of whoever
+  // knocked you out — so a tough loss late in the running order still
+  // counts for something real.
+  function fairnessScore(i){
+    const own = wins[i];
+    const viaOpponent = eliminatedBy[i] !== null ? wins[eliminatedBy[i]] : 0;
+    return own + viaOpponent;
+  }
 
   // ---- Final round: the top 3 performers face off directly, so the
   // real favorite is confirmed head-to-head rather than just being
@@ -703,10 +717,12 @@ function simulateRun(outcomes){
       if (status[i] !== "neutral") indices.push(i);
     }
     indices.sort((a, b) => {
-      if (wins[b] !== wins[a]) return wins[b] - wins[a];
+      const fa = fairnessScore(a), fb = fairnessScore(b);
+      if (fb !== fa) return fb - fa;
       const elimA = eliminatedAt[a] === null ? Infinity : eliminatedAt[a];
       const elimB = eliminatedAt[b] === null ? Infinity : eliminatedAt[b];
-      return elimB - elimA;
+      if (elimB !== elimA) return elimB - elimA;
+      return a - b;
     });
     return indices;
   }
@@ -722,10 +738,12 @@ function simulateRun(outcomes){
         wins[finalBest] += 1;
         status[finalChallenger] = "eliminated";
         eliminatedAt[finalChallenger] = mainBattleCount + step;
+        eliminatedBy[finalChallenger] = finalBest;
       } else if (code === "x") {
         wins[finalChallenger] += 1;
         status[finalBest] = "eliminated";
         eliminatedAt[finalBest] = mainBattleCount + step;
+        eliminatedBy[finalBest] = finalChallenger;
         finalBest = finalChallenger;
       }
       // 'n', or the battle simply hasn't been played yet: leave things as
@@ -736,7 +754,7 @@ function simulateRun(outcomes){
   }
 
   status[championIndex] = "champion";
-  return { wins, status, eliminatedAt, championIndex, finalists };
+  return { wins, status, eliminatedAt, eliminatedBy, championIndex, finalists, fairnessScore };
 }
 
 function buildFontRecords(result){
@@ -746,20 +764,29 @@ function buildFontRecords(result){
     wins: result.wins[i],
     status: result.status[i],
     eliminatedAt: result.eliminatedAt[i],
+    eliminatedBy: result.eliminatedBy[i],
   }));
 }
 
-// Best → worst, excluding anything marked neutral.
+// Best → worst, excluding anything marked neutral. Uses the same fairness
+// score as the finals selection: your own wins, plus the final win total
+// of whoever eliminated you — so a tough loss to a strong opponent still
+// counts for something, instead of a font being buried just because of
+// when it happened to enter the running order.
 function computeRanking(records){
+  function fairnessScore(r){
+    const via = r.eliminatedBy !== null && records[r.eliminatedBy] ? records[r.eliminatedBy].wins : 0;
+    return r.wins + via;
+  }
   return records
     .map((r, i) => ({
       i,
-      wins: r.wins,
+      fairness: fairnessScore(r),
       elim: r.eliminatedAt === null ? Infinity : r.eliminatedAt,
       status: r.status,
     }))
     .filter(r => r.status !== "neutral")
-    .sort((a, b) => b.wins - a.wins || b.elim - a.elim)
+    .sort((a, b) => b.fairness - a.fairness || b.elim - a.elim || a.i - b.i)
     .map(r => r.i);
 }
 
