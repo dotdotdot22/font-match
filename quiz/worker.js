@@ -10,15 +10,20 @@ export default {
       return handleSubmit(request, env);
     }
 
+    if (url.pathname === "/api/share" && request.method === "POST") {
+      return handleCreateShare(request, env);
+    }
+
+    if (url.pathname.startsWith("/api/share/") && request.method === "GET") {
+      const id = url.pathname.split("/").pop();
+      return handleGetShare(id, env);
+    }
+
     return env.ASSETS.fetch(request);
   }
 };
 
 async function handleStats(env) {
-  if (!env.DB) {
-    return json({ error: "No DB binding configured" }, 500);
-  }
-
   const totalRow = await env.DB
     .prepare(`SELECT value FROM site_stats WHERE key = 'total_players'`)
     .first();
@@ -39,10 +44,6 @@ async function handleStats(env) {
 }
 
 async function handleSubmit(request, env) {
-  if (!env.DB) {
-    return json({ error: "No DB binding configured" }, 500);
-  }
-
   let body;
 
   try {
@@ -96,13 +97,74 @@ async function handleSubmit(request, env) {
     )
   );
 
-  try {
-    await env.DB.batch(statements);
-  } catch {
-    return json({ error: "Database write failed" }, 500);
-  }
+  await env.DB.batch(statements);
 
   return json({ ok: true });
+}
+
+async function handleCreateShare(request, env) {
+  let body;
+
+  try {
+    body = await request.json();
+  } catch {
+    return json({ error: "Invalid JSON body" }, 400);
+  }
+
+  if (!Array.isArray(body.answers)) {
+    return json({ error: "Missing answers" }, 400);
+  }
+
+  const id = makeId();
+  const name = typeof body.name === "string" ? body.name.trim().slice(0, 24) : "";
+  const answers = JSON.stringify(body.answers);
+  const createdAt = new Date().toISOString();
+
+  await env.DB
+    .prepare(
+      `INSERT INTO shared_results (id, name, answers, created_at)
+       VALUES (?, ?, ?, ?)`
+    )
+    .bind(id, name, answers, createdAt)
+    .run();
+
+  return json({ id });
+}
+
+async function handleGetShare(id, env) {
+  if (!id) {
+    return json({ error: "Missing id" }, 400);
+  }
+
+  const row = await env.DB
+    .prepare(
+      `SELECT id, name, answers
+       FROM shared_results
+       WHERE id = ?`
+    )
+    .bind(id)
+    .first();
+
+  if (!row) {
+    return json({ error: "Not found" }, 404);
+  }
+
+  return json({
+    id: row.id,
+    name: row.name || "",
+    answers: JSON.parse(row.answers)
+  });
+}
+
+function makeId() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let id = "";
+
+  for (let i = 0; i < 6; i++) {
+    id += chars[Math.floor(Math.random() * chars.length)];
+  }
+
+  return id;
 }
 
 function json(data, status = 200) {
