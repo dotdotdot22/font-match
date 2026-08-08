@@ -2,9 +2,18 @@
   "name": "font-match",
   "main": "quiz/worker.js",
   "compatibility_date": "2026-08-08",
+
   "assets": {
     "directory": "./quiz",
     "binding": "ASSETS",
     "run_worker_first": ["/api/*"]
-  }
+  },
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "font-match-db",
+      "database_id": "52e00f36-73c6-41e2-ba91-882f8fe40df3"
+    }
+  ]
 }
