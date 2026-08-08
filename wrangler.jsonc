@@ -1,0 +1,9 @@
+{
+  "name": "font-match",
+  "main": "quiz/worker.js",
+  "compatibility_date": "2026-08-08",
+  "assets": {
+    "directory": "./quiz",
+    "binding": "ASSETS"
+  }
+}
