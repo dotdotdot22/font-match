@@ -590,7 +590,11 @@ function simulateRun(outcomes){
   const eliminatedAt = new Array(FONT_POOL.length).fill(null);
   let championIndex = 0;
 
-  outcomes.forEach((code, idx) => {
+  const mainBattleCount = FONT_POOL.length - 1;
+  const mainOutcomes = outcomes.slice(0, mainBattleCount);
+  const finalOutcomes = outcomes.slice(mainBattleCount);
+
+  mainOutcomes.forEach((code, idx) => {
     const battle = idx + 1;
     const challengerIndex = battle;
     if (code === "c") {
@@ -606,8 +610,49 @@ function simulateRun(outcomes){
     }
   });
 
+  // ---- Final round: the top 3 performers face off directly, so the
+  // real favorite is confirmed head-to-head rather than just being
+  // "whoever happened to be undefeated when the bracket ran out." ----
+  function currentRanking(){
+    const indices = [];
+    for (let i = 0; i < FONT_POOL.length; i++) {
+      if (status[i] !== "neutral") indices.push(i);
+    }
+    indices.sort((a, b) => {
+      if (wins[b] !== wins[a]) return wins[b] - wins[a];
+      const elimA = eliminatedAt[a] === null ? Infinity : eliminatedAt[a];
+      const elimB = eliminatedAt[b] === null ? Infinity : eliminatedAt[b];
+      return elimB - elimA;
+    });
+    return indices;
+  }
+
+  const finalists = currentRanking().slice(0, 3);
+
+  if (finalists.length >= 2) {
+    let finalBest = finalists[0];
+    for (let step = 1; step < finalists.length; step++) {
+      const finalChallenger = finalists[step];
+      const code = finalOutcomes[step - 1];
+      if (code === "c") {
+        wins[finalBest] += 1;
+        status[finalChallenger] = "eliminated";
+        eliminatedAt[finalChallenger] = mainBattleCount + step;
+      } else if (code === "x") {
+        wins[finalChallenger] += 1;
+        status[finalBest] = "eliminated";
+        eliminatedAt[finalBest] = mainBattleCount + step;
+        finalBest = finalChallenger;
+      }
+      // 'n', or the battle simply hasn't been played yet: leave things as
+      // they stand and, if it hasn't been played yet, stop simulating.
+      if (code === undefined) break;
+    }
+    championIndex = finalBest;
+  }
+
   status[championIndex] = "champion";
-  return { wins, status, eliminatedAt, championIndex };
+  return { wins, status, eliminatedAt, championIndex, finalists };
 }
 
 function buildFontRecords(result){
@@ -674,13 +719,16 @@ const incomingVs = params.get("vs");
 const incomingName = params.get("who") || "";
 
 let challenger = null;
-if (incomingVs && /^[cxn]+$/.test(incomingVs) && incomingVs.length === FONT_POOL.length - 1) {
-  const result = simulateRun(incomingVs.split(""));
-  challenger = {
-    n: incomingName,
-    answers: buildFontRecords(result),
-    championIndex: result.championIndex,
-  };
+if (incomingVs && /^[cxn]+$/.test(incomingVs)) {
+  const mainBattles = FONT_POOL.length - 1;
+  if (incomingVs.length >= mainBattles && incomingVs.length <= mainBattles + 2) {
+    const result = simulateRun(incomingVs.split(""));
+    challenger = {
+      n: incomingName,
+      answers: buildFontRecords(result),
+      championIndex: result.championIndex,
+    };
+  }
 }
 
 const state = {
@@ -689,6 +737,8 @@ const state = {
   championIndex: 0,
   outcomes: [],
   answers: [],
+  finalsPool: [],
+  finalsStep: 1,
 };
 
 // Carries across "take it again" / "challenge someone else" in the same
@@ -728,6 +778,8 @@ function startQuiz(){
   state.championIndex = 0;
   state.outcomes = [];
   state.answers = [];
+  state.finalsPool = [];
+  state.finalsStep = 1;
   render();
 }
 
@@ -735,7 +787,7 @@ function renderLanding(){
   app.innerHTML = `
     <div class="landing">
       <h1>Do your fonts&nbsp;match?</h1>
-      <p class="lede">${FONT_POOL.length} fonts, one bracket. Your favorite stays on to face the next challenger — see which one survives, then send the link and find out who agrees with you.</p>
+      <p class="lede">${FONT_POOL.length} fonts, one bracket. Your favorite stays on to face the next challenger, then your top 3 face off directly to confirm your real favorite. Send the link and find out who agrees with you.</p>
       <button class="cta" id="start-btn">Start the tournament</button>
       <div class="stats-link"><a href="#" id="stats-link">See how everyone else has answered →</a></div>
     </div>
@@ -808,6 +860,70 @@ function choose(outcome){
     state.battle += 1;
     if (state.battle < FONT_POOL.length){
       renderQuiz();
+    } else {
+      beginFinals();
+    }
+  }, 220);
+}
+
+function beginFinals(){
+  const provisional = simulateRun(state.outcomes);
+  state.finalsPool = provisional.finalists;
+  state.finalsStep = 1;
+  if (state.finalsPool.length < 2) {
+    finishRun();
+  } else {
+    renderFinals();
+  }
+}
+
+function renderFinals(){
+  const pool = state.finalsPool;
+  const step = state.finalsStep;
+  const soFar = simulateRun(state.outcomes);
+  const bestIdx = soFar.championIndex;
+  const challengerIdx = pool[step];
+  const bestFont = FONT_POOL[bestIdx];
+  const challengerFont = FONT_POOL[challengerIdx];
+  const word = challengerFont.word;
+
+  app.innerHTML = `
+    <div class="challenge-banner">Final round</div>
+    <div class="round-label">Confirming your real favorite</div>
+    <div class="round-word">Which setting of <b>“${word}”</b> do you actually prefer?</div>
+    <div class="specimens">
+      <div class="specimen" data-choice="champion" tabindex="0" role="button" aria-label="Keep the current favorite">
+        <div class="specimen-badge">${step === 1 ? "Your top pick" : "Winner so far"}</div>
+        <div class="word" style="font-family:${bestFont.font}; font-size:${bestFont.size}px;">${escapeHtml(word)}</div>
+      </div>
+      <div class="specimen" data-choice="challenger" tabindex="0" role="button" aria-label="Switch to the challenger">
+        <div class="specimen-badge">${step === 1 ? "Your #2 pick" : "Your #3 pick"}</div>
+        <div class="word" style="font-family:${challengerFont.font}; font-size:${challengerFont.size}px;">${escapeHtml(word)}</div>
+      </div>
+    </div>
+    <button class="neutral-btn" id="neutral-btn">No strong preference</button>
+  `;
+
+  const cards = app.querySelectorAll(".specimen");
+  cards.forEach(card => {
+    const pick = () => chooseFinals(card.dataset.choice);
+    card.addEventListener("click", pick);
+    card.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
+  });
+  document.getElementById("neutral-btn").addEventListener("click", () => chooseFinals("neutral"));
+}
+
+function chooseFinals(outcome){
+  const code = outcome === "champion" ? "c" : outcome === "challenger" ? "x" : "n";
+  state.outcomes.push(code);
+
+  const chosenCard = outcome !== "neutral" ? app.querySelector(`.specimen[data-choice="${outcome}"]`) : null;
+  if (chosenCard) chosenCard.classList.add("chosen");
+
+  setTimeout(() => {
+    state.finalsStep += 1;
+    if (state.finalsStep < state.finalsPool.length){
+      renderFinals();
     } else {
       finishRun();
     }
