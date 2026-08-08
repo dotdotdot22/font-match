@@ -28,8 +28,8 @@ async function handleStats(env) {
     .prepare(`SELECT value FROM site_stats WHERE key = 'total_players'`)
     .first();
 
-  const roundRows = await env.DB
-    .prepare(`SELECT round_index, choice, count FROM round_counts`)
+  const fontRows = await env.DB
+    .prepare(`SELECT font_key, wins, losses, champion_count FROM font_battle_stats`)
     .all();
 
   const categoryRows = await env.DB
@@ -38,7 +38,7 @@ async function handleStats(env) {
 
   return json({
     totalPlayers: totalRow ? totalRow.value : 0,
-    rounds: roundRows.results || [],
+    fonts: fontRows.results || [],
     categories: categoryRows.results || []
   });
 }
@@ -52,30 +52,30 @@ async function handleSubmit(request, env) {
     return json({ error: "Invalid JSON body" }, 400);
   }
 
-  const picks = Array.isArray(body.picks) ? body.picks : null;
+  const fonts = Array.isArray(body.fonts) ? body.fonts : null;
+  const championKey = typeof body.championKey === "string" ? body.championKey : null;
   const category = typeof body.category === "string" ? body.category : null;
 
-  if (!picks || picks.length === 0 || !category) {
-    return json({ error: "Missing picks or category" }, 400);
+  if (!fonts || fonts.length === 0 || !championKey || !category) {
+    return json({ error: "Missing fonts, championKey, or category" }, 400);
   }
 
   const statements = [];
 
-  for (const p of picks) {
-    if (
-      typeof p.round !== "number" ||
-      (p.choice !== "a" && p.choice !== "b")
-    ) {
-      continue;
-    }
+  for (const f of fonts) {
+    if (typeof f.key !== "string" || typeof f.wins !== "number") continue;
+    const isChampion = f.key === championKey;
+    const losses = isChampion ? 0 : 1;
 
     statements.push(
       env.DB.prepare(
-        `INSERT INTO round_counts (round_index, choice, count)
-         VALUES (?, ?, 1)
-         ON CONFLICT(round_index, choice)
-         DO UPDATE SET count = count + 1`
-      ).bind(p.round, p.choice)
+        `INSERT INTO font_battle_stats (font_key, wins, losses, champion_count)
+         VALUES (?, ?, ?, ?)
+         ON CONFLICT(font_key) DO UPDATE SET
+           wins = wins + excluded.wins,
+           losses = losses + excluded.losses,
+           champion_count = champion_count + excluded.champion_count`
+      ).bind(f.key, f.wins, losses, isChampion ? 1 : 0)
     );
   }
 
