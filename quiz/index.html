@@ -779,7 +779,10 @@ function simulateRun(outcomes){
 
   const finalists = currentRanking().slice(0, 3);
 
-  if (finalists.length >= 2) {
+  // Only run the head-to-head finals once the main rounds are complete.
+  // Mid-quiz, finalOutcomes is empty and the champion must stay exactly
+  // who the player last picked — not get snapped to the current #1 rank.
+  if (finalOutcomes.length > 0 && finalists.length >= 2) {
     let finalBest = finalists[0];
     for (let step = 1; step < finalists.length; step++) {
       const finalChallenger = finalists[step];
@@ -798,8 +801,7 @@ function simulateRun(outcomes){
         eliminatedBy[finalBest] = finalChallenger;
         finalBest = finalChallenger;
       }
-      // 'n', or the battle simply hasn't been played yet: leave things as
-      // they stand and, if it hasn't been played yet, stop simulating.
+      // The battle hasn't been played yet: stop and leave the standing as is.
       if (code === undefined) break;
     }
     championIndex = finalBest;
