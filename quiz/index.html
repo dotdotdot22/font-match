@@ -174,20 +174,49 @@
     background:var(--paper-shade);
     border:1px solid var(--line);
     border-radius:var(--radius);
-    padding:26px 18px 16px;
+    padding:30px 21px 18px;
     cursor:pointer;
     text-align:center;
     position:relative;
-    min-height:180px;
+    min-height:207px;
     display:flex;
     flex-direction:column;
     justify-content:center;
-    transition:border-color .15s ease, background .15s ease;
+    transition:border-color .15s ease, background .15s ease, opacity .3s ease;
   }
   .specimen:hover{border-color:var(--ink);}
   .specimen.chosen{
     background:var(--accent-soft);
     border-color:var(--accent);
+    animation:selectPulse .45s ease-out forwards;
+  }
+  .specimen.chosen::after{
+    content:"✓";
+    position:absolute;
+    top:12px;
+    right:12px;
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    background:var(--accent);
+    color:var(--paper);
+    font-size:15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transform:scale(0);
+    animation:checkPop .35s cubic-bezier(.34,1.56,.64,1) .05s forwards;
+  }
+  .specimen.not-chosen{
+    opacity:.35;
+  }
+  @keyframes selectPulse{
+    0%{ transform:scale(1); box-shadow:0 0 0 0 rgba(42,77,224,.45); }
+    45%{ transform:scale(1.035); box-shadow:0 0 0 10px rgba(42,77,224,.12); }
+    100%{ transform:scale(1.015); box-shadow:0 0 0 14px rgba(42,77,224,0); }
+  }
+  @keyframes checkPop{
+    to{ transform:scale(1); }
   }
   .specimen .word{
     word-break:break-word;
@@ -219,21 +248,6 @@
   }
   .specimen.chosen .specimen-badge{color:var(--accent);}
 
-  .neutral-btn{
-    display:block;
-    margin:16px auto 0;
-    font-family:var(--body);
-    font-size:13px;
-    color:var(--ink-soft);
-    background:transparent;
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    padding:10px 18px;
-    cursor:pointer;
-    transition:border-color .15s ease, color .15s ease;
-  }
-  .neutral-btn:hover{border-color:var(--ink); color:var(--ink);}
-
   .champion-showcase{
     text-align:center;
     margin-bottom:20px;
@@ -251,13 +265,6 @@
     line-height:1.05;
     word-break:break-word;
   }
-  .champion-name{
-    font-family:var(--mono);
-    font-size:12px;
-    color:var(--ink-soft);
-    margin-top:10px;
-  }
-
   .dominance-list{
     display:flex;
     flex-direction:column;
@@ -299,12 +306,11 @@
 
   /* ---------- Results (shared) ---------- */
   .result-kicker{
-    font-family:var(--mono);
-    font-size:12px;
-    letter-spacing:0.08em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    margin-bottom:6px;
+    font-family:var(--display);
+    font-weight:600;
+    font-size:24px;
+    color:var(--ink);
+    margin-bottom:16px;
     text-align:center;
   }
   .result-sub{
@@ -634,7 +640,7 @@ function computeDominantCategory(records){
   const totals = {};
   records.forEach(r => {
     if (r.status === "neutral") return;
-    totals[r.cat] = (totals[r.cat] || 0) + r.wins;
+    totals[r.cat] = (totals[r.cat] || 0) + r.pickCount;
   });
   let best = null, bestVal = -1;
   Object.keys(totals).forEach(cat => {
@@ -652,7 +658,7 @@ const SAMPLE_TEXT = "The quick brown fox jumps over the lazy dog";
 // Battle-display sizes are noticeably smaller than the original per-word
 // sizes, since a full sentence needs to wrap across a few lines.
 function sentenceSize(fontMeta){
-  return Math.max(14, Math.round(fontMeta.size * 0.48));
+  return Math.max(16, Math.round(fontMeta.size * 0.55));
 }
 
 /* ---------------------------------------------------------
@@ -668,44 +674,95 @@ function sentenceSize(fontMeta){
    FONT_POOL always reproduces the same result — that's what
    makes the compact share link possible.
 --------------------------------------------------------- */
+const CATEGORY_ROTATION = ["serif","sans","display","script","mono","slab","blackletter"];
+
+function makeRemainingPools(){
+  const remaining = {};
+  CATEGORY_ROTATION.forEach(cat => { remaining[cat] = []; });
+  FONT_POOL.forEach((f, i) => { if (i !== 0) remaining[f.cat].push(i); });
+  return remaining;
+}
+
+// Always hands back a font from a DIFFERENT category than the current
+// champion — cycling through serif, sans, display, script, mono, slab,
+// blackletter — so no style gets an easy or a repeatedly-unlucky run
+// just by chance. Only falls back to the champion's own category in the
+// rare case where every other category has already been used up.
+function pickNextChallenger(remaining, championCat){
+  const startIdx = CATEGORY_ROTATION.indexOf(championCat);
+  for (let offset = 1; offset <= CATEGORY_ROTATION.length; offset++) {
+    const cat = CATEGORY_ROTATION[(startIdx + offset) % CATEGORY_ROTATION.length];
+    if (cat === championCat) continue;
+    if (remaining[cat] && remaining[cat].length > 0) return remaining[cat].shift();
+  }
+  if (remaining[championCat] && remaining[championCat].length > 0) return remaining[championCat].shift();
+  return null;
+}
+
 function simulateRun(outcomes){
   const wins = new Array(FONT_POOL.length).fill(0);
+  const pickCount = new Array(FONT_POOL.length).fill(0);
   const status = new Array(FONT_POOL.length).fill("pending");
   const eliminatedAt = new Array(FONT_POOL.length).fill(null);
   const eliminatedBy = new Array(FONT_POOL.length).fill(null);
   let championIndex = 0;
 
+  const remaining = makeRemainingPools();
   const mainBattleCount = FONT_POOL.length - 1;
   const mainOutcomes = outcomes.slice(0, mainBattleCount);
   const finalOutcomes = outcomes.slice(mainBattleCount);
+  let nextChallengerIndex = null;
 
   mainOutcomes.forEach((code, idx) => {
     const battle = idx + 1;
-    const challengerIndex = battle;
+    const championCat = FONT_POOL[championIndex].cat;
+    const challengerIndex = pickNextChallenger(remaining, championCat);
     if (code === "c") {
+      // The player looked at both and chose to keep the champion.
       wins[championIndex] += 1;
+      pickCount[championIndex] += 1;
       status[challengerIndex] = "eliminated";
       eliminatedAt[challengerIndex] = battle;
       eliminatedBy[challengerIndex] = championIndex;
     } else if (code === "x") {
+      // The player chose the challenger over the champion.
+      wins[challengerIndex] += 1;
+      pickCount[challengerIndex] += 1;
       status[championIndex] = "eliminated";
       eliminatedAt[championIndex] = battle;
       eliminatedBy[championIndex] = challengerIndex;
       championIndex = challengerIndex;
     } else {
+      // Kept only so a link generated before the neutral option was
+      // removed still decodes instead of breaking outright.
       status[challengerIndex] = "neutral";
     }
   });
 
-  // A font that loses to a strong, battle-tested opponent shouldn't rank
-  // below one that got lucky and lost to a font that never won anything.
-  // Fairness score = your own wins, plus the final win total of whoever
-  // knocked you out — so a tough loss late in the running order still
-  // counts for something real.
+  if (mainOutcomes.length < mainBattleCount) {
+    const championCat = FONT_POOL[championIndex].cat;
+    nextChallengerIndex = pickNextChallenger(remaining, championCat);
+  }
+
+  // How much the player actually liked a font, in priority order:
+  //   1. pickCount — how many times they chose it head-to-head. This is
+  //      the most direct signal of preference and doesn't care when the
+  //      font entered or how the bracket happened to shake out.
+  //   2. fairnessScore — own wins plus the wins of whoever knocked it out,
+  //      so a tough loss to a strong opponent still counts. Breaks ties.
   function fairnessScore(i){
     const own = wins[i];
     const viaOpponent = eliminatedBy[i] !== null ? wins[eliminatedBy[i]] : 0;
     return own + viaOpponent;
+  }
+  function preferenceRank(a, b){
+    if (pickCount[b] !== pickCount[a]) return pickCount[b] - pickCount[a];
+    const fa = fairnessScore(a), fb = fairnessScore(b);
+    if (fb !== fa) return fb - fa;
+    const elimA = eliminatedAt[a] === null ? Infinity : eliminatedAt[a];
+    const elimB = eliminatedAt[b] === null ? Infinity : eliminatedAt[b];
+    if (elimB !== elimA) return elimB - elimA;
+    return a - b;
   }
 
   // ---- Final round: the top 3 performers face off directly, so the
@@ -716,14 +773,7 @@ function simulateRun(outcomes){
     for (let i = 0; i < FONT_POOL.length; i++) {
       if (status[i] !== "neutral") indices.push(i);
     }
-    indices.sort((a, b) => {
-      const fa = fairnessScore(a), fb = fairnessScore(b);
-      if (fb !== fa) return fb - fa;
-      const elimA = eliminatedAt[a] === null ? Infinity : eliminatedAt[a];
-      const elimB = eliminatedAt[b] === null ? Infinity : eliminatedAt[b];
-      if (elimB !== elimA) return elimB - elimA;
-      return a - b;
-    });
+    indices.sort(preferenceRank);
     return indices;
   }
 
@@ -736,11 +786,13 @@ function simulateRun(outcomes){
       const code = finalOutcomes[step - 1];
       if (code === "c") {
         wins[finalBest] += 1;
+        pickCount[finalBest] += 1;
         status[finalChallenger] = "eliminated";
         eliminatedAt[finalChallenger] = mainBattleCount + step;
         eliminatedBy[finalChallenger] = finalBest;
       } else if (code === "x") {
         wins[finalChallenger] += 1;
+        pickCount[finalChallenger] += 1;
         status[finalBest] = "eliminated";
         eliminatedAt[finalBest] = mainBattleCount + step;
         eliminatedBy[finalBest] = finalChallenger;
@@ -754,7 +806,7 @@ function simulateRun(outcomes){
   }
 
   status[championIndex] = "champion";
-  return { wins, status, eliminatedAt, eliminatedBy, championIndex, finalists, fairnessScore };
+  return { wins, pickCount, status, eliminatedAt, eliminatedBy, championIndex, finalists, fairnessScore, nextChallengerIndex };
 }
 
 function buildFontRecords(result){
@@ -762,17 +814,17 @@ function buildFontRecords(result){
     key: f.font,
     cat: f.cat,
     wins: result.wins[i],
+    pickCount: result.pickCount[i],
     status: result.status[i],
     eliminatedAt: result.eliminatedAt[i],
     eliminatedBy: result.eliminatedBy[i],
   }));
 }
 
-// Best → worst, excluding anything marked neutral. Uses the same fairness
-// score as the finals selection: your own wins, plus the final win total
-// of whoever eliminated you — so a tough loss to a strong opponent still
-// counts for something, instead of a font being buried just because of
-// when it happened to enter the running order.
+// Best → worst, excluding anything marked neutral. Ranks by how many times
+// the player actually chose each font (pickCount) first, then by the same
+// fairness score used for finals selection as a tiebreaker — so a font the
+// player kept picking rises to the top regardless of when it entered.
 function computeRanking(records){
   function fairnessScore(r){
     const via = r.eliminatedBy !== null && records[r.eliminatedBy] ? records[r.eliminatedBy].wins : 0;
@@ -781,12 +833,13 @@ function computeRanking(records){
   return records
     .map((r, i) => ({
       i,
+      pickCount: r.pickCount,
       fairness: fairnessScore(r),
       elim: r.eliminatedAt === null ? Infinity : r.eliminatedAt,
       status: r.status,
     }))
     .filter(r => r.status !== "neutral")
-    .sort((a, b) => b.fairness - a.fairness || b.elim - a.elim || a.i - b.i)
+    .sort((a, b) => b.pickCount - a.pickCount || b.fairness - a.fairness || b.elim - a.elim || a.i - b.i)
     .map(r => r.i);
 }
 
@@ -921,8 +974,9 @@ function renderChallengeIntro(){
 }
 
 function renderQuiz(){
-  const champion = FONT_POOL[state.championIndex];
-  const challengerFont = FONT_POOL[state.battle];
+  const soFar = simulateRun(state.outcomes);
+  const champion = FONT_POOL[soFar.championIndex];
+  const challengerFont = FONT_POOL[soFar.nextChallengerIndex];
   const totalBattles = FONT_POOL.length - 1;
   const ticks = Array.from({ length: totalBattles }, (_, i) => {
     const battleNum = i + 1;
@@ -948,7 +1002,6 @@ function renderQuiz(){
         <div class="specimen-fontname">${escapeHtml(challengerFont.font.replace(/'/g, ""))}</div>
       </div>
     </div>
-    <button class="neutral-btn" id="neutral-btn">No strong preference</button>
   `;
 
   const cards = app.querySelectorAll(".specimen");
@@ -957,25 +1010,25 @@ function renderQuiz(){
     card.addEventListener("click", pick);
     card.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
   });
-  document.getElementById("neutral-btn").addEventListener("click", () => choose("neutral"));
 }
 
 function choose(outcome){
-  const code = outcome === "champion" ? "c" : outcome === "challenger" ? "x" : "n";
-  state.outcomes.push(code);
-  if (outcome === "challenger") state.championIndex = state.battle;
+  const code = outcome === "champion" ? "c" : "x";
 
-  const chosenCard = outcome !== "neutral" ? app.querySelector(`.specimen[data-choice="${outcome}"]`) : null;
+  const chosenCard = app.querySelector(`.specimen[data-choice="${outcome}"]`);
+  const otherCard = app.querySelector(`.specimen[data-choice="${outcome === "champion" ? "challenger" : "champion"}"]`);
   if (chosenCard) chosenCard.classList.add("chosen");
+  if (otherCard) otherCard.classList.add("not-chosen");
 
   setTimeout(() => {
+    state.outcomes.push(code);
     state.battle += 1;
     if (state.battle < FONT_POOL.length){
       renderQuiz();
     } else {
       beginFinals();
     }
-  }, 220);
+  }, 420);
 }
 
 function beginFinals(){
@@ -1014,7 +1067,6 @@ function renderFinals(){
         <div class="specimen-fontname">${escapeHtml(challengerFont.font.replace(/'/g, ""))}</div>
       </div>
     </div>
-    <button class="neutral-btn" id="neutral-btn">No strong preference</button>
   `;
 
   const cards = app.querySelectorAll(".specimen");
@@ -1023,24 +1075,25 @@ function renderFinals(){
     card.addEventListener("click", pick);
     card.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
   });
-  document.getElementById("neutral-btn").addEventListener("click", () => chooseFinals("neutral"));
 }
 
 function chooseFinals(outcome){
-  const code = outcome === "champion" ? "c" : outcome === "challenger" ? "x" : "n";
-  state.outcomes.push(code);
+  const code = outcome === "champion" ? "c" : "x";
 
-  const chosenCard = outcome !== "neutral" ? app.querySelector(`.specimen[data-choice="${outcome}"]`) : null;
+  const chosenCard = app.querySelector(`.specimen[data-choice="${outcome}"]`);
+  const otherCard = app.querySelector(`.specimen[data-choice="${outcome === "champion" ? "challenger" : "champion"}"]`);
   if (chosenCard) chosenCard.classList.add("chosen");
+  if (otherCard) otherCard.classList.add("not-chosen");
 
   setTimeout(() => {
+    state.outcomes.push(code);
     state.finalsStep += 1;
     if (state.finalsStep < state.finalsPool.length){
       renderFinals();
     } else {
       finishRun();
     }
-  }, 220);
+  }, 420);
 }
 
 function finishRun(){
@@ -1081,13 +1134,13 @@ function buildDominanceRows(result){
   return result.finalists.map((idx, pos) => {
     const font = FONT_POOL[idx];
     const name = font.font.replace(/'/g, "");
-    const wins = result.wins[idx];
+    const picks = result.pickCount[idx];
     const isChampion = idx === result.championIndex;
     return `
       <div class="dominance-row ${isChampion ? "champion" : ""}">
         <div class="dominance-rank">${isChampion ? "🏆" : "#" + (pos + 1)}</div>
         <div class="dominance-name" style="font-family:'${escapeHtml(name)}';">${escapeHtml(name)}</div>
-        <div class="dominance-wins">${wins} ${wins === 1 ? "win" : "wins"}</div>
+        <div class="dominance-wins">you picked it ${picks}×</div>
       </div>
     `;
   }).join("");
@@ -1102,8 +1155,7 @@ function renderPersonalityBlock(result, records){
   return `
     <div class="champion-showcase">
       <div class="champion-label">Your favorite</div>
-      <div class="champion-word" style="font-family:${champion.key};">${SAMPLE_TEXT}</div>
-      <div class="champion-name" style="font-family:${champion.key};">${escapeHtml(championName)}</div>
+      <div class="champion-word" style="font-family:${champion.key};">${escapeHtml(championName)}</div>
     </div>
     <div class="stats-section">
       <div class="stats-heading">How it went</div>
