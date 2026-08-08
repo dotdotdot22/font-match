@@ -6,7 +6,7 @@
 <title>Font Match — do your typefaces agree?</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@700&family=DM+Sans:wght@700&family=Space+Mono:wght@700&family=Cormorant+Garamond:wght@600&family=Bebas+Neue&family=Libre+Baskerville:wght@700&family=Righteous&family=EB+Garamond:wght@600&family=Archivo+Black&family=Crimson+Pro:wght@600&family=Caveat:wght@700&family=Oswald:wght@600&family=Abril+Fatface&family=Work+Sans:wght@600&family=IBM+Plex+Mono:wght@600&family=Lora:wght@600&family=Pacifico&family=Inter:wght@700&family=Bungee&family=Source+Serif+4:wght@600&family=Zilla+Slab:wght@600&family=Poppins:wght@700&family=Anton&family=Merriweather:wght@700&family=Dancing+Script:wght@700&family=Barlow:wght@700&family=Staatliches&family=PT+Serif:wght@700&family=Courier+Prime:wght@700&family=Vollkorn:wght@700&family=Alfa+Slab+One&family=Nunito+Sans:wght@700&family=Sacramento&family=Rubik:wght@700&family=Fjalla+One&family=Cardo:wght@700&family=Amatic+SC:wght@700&family=Karla:wght@700&family=Big+Shoulders+Display:wght@700&family=Spectral:wght@600&family=Permanent+Marker&family=Manrope:wght@700&family=Special+Elite&family=Domine:wght@600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@700&family=DM+Sans:wght@700&family=Space+Mono:wght@700&family=Cormorant+Garamond:wght@600&family=Bebas+Neue&family=Libre+Baskerville:wght@700&family=Caveat:wght@700&family=Oswald:wght@600&family=IBM+Plex+Mono:wght@600&family=Lora:wght@600&family=Alfa+Slab+One&family=Nunito+Sans:wght@700&family=Dancing+Script:wght@700&family=Barlow:wght@700&family=Big+Shoulders+Display:wght@700&family=Spectral:wght@600&family=UnifrakturMaguntia&family=Pirata+One&family=Great+Vibes&family=Parisienne&family=Tangerine:wght@700&family=Satisfy&family=Alex+Brush&family=Yellowtail&family=Rock+Salt&family=Monoton&family=Bangers&family=Lobster&family=Orbitron:wght@700&family=Shrikhand&family=Unbounded:wght@700&family=Chewy&family=Comfortaa:wght@700&family=Bodoni+Moda:wght@700&family=Silkscreen:wght@700&family=Cutive+Mono&display=swap" rel="stylesheet">
 <style>
   :root{
     --paper:#F6F6F3;
@@ -527,6 +527,26 @@ const FONT_POOL = [
   { word:"Halcyon", font:"'Barlow'", size:36, cat:"sans" },
   { word:"Cobalt", font:"'Big Shoulders Display'", size:36, cat:"display" },
   { word:"Cobalt", font:"'Spectral'", size:38, cat:"serif" },
+  { word:"Vanguard", font:"'UnifrakturMaguntia'", size:36, cat:"blackletter" },
+  { word:"Wraith", font:"'Pirata One'", size:34, cat:"blackletter" },
+  { word:"Cherish", font:"'Great Vibes'", size:46, cat:"script" },
+  { word:"Reverie", font:"'Parisienne'", size:44, cat:"script" },
+  { word:"Elysian", font:"'Tangerine'", size:54, cat:"script" },
+  { word:"Breezy", font:"'Satisfy'", size:40, cat:"script" },
+  { word:"Velour", font:"'Alex Brush'", size:44, cat:"script" },
+  { word:"Sunbeam", font:"'Yellowtail'", size:38, cat:"script" },
+  { word:"Rustic", font:"'Rock Salt'", size:34, cat:"script" },
+  { word:"Neon", font:"'Monoton'", size:30, cat:"display" },
+  { word:"Kaboom", font:"'Bangers'", size:38, cat:"display" },
+  { word:"Zephyr", font:"'Lobster'", size:36, cat:"display" },
+  { word:"Vortex", font:"'Orbitron'", size:32, cat:"display" },
+  { word:"Carnival", font:"'Shrikhand'", size:34, cat:"display" },
+  { word:"Fracture", font:"'Unbounded'", size:30, cat:"display" },
+  { word:"Bubblegum", font:"'Chewy'", size:34, cat:"display" },
+  { word:"Cloudy", font:"'Comfortaa'", size:34, cat:"sans" },
+  { word:"Vogue", font:"'Bodoni Moda'", size:40, cat:"serif" },
+  { word:"Pixel", font:"'Silkscreen'", size:28, cat:"mono" },
+  { word:"Vintage", font:"'Cutive Mono'", size:32, cat:"mono" },
 ];
 
 const TAG_LABEL = {
@@ -536,6 +556,7 @@ const TAG_LABEL = {
   script:"Playful & Expressive",
   mono:"Technical & Precise",
   slab:"Sturdy & Slab-Serif",
+  blackletter:"Dramatic & Gothic",
 };
 
 const CATEGORY_PHRASE = {
@@ -545,6 +566,7 @@ const CATEGORY_PHRASE = {
   script:"playful script type",
   mono:"technical monospace type",
   slab:"sturdy slab type",
+  blackletter:"dramatic blackletter type",
 };
 
 const HEART_PATH = "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z";
