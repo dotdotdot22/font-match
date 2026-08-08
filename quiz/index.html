@@ -113,6 +113,8 @@
   }
   .cta.ghost:hover{background:var(--ink); color:var(--paper);}
 
+  .landing .cta{display:block; margin:0 auto;}
+
   .challenge-banner{
     font-family:var(--mono);
     font-size:12px;
@@ -189,7 +191,15 @@
   }
   .specimen .word{
     word-break:break-word;
-    line-height:1.05;
+    line-height:1.3;
+  }
+  .specimen-fontname{
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-top:14px;
   }
   .specimen .pt{
     font-family:var(--mono);
@@ -312,12 +322,11 @@
     margin:0 0 28px;
   }
 
-  /* ---------- Match layout: them | heart | you ---------- */
-  .match-layout{
+  /* ---------- Compatibility breakdown: them | you (two columns) ---------- */
+  .match-breakdown{
     display:grid;
-    grid-template-columns:1fr 128px 1fr;
+    grid-template-columns:1fr 1fr;
     gap:16px;
-    align-items:stretch;
     margin-bottom:12px;
   }
   .match-col{
@@ -338,24 +347,25 @@
   .match-col.you .col-label{text-align:right;}
 
   .match-entry{
+    display:flex;
+    align-items:baseline;
+    gap:6px;
     padding:9px 11px;
     border-radius:var(--radius);
     border:1px solid var(--line);
-    font-size:12px;
+    font-size:13px;
     line-height:1.25;
     overflow-wrap:anywhere;
   }
-  .match-col.them .match-entry{text-align:left;}
-  .match-col.you .match-entry{text-align:right;}
+  .match-col.them .match-entry{justify-content:flex-start;}
+  .match-col.you .match-entry{justify-content:flex-end;}
   .match-entry.match{background:var(--match-soft); border-color:var(--match); color:var(--match); font-weight:600;}
   .match-entry .w{
-    display:block;
     font-family:var(--mono);
     font-size:9px;
     letter-spacing:0.05em;
-    text-transform:uppercase;
     color:var(--ink-soft);
-    margin-bottom:2px;
+    flex-shrink:0;
   }
   .match-entry.match .w{color:var(--match);}
 
@@ -365,7 +375,7 @@
     align-items:center;
     justify-content:center;
     text-align:center;
-    padding:12px 0;
+    padding:12px 0 28px;
   }
   .heart-wrap{
     position:relative;
@@ -398,11 +408,10 @@
     max-width:20ch;
   }
 
-  @media (max-width:640px){
-    .match-layout{grid-template-columns:1fr;}
-    .match-center{order:-1; padding-bottom:20px;}
-    .match-col.you .col-label,
-    .match-col.you .match-entry{text-align:left;}
+  @media (max-width:560px){
+    .match-breakdown{grid-template-columns:1fr;}
+    .match-col.you .col-label{text-align:left;}
+    .match-col.you .match-entry{justify-content:flex-start;}
   }
 
   .name-box{margin-bottom:12px;}
@@ -533,11 +542,11 @@
 <body>
 <div class="frame">
   <div class="topline">
-    <span>Font Match — Tournament</span>
+    <span>Font Match</span>
     <span class="mark" aria-hidden="true"></span>
   </div>
   <div id="app"></div>
-  <footer>One bracket. One favorite. See who agrees with you.</footer>
+  <footer>Pick your favorites. Find out your type. See who agrees with you.</footer>
 </div>
 
 <script>
@@ -636,8 +645,18 @@ function computeDominantCategory(records){
 
 const HEART_PATH = "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z";
 
+// Same sentence shown every round, so the only thing changing between
+// two cards is the typeface itself — a classic type-specimen pangram.
+const SAMPLE_TEXT = "The quick brown fox jumps over the lazy dog";
+
+// Battle-display sizes are noticeably smaller than the original per-word
+// sizes, since a full sentence needs to wrap across a few lines.
+function sentenceSize(fontMeta){
+  return Math.max(14, Math.round(fontMeta.size * 0.48));
+}
+
 /* ---------------------------------------------------------
-   TOURNAMENT ENGINE
+   ROUND ENGINE
    Font 0 starts as champion. Each font after it, in order,
    challenges the current champion. Winner stays on. A neutral
    pick leaves the champion in place and drops the challenger
@@ -677,7 +696,7 @@ function simulateRun(outcomes){
 
   // ---- Final round: the top 3 performers face off directly, so the
   // real favorite is confirmed head-to-head rather than just being
-  // "whoever happened to be undefeated when the bracket ran out." ----
+  // "whoever happened to be undefeated when the rounds ran out." ----
   function currentRanking(){
     const indices = [];
     for (let i = 0; i < FONT_POOL.length; i++) {
@@ -851,9 +870,9 @@ function startQuiz(){
 function renderLanding(){
   app.innerHTML = `
     <div class="landing">
-      <h1>Do your fonts&nbsp;match?</h1>
-      <p class="lede">${FONT_POOL.length} fonts, one bracket. Your favorite stays on to face the next challenger, then your top 3 face off directly to confirm your real favorite. Send the link and find out who agrees with you.</p>
-      <button class="cta" id="start-btn">Start the tournament</button>
+      <h1>What's your font&nbsp;personality?</h1>
+      <p class="lede">Pick your favorite in each round and we'll work out your type — classic, playful, bold, dramatic, and everything between. Once you're done, send the link to a friend and see how your taste compares.</p>
+      <button class="cta" id="start-btn">Start the quiz</button>
       <div class="stats-link"><a href="#" id="stats-link">See how everyone else has answered →</a></div>
     </div>
   `;
@@ -867,8 +886,8 @@ function renderChallengeIntro(){
     <div class="landing">
       <div class="challenge-banner">Incoming challenge</div>
       <h1>${escapeHtml(name)} wants to know if your fonts match.</h1>
-      <p class="lede">Same ${FONT_POOL.length} fonts, same bracket. Pick your favorites and we'll show you a compatibility score based on how closely your taste actually lines up.</p>
-      <button class="cta" id="start-btn">Take the tournament</button>
+      <p class="lede">Same ${FONT_POOL.length} fonts. Pick your favorites and we'll show you a compatibility score based on how closely your taste actually lines up.</p>
+      <button class="cta" id="start-btn">Take the quiz</button>
     </div>
   `;
   document.getElementById("start-btn").addEventListener("click", startQuiz);
@@ -877,7 +896,6 @@ function renderChallengeIntro(){
 function renderQuiz(){
   const champion = FONT_POOL[state.championIndex];
   const challengerFont = FONT_POOL[state.battle];
-  const word = challengerFont.word;
   const totalBattles = FONT_POOL.length - 1;
   const ticks = Array.from({ length: totalBattles }, (_, i) => {
     const battleNum = i + 1;
@@ -890,15 +908,17 @@ function renderQuiz(){
   app.innerHTML = `
     <div class="ruler">${ticks}</div>
     <div class="round-label">Battle ${String(state.battle).padStart(2,"0")} / ${totalBattles}</div>
-    <div class="round-word">Which setting of <b>“${word}”</b> feels more like you?</div>
+    <div class="round-word">Which one feels more like you?</div>
     <div class="specimens">
       <div class="specimen" data-choice="champion" tabindex="0" role="button" aria-label="Keep the current favorite">
         <div class="specimen-badge">Your favorite so far</div>
-        <div class="word" style="font-family:${champion.font}; font-size:${champion.size}px;">${escapeHtml(word)}</div>
+        <div class="word" style="font-family:${champion.font}; font-size:${sentenceSize(champion)}px;">${SAMPLE_TEXT}</div>
+        <div class="specimen-fontname">${escapeHtml(champion.font.replace(/'/g, ""))}</div>
       </div>
       <div class="specimen" data-choice="challenger" tabindex="0" role="button" aria-label="Switch to the new challenger">
         <div class="specimen-badge">New challenger</div>
-        <div class="word" style="font-family:${challengerFont.font}; font-size:${challengerFont.size}px;">${escapeHtml(word)}</div>
+        <div class="word" style="font-family:${challengerFont.font}; font-size:${sentenceSize(challengerFont)}px;">${SAMPLE_TEXT}</div>
+        <div class="specimen-fontname">${escapeHtml(challengerFont.font.replace(/'/g, ""))}</div>
       </div>
     </div>
     <button class="neutral-btn" id="neutral-btn">No strong preference</button>
@@ -950,20 +970,21 @@ function renderFinals(){
   const challengerIdx = pool[step];
   const bestFont = FONT_POOL[bestIdx];
   const challengerFont = FONT_POOL[challengerIdx];
-  const word = challengerFont.word;
 
   app.innerHTML = `
     <div class="challenge-banner">Final round</div>
     <div class="round-label">Confirming your real favorite</div>
-    <div class="round-word">Which setting of <b>“${word}”</b> do you actually prefer?</div>
+    <div class="round-word">Which one do you actually prefer?</div>
     <div class="specimens">
       <div class="specimen" data-choice="champion" tabindex="0" role="button" aria-label="Keep the current favorite">
         <div class="specimen-badge">${step === 1 ? "Your top pick" : "Winner so far"}</div>
-        <div class="word" style="font-family:${bestFont.font}; font-size:${bestFont.size}px;">${escapeHtml(word)}</div>
+        <div class="word" style="font-family:${bestFont.font}; font-size:${sentenceSize(bestFont)}px;">${SAMPLE_TEXT}</div>
+        <div class="specimen-fontname">${escapeHtml(bestFont.font.replace(/'/g, ""))}</div>
       </div>
       <div class="specimen" data-choice="challenger" tabindex="0" role="button" aria-label="Switch to the challenger">
         <div class="specimen-badge">${step === 1 ? "Your #2 pick" : "Your #3 pick"}</div>
-        <div class="word" style="font-family:${challengerFont.font}; font-size:${challengerFont.size}px;">${escapeHtml(word)}</div>
+        <div class="word" style="font-family:${challengerFont.font}; font-size:${sentenceSize(challengerFont)}px;">${SAMPLE_TEXT}</div>
+        <div class="specimen-fontname">${escapeHtml(challengerFont.font.replace(/'/g, ""))}</div>
       </div>
     </div>
     <button class="neutral-btn" id="neutral-btn">No strong preference</button>
@@ -1048,15 +1069,14 @@ function buildDominanceRows(result){
 function renderPersonalityBlock(result, records){
   const championIdx = result.championIndex;
   const champion = records[championIdx];
-  const championFontMeta = FONT_POOL[championIdx];
   const championName = champion.key.replace(/'/g, "");
   const dominantCategory = computeDominantCategory(records);
 
   return `
     <div class="champion-showcase">
       <div class="champion-label">Your favorite</div>
-      <div class="champion-word" style="font-family:${champion.key};">${escapeHtml(championFontMeta.word)}</div>
-      <div class="champion-name">${escapeHtml(championName)}</div>
+      <div class="champion-word" style="font-family:${champion.key};">${SAMPLE_TEXT}</div>
+      <div class="champion-name" style="font-family:${champion.key};">${escapeHtml(championName)}</div>
     </div>
     <div class="stats-section">
       <div class="stats-heading">How it went</div>
@@ -1066,6 +1086,11 @@ function renderPersonalityBlock(result, records){
       <div class="stats-heading">Your type personality</div>
       <p class="personality-text">${PERSONALITY_COPY[dominantCategory] || ""}</p>
     </div>
+  `;
+}
+
+function renderSharePrompt(){
+  return `
     <p class="result-sub">Share this link with a friend to see how compatible you really are.</p>
     <div class="name-box">
       <input id="name-input" type="text" maxlength="24" placeholder="Your name (shown on the link)" value="${escapeHtml(myName)}">
@@ -1081,8 +1106,9 @@ function renderPersonalityBlock(result, records){
 function renderResultsSolo(){
   const result = simulateRun(state.outcomes);
   app.innerHTML = `
-    <div class="result-kicker">Tournament complete</div>
+    <div class="result-kicker">Your results</div>
     ${renderPersonalityBlock(result, state.answers)}
+    ${renderSharePrompt()}
     <div class="btn-row">
       <button class="cta ghost" id="again-btn">Take it again</button>
     </div>
@@ -1133,13 +1159,12 @@ function renderResultsChallenge(){
     return rankOrder.map((idx, pos) => {
       const myPos = pos + 1;
       const rec = records[idx];
-      const font = FONT_POOL[idx];
       const fontName = rec.key.replace(/'/g, "");
       const otherRank = otherPos[idx];
       const closelyMatched = otherRank !== undefined && Math.abs(otherRank - myPos) <= 2;
       return `
         <div class="match-entry ${closelyMatched ? "match" : ""}">
-          <span class="w">#${myPos} · ${escapeHtml(font.word)}</span>${escapeHtml(fontName)}
+          <span class="w">#${myPos}</span><span style="font-family:${rec.key};">${escapeHtml(fontName)}</span>
         </div>
       `;
     }).join("");
@@ -1149,28 +1174,33 @@ function renderResultsChallenge(){
   const yourEntries = renderRankList(myRank, state.answers, theirRank);
 
   app.innerHTML = `
-    <div class="result-kicker">Tournament complete</div>
+    <div class="result-kicker">Your results</div>
     ${renderPersonalityBlock(myResult, state.answers)}
 
-    <div class="result-kicker" style="margin-top:36px;">Type match</div>
-    <div class="match-layout">
+    <div class="result-kicker" style="margin-top:36px;">Your compatibility with ${escapeHtml(name)}</div>
+    <div class="match-center">
+      <div class="heart-wrap" id="heart-wrap" style="--heart-scale:${heartScale};">
+        <svg class="heart-svg heart-outline" viewBox="0 0 24 24" aria-hidden="true"><path d="${HEART_PATH}"/></svg>
+        <svg class="heart-svg heart-fill" viewBox="0 0 24 24" aria-hidden="true" style="opacity:${pct/100};"><path d="${HEART_PATH}"/></svg>
+      </div>
+      <div class="match-pct">${pct}%</div>
+      <div class="match-statement">${escapeHtml(statement)}</div>
+    </div>
+
+    ${renderSharePrompt()}
+
+    <div class="stats-heading" style="margin-top:8px;">Here's your breakdown with ${escapeHtml(name)} →</div>
+    <div class="match-breakdown">
       <div class="match-col them">
         <div class="col-label">${escapeHtml(name)}</div>
         ${theirEntries}
-      </div>
-      <div class="match-center">
-        <div class="heart-wrap" id="heart-wrap" style="--heart-scale:${heartScale};">
-          <svg class="heart-svg heart-outline" viewBox="0 0 24 24" aria-hidden="true"><path d="${HEART_PATH}"/></svg>
-          <svg class="heart-svg heart-fill" viewBox="0 0 24 24" aria-hidden="true" style="opacity:${pct/100};"><path d="${HEART_PATH}"/></svg>
-        </div>
-        <div class="match-pct">${pct}%</div>
-        <div class="match-statement">${escapeHtml(statement)}</div>
       </div>
       <div class="match-col you">
         <div class="col-label">You</div>
         ${yourEntries}
       </div>
     </div>
+
     <div class="btn-row">
       <button class="cta ghost" id="again-btn">Take it again</button>
     </div>
@@ -1257,7 +1287,7 @@ function renderStatsData(data){
 
     ${topFavorite && topFavorite.champion_count > 0 ? `
       <div class="stats-callout">
-        <b>Most common favorite:</b> ${escapeHtml(topFavorite.font_key)} has won the whole bracket for ${topFavorite.champion_count} ${topFavorite.champion_count === 1 ? "person" : "people"} so far.
+        <b>Most common favorite:</b> ${escapeHtml(topFavorite.font_key)} has been the top pick for ${topFavorite.champion_count} ${topFavorite.champion_count === 1 ? "person" : "people"} so far.
       </div>
     ` : ""}
 
