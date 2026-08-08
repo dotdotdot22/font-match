@@ -248,6 +248,45 @@
     margin-top:10px;
   }
 
+  .dominance-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin-bottom:4px;
+  }
+  .dominance-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:10px 12px;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+  }
+  .dominance-row.champion{background:var(--accent-soft); border-color:var(--accent);}
+  .dominance-rank{
+    font-family:var(--mono);
+    font-size:13px;
+    width:28px;
+    flex-shrink:0;
+    color:var(--ink-soft);
+    text-align:center;
+  }
+  .dominance-row.champion .dominance-rank{font-size:16px;}
+  .dominance-name{flex:1; font-size:15px; color:var(--ink); overflow-wrap:anywhere;}
+  .dominance-wins{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--ink-soft);
+    white-space:nowrap;
+  }
+
+  .personality-text{
+    font-size:14px;
+    line-height:1.55;
+    color:var(--ink-soft);
+    margin:0;
+  }
+
   /* ---------- Results (shared) ---------- */
   .result-kicker{
     font-family:var(--mono);
@@ -568,6 +607,32 @@ const CATEGORY_PHRASE = {
   slab:"sturdy slab type",
   blackletter:"dramatic blackletter type",
 };
+
+const PERSONALITY_COPY = {
+  serif: "You're drawn to serif type — classic, dependable, built to be taken seriously. You probably value clear communication and don't go looking for unnecessary flash.",
+  sans: "You're drawn to clean sans-serif type — modern, minimal, no clutter. You likely value simplicity and directness over decoration.",
+  display: "You're drawn to bold display type — big, loud, impossible to ignore. You're probably artsy and a little eccentric, and you don't mind standing out.",
+  script: "You're drawn to script and cursive type — flowing, expressive, personal. You likely lead with feeling over rigid structure.",
+  mono: "You're drawn to monospace type — precise, technical, orderly. You probably think in systems and like things lined up just right.",
+  slab: "You're drawn to slab serif type — sturdy, confident, no-nonsense. You value reliability and don't waste time on subtlety.",
+  blackletter: "You're drawn to blackletter and gothic type — dramatic, intense, larger than life. You've got a flair for the theatrical.",
+};
+
+// Which type category this person actually preferred, weighted by how
+// decisively they won with fonts in that category — not just which
+// category the outright champion happened to belong to.
+function computeDominantCategory(records){
+  const totals = {};
+  records.forEach(r => {
+    if (r.status === "neutral") return;
+    totals[r.cat] = (totals[r.cat] || 0) + r.wins;
+  });
+  let best = null, bestVal = -1;
+  Object.keys(totals).forEach(cat => {
+    if (totals[cat] > bestVal) { best = cat; bestVal = totals[cat]; }
+  });
+  return best;
+}
 
 const HEART_PATH = "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z";
 
@@ -964,20 +1029,44 @@ function submitResult(answers, championIndex){
   } catch (e) {}
 }
 
-function renderResultsSolo(){
-  const champion = state.answers[state.championIndex];
-  const championFont = FONT_POOL[state.championIndex];
-  const championName = champion.key.replace(/'/g, "");
+function buildDominanceRows(result){
+  return result.finalists.map((idx, pos) => {
+    const font = FONT_POOL[idx];
+    const name = font.font.replace(/'/g, "");
+    const wins = result.wins[idx];
+    const isChampion = idx === result.championIndex;
+    return `
+      <div class="dominance-row ${isChampion ? "champion" : ""}">
+        <div class="dominance-rank">${isChampion ? "🏆" : "#" + (pos + 1)}</div>
+        <div class="dominance-name" style="font-family:'${escapeHtml(name)}';">${escapeHtml(name)}</div>
+        <div class="dominance-wins">${wins} ${wins === 1 ? "win" : "wins"}</div>
+      </div>
+    `;
+  }).join("");
+}
 
-  app.innerHTML = `
-    <div class="result-kicker">Tournament complete</div>
+function renderPersonalityBlock(result, records){
+  const championIdx = result.championIndex;
+  const champion = records[championIdx];
+  const championFontMeta = FONT_POOL[championIdx];
+  const championName = champion.key.replace(/'/g, "");
+  const dominantCategory = computeDominantCategory(records);
+
+  return `
     <div class="champion-showcase">
       <div class="champion-label">Your favorite</div>
-      <div class="champion-word" style="font-family:${champion.key};">${escapeHtml(championFont.word)}</div>
+      <div class="champion-word" style="font-family:${champion.key};">${escapeHtml(championFontMeta.word)}</div>
       <div class="champion-name">${escapeHtml(championName)}</div>
     </div>
-    <div class="profile-tag" style="text-align:center;">You lean ${TAG_LABEL[champion.cat]}.</div>
-    <p class="result-sub">That's just your half of the picture. Add your name, send the link below to a friend — once they finish their own bracket, you'll both see a compatibility score based on how closely your whole rankings agree, not just the winner.</p>
+    <div class="stats-section">
+      <div class="stats-heading">How it went</div>
+      <div class="dominance-list">${buildDominanceRows(result)}</div>
+    </div>
+    <div class="stats-section">
+      <div class="stats-heading">Your type personality</div>
+      <p class="personality-text">${PERSONALITY_COPY[dominantCategory] || ""}</p>
+    </div>
+    <p class="result-sub">Share this link with a friend to see how compatible you really are.</p>
     <div class="name-box">
       <input id="name-input" type="text" maxlength="24" placeholder="Your name (shown on the link)" value="${escapeHtml(myName)}">
     </div>
@@ -986,6 +1075,14 @@ function renderResultsSolo(){
       <button class="cta" id="copy-btn">Copy link</button>
     </div>
     <div class="copy-note" id="copy-note"></div>
+  `;
+}
+
+function renderResultsSolo(){
+  const result = simulateRun(state.outcomes);
+  app.innerHTML = `
+    <div class="result-kicker">Tournament complete</div>
+    ${renderPersonalityBlock(result, state.answers)}
     <div class="btn-row">
       <button class="cta ghost" id="again-btn">Take it again</button>
     </div>
@@ -1013,6 +1110,7 @@ function buildStatement(myChampion, theirChampion, myChampionName, theirChampion
 }
 
 function renderResultsChallenge(){
+  const myResult = simulateRun(state.outcomes);
   const compat = computeCompatibility(state.answers, challenger.answers);
   const pct = compat ? compat.pct : 0;
   const name = challenger.n && challenger.n.trim() ? challenger.n.trim() : "Them";
@@ -1051,7 +1149,10 @@ function renderResultsChallenge(){
   const yourEntries = renderRankList(myRank, state.answers, theirRank);
 
   app.innerHTML = `
-    <div class="result-kicker">Type match</div>
+    <div class="result-kicker">Tournament complete</div>
+    ${renderPersonalityBlock(myResult, state.answers)}
+
+    <div class="result-kicker" style="margin-top:36px;">Type match</div>
     <div class="match-layout">
       <div class="match-col them">
         <div class="col-label">${escapeHtml(name)}</div>
@@ -1071,7 +1172,6 @@ function renderResultsChallenge(){
       </div>
     </div>
     <div class="btn-row">
-      <button class="cta" id="own-challenge-btn">Challenge someone else!</button>
       <button class="cta ghost" id="again-btn">Take it again</button>
     </div>
     <div class="affiliate-line">
@@ -1080,18 +1180,14 @@ function renderResultsChallenge(){
     <div class="stats-link"><a href="#" id="stats-link">See how everyone else has answered →</a></div>
   `;
 
+  wireShare(state.outcomes);
+
   requestAnimationFrame(() => {
     const hw = document.getElementById("heart-wrap");
     if (hw) requestAnimationFrame(() => hw.classList.add("grown"));
   });
 
   document.getElementById("again-btn").addEventListener("click", startQuiz);
-  document.getElementById("own-challenge-btn").addEventListener("click", () => {
-    challenger = null;
-    history.replaceState(null, "", location.pathname);
-    state.mode = "results-solo";
-    render();
-  });
   document.getElementById("stats-link").addEventListener("click", (e) => { e.preventDefault(); goToStats(); });
 }
 
