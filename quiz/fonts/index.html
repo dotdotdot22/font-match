@@ -6,7 +6,7 @@
 <title>Font Match — do your typefaces agree?</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@700&family=DM+Sans:wght@700&family=Space+Mono:wght@700&family=Cormorant+Garamond:wght@600&family=Bebas+Neue&family=Libre+Baskerville:wght@700&family=Caveat:wght@700&family=Oswald:wght@600&family=IBM+Plex+Mono:wght@600&family=Lora:wght@600&family=Alfa+Slab+One&family=Nunito+Sans:wght@700&family=Dancing+Script:wght@700&family=Barlow:wght@700&family=Big+Shoulders+Display:wght@700&family=Spectral:wght@600&family=UnifrakturMaguntia&family=Pirata+One&family=Great+Vibes&family=Parisienne&family=Tangerine:wght@700&family=Alex+Brush&family=Yellowtail&family=Lobster&family=Orbitron:wght@700&family=Shrikhand&family=Unbounded:wght@700&family=Bodoni+Moda:wght@700&family=Silkscreen:wght@700&family=Cutive+Mono&family=Bangers&family=Comfortaa:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@700&family=Cormorant+Garamond:wght@600&family=Libre+Baskerville:wght@700&family=EB+Garamond:wght@600&family=Bodoni+Moda:wght@700&family=Spectral:wght@600&family=DM+Sans:wght@700&family=Oswald:wght@600&family=Nunito+Sans:wght@700&family=Barlow:wght@700&family=Work+Sans:wght@700&family=Poppins:wght@700&family=Bebas+Neue&family=Big+Shoulders+Display:wght@700&family=Bangers&family=Lobster&family=Orbitron:wght@700&family=Shrikhand&family=Caveat:wght@700&family=Dancing+Script:wght@700&family=Great+Vibes&family=Parisienne&family=Tangerine:wght@700&family=Alex+Brush&family=Space+Mono:wght@700&family=IBM+Plex+Mono:wght@600&family=Silkscreen:wght@700&family=Cutive+Mono&family=Courier+Prime:wght@700&family=VT323&family=Alfa+Slab+One&family=Bitter:wght@700&family=Zilla+Slab:wght@700&family=Josefin+Slab:wght@700&family=Roboto+Slab:wght@700&family=Arvo:wght@700&family=UnifrakturMaguntia&family=Pirata+One&family=Grenze+Gotisch:wght@600&family=MedievalSharp&family=Metal+Mania&family=Almendra+Display&family=Chewy&family=Fredoka:wght@600&family=Baloo+2:wght@700&family=Bubblegum+Sans&family=Sniglet:wght@800&family=Titan+One&display=swap" rel="stylesheet">
 <style>
   :root{
     --paper:#F6F6F3; --paper-shade:#ECEBE5; --ink:#16151A; --ink-soft:#5B5A56;
@@ -177,55 +177,71 @@
    list, so changing it invalidates every link already sent out.
 ========================================================= */
 const FONT_POOL = [
+  { font:"'Playfair Display'", size:44, cat:"serif" },
+  { font:"'Cormorant Garamond'", size:46, cat:"serif" },
+  { font:"'Libre Baskerville'", size:30, cat:"serif" },
+  { font:"'EB Garamond'", size:42, cat:"serif" },
+  { font:"'Bodoni Moda'", size:40, cat:"serif" },
+  { font:"'Spectral'", size:38, cat:"serif" },
+  { font:"'DM Sans'", size:38, cat:"sans" },
+  { font:"'Oswald'", size:36, cat:"sans" },
+  { font:"'Nunito Sans'", size:34, cat:"sans" },
+  { font:"'Barlow'", size:36, cat:"sans" },
+  { font:"'Work Sans'", size:36, cat:"sans" },
+  { font:"'Poppins'", size:34, cat:"sans" },
   { font:"'Bebas Neue'", size:40, cat:"display" },
-  { font:"'Caveat'", size:50, cat:"script" },
   { font:"'Big Shoulders Display'", size:36, cat:"display" },
+  { font:"'Bangers'", size:38, cat:"display" },
+  { font:"'Lobster'", size:36, cat:"display" },
+  { font:"'Orbitron'", size:32, cat:"display" },
+  { font:"'Shrikhand'", size:34, cat:"display" },
+  { font:"'Caveat'", size:50, cat:"script" },
   { font:"'Dancing Script'", size:46, cat:"script" },
   { font:"'Great Vibes'", size:46, cat:"script" },
-  { font:"'Bangers'", size:38, cat:"display" },
   { font:"'Parisienne'", size:44, cat:"script" },
-  { font:"'Playfair Display'", size:44, cat:"serif" },
-  { font:"'Lobster'", size:36, cat:"display" },
-  { font:"'DM Sans'", size:38, cat:"sans" },
   { font:"'Tangerine'", size:54, cat:"script" },
-  { font:"'Cormorant Garamond'", size:46, cat:"serif" },
-  { font:"'Orbitron'", size:32, cat:"display" },
-  { font:"'Space Mono'", size:34, cat:"mono" },
-  { font:"'Oswald'", size:36, cat:"sans" },
-  { font:"'Libre Baskerville'", size:30, cat:"serif" },
-  { font:"'Shrikhand'", size:34, cat:"display" },
-  { font:"'IBM Plex Mono'", size:32, cat:"mono" },
-  { font:"'Nunito Sans'", size:34, cat:"sans" },
   { font:"'Alex Brush'", size:44, cat:"script" },
-  { font:"'Lora'", size:38, cat:"serif" },
-  { font:"'UnifrakturMaguntia'", size:36, cat:"blackletter" },
-  { font:"'Unbounded'", size:30, cat:"display" },
+  { font:"'Space Mono'", size:34, cat:"mono" },
+  { font:"'IBM Plex Mono'", size:32, cat:"mono" },
   { font:"'Silkscreen'", size:28, cat:"mono" },
-  { font:"'Barlow'", size:36, cat:"sans" },
-  { font:"'Yellowtail'", size:38, cat:"script" },
-  { font:"'Spectral'", size:38, cat:"serif" },
-  { font:"'Pirata One'", size:34, cat:"blackletter" },
   { font:"'Cutive Mono'", size:32, cat:"mono" },
-  { font:"'Comfortaa'", size:34, cat:"sans" },
-  { font:"'Bodoni Moda'", size:40, cat:"serif" },
+  { font:"'Courier Prime'", size:34, cat:"mono" },
+  { font:"'VT323'", size:40, cat:"mono" },
   { font:"'Alfa Slab One'", size:32, cat:"slab" },
+  { font:"'Bitter'", size:36, cat:"slab" },
+  { font:"'Zilla Slab'", size:36, cat:"slab" },
+  { font:"'Josefin Slab'", size:38, cat:"slab" },
+  { font:"'Roboto Slab'", size:36, cat:"slab" },
+  { font:"'Arvo'", size:34, cat:"slab" },
+  { font:"'UnifrakturMaguntia'", size:36, cat:"blackletter" },
+  { font:"'Pirata One'", size:34, cat:"blackletter" },
+  { font:"'Grenze Gotisch'", size:40, cat:"blackletter" },
+  { font:"'MedievalSharp'", size:38, cat:"blackletter" },
+  { font:"'Metal Mania'", size:38, cat:"blackletter" },
+  { font:"'Almendra Display'", size:38, cat:"blackletter" },
+  { font:"'Chewy'", size:36, cat:"bubble" },
+  { font:"'Fredoka'", size:36, cat:"bubble" },
+  { font:"'Baloo 2'", size:36, cat:"bubble" },
+  { font:"'Bubblegum Sans'", size:36, cat:"bubble" },
+  { font:"'Sniglet'", size:34, cat:"bubble" },
+  { font:"'Titan One'", size:32, cat:"bubble" },
 ];
 
-const CATEGORY_ROTATION = ["serif","sans","display","script","mono","slab","blackletter"];
+const CATEGORY_ROTATION = ["serif","sans","display","script","mono","slab","blackletter","bubble"];
 
 const TAG_LABEL = {
   serif:"Classic & Serif-Leaning", sans:"Clean & Modern", display:"Bold & Maximalist",
   script:"Playful & Expressive", mono:"Technical & Precise", slab:"Sturdy & Slab-Serif",
-  blackletter:"Dramatic & Gothic",
+  blackletter:"Dramatic & Gothic", bubble:"Soft & Rounded",
 };
 const CATEGORY_PHRASE = {
   serif:"serif type", sans:"clean sans-serif type", display:"bold display type",
   script:"playful script type", mono:"technical monospace type", slab:"sturdy slab type",
-  blackletter:"dramatic blackletter type",
+  blackletter:"dramatic blackletter type", bubble:"soft rounded type",
 };
 const CATEGORY_SHORT = {
   serif:"serif", sans:"sans-serif", display:"display", script:"script",
-  mono:"monospace", slab:"slab serif", blackletter:"blackletter",
+  mono:"monospace", slab:"slab serif", blackletter:"blackletter", bubble:"bubble",
 };
 const PERSONALITY_COPY = {
   serif:"You're drawn to serif type — classic, dependable, built to be taken seriously. You probably value clear communication and don't go looking for unnecessary flash.",
@@ -235,6 +251,7 @@ const PERSONALITY_COPY = {
   mono:"You're drawn to monospace type — precise, technical, orderly. You probably think in systems and like things lined up just right.",
   slab:"You're drawn to slab serif type — sturdy, confident, no-nonsense. You value reliability and don't waste time on subtlety.",
   blackletter:"You're drawn to blackletter and gothic type — dramatic, intense, larger than life. You've got a flair for the theatrical.",
+  bubble:"You're drawn to soft, rounded bubble type — friendly, warm, a bit silly on purpose. You'd rather put someone at ease than impress them.",
 };
 
 const HEART_PATH = "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z";
@@ -280,11 +297,33 @@ const ROUND_NAMES = ["Opening round","Round of 16","Quarter-finals","Semi-finals
 
 const ELO_START = 1000, ELO_K = 32;
 
+// Position of a font within its own category, and where that category sits
+// in the rotation. Used only to break ties, below.
+const CAT_SLOT = (() => {
+  const count = {}, slot = [];
+  FONT_POOL.forEach((f,i) => { count[f.cat] = (count[f.cat] || 0); slot[i] = count[f.cat]++; });
+  return slot;
+})();
+const CAT_ORDER = i => CATEGORY_ROTATION.indexOf(FONT_POOL[i].cat);
+
 // Fonts that have played, best rating first; then anything not yet played.
+//
+// Ties matter more than they look. After the opening round every winner has
+// beaten one untested opponent, so all 24 hold the identical rating, and the
+// cut to the best 16 is decided entirely by the tie-break. Breaking ties by
+// position in FONT_POOL quietly handed those places to whichever categories
+// were listed first — a blackletter fan could sweep all six blackletter
+// battles and still see the style vanish before round two. Ties are now
+// broken by taking one font from each category in turn, so an equal score
+// gets equal representation.
 function rankByRating(rating, played){
   const seen = [], unseen = [];
   for (let i = 0; i < FONT_POOL.length; i++) (played[i] ? seen : unseen).push(i);
-  seen.sort((a,b) => rating[b] - rating[a] || a - b);
+  seen.sort((a,b) =>
+    rating[b] - rating[a] ||
+    CAT_SLOT[a] - CAT_SLOT[b] ||
+    CAT_ORDER(a) - CAT_ORDER(b) ||
+    a - b);
   return seen.concat(unseen);
 }
 
@@ -437,9 +476,10 @@ function renderLanding(){
   app.innerHTML = `
     <div class="landing">
       <h1>What's your font&nbsp;personality?</h1>
-      <p class="lede">Every one of ${FONT_POOL.length} typefaces gets judged, then the ones you liked play each other until a favourite is left standing. ${TOTAL_BATTLES} quick picks. Send the link to a friend afterwards and see how your taste compares.</p>
+      <p class="lede">${FONT_POOL.length} typefaces, six from each of eight styles, so no style has a head start. Every font gets judged, then the ones you liked play each other until a favourite is left standing. ${TOTAL_BATTLES} quick picks. Send the link to a friend afterwards and see how your taste compares.</p>
       <button class="cta" id="start-btn">Start the quiz</button>
       <div class="stats-link"><a href="#" id="stats-link">See how everyone else has answered &rarr;</a></div>
+      <div class="stats-link"><a href="/">&larr; More quizzes on quizheart</a></div>
     </div>`;
   document.getElementById("start-btn").addEventListener("click", startQuiz);
   document.getElementById("stats-link").addEventListener("click", e => { e.preventDefault(); goToStats(); });
@@ -605,7 +645,7 @@ function renderResultsSolo(){
     <div class="result-kicker">Your results</div>
     ${renderPersonalityBlock(result, state.answers)}
     ${renderSharePrompt()}
-    <div class="btn-row"><button class="cta ghost" id="again-btn">Take it again</button></div>
+    <div class="btn-row"><button class="cta ghost" id="again-btn">Take it again</button><a class="cta ghost" href="/" style="text-decoration:none;">More quizzes</a></div>
     <div class="affiliate-line">
       Curious about the typefaces you picked? <a href="https://fonts.google.com" target="_blank" rel="noopener">Explore more type &rarr;</a>
       <!-- AFFILIATE SLOT: swap this href for your marketplace affiliate link once approved. -->
@@ -665,7 +705,7 @@ function renderResultsChallenge(){
       <div class="match-col them"><div class="col-label">${escapeHtml(name)}</div>${rankList(theirRank, challenger.answers, myRank)}</div>
       <div class="match-col you"><div class="col-label">You</div>${rankList(myRank, state.answers, theirRank)}</div>
     </div>
-    <div class="btn-row"><button class="cta ghost" id="again-btn">Take it again</button></div>
+    <div class="btn-row"><button class="cta ghost" id="again-btn">Take it again</button><a class="cta ghost" href="/" style="text-decoration:none;">More quizzes</a></div>
     <div class="affiliate-line">
       Curious about the typefaces you picked? <a href="https://fonts.google.com" target="_blank" rel="noopener">Explore more type &rarr;</a>
     </div>
