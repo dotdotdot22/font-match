@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>quizheart — quizzes about taste, made to send to someone</title>
+<meta name="description" content="Short quizzes about your taste in fonts, colour and more. Take one, send the link, see how well you match.">
+<meta property="og:title" content="quizheart">
+<meta property="og:description" content="Quizzes about taste. Take one, send the link, see how well you match.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://quizheart.life/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Instrument+Sans:wght@400..700&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1C1747;
+  --ink-soft:#514B87;
+  --ground:#E9E5FF;
+  --paper:#FFFFFF;
+  --coral:#FF5A6E;
+  --butter:#FFD166;
+  --mint:#57DFB4;
+  --edge:#CFC8FF;
+  --display:"Bricolage Grotesque",system-ui,sans-serif;
+  --body:"Instrument Sans",system-ui,sans-serif;
+  --mono:"DM Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.55;
+  background-image:radial-gradient(var(--edge) 1px,transparent 1px);
+  background-size:22px 22px;
+}
+.wrap{max-width:1000px;margin:0 auto;padding:0 22px}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:26px 0 0}
+.mark{display:flex;align-items:center;gap:9px;font-family:var(--display);font-weight:800;font-size:22px;font-variation-settings:"wdth" 82;letter-spacing:-.02em}
+.mark svg{display:block;width:19px;height:19px;transform-origin:50% 55%;animation:beat 2.6s ease-in-out infinite}
+@keyframes beat{0%,72%,100%{transform:scale(1)}78%{transform:scale(1.22)}84%{transform:scale(1)}90%{transform:scale(1.13)}}
+.top-note{font-family:var(--mono);font-size:12px;color:var(--ink-soft);letter-spacing:.04em;margin:0}
+
+.hero{padding:74px 0 58px;max-width:790px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 20px}
+.hero h1{
+  font-family:var(--display);
+  font-weight:700;
+  font-variation-settings:"wdth" 88,"opsz" 72;
+  font-size:clamp(42px,7.4vw,80px);
+  line-height:.98;
+  letter-spacing:-.035em;
+  margin:0 0 24px;
+}
+.hero h1 .alt{font-family:"Playfair Display",serif;font-weight:700;letter-spacing:-.01em}
+.hero h1 .alt2{font-family:"Space Grotesk",sans-serif;font-weight:700}
+.hero h1 u{text-decoration:none;background:linear-gradient(transparent 62%,var(--butter) 62%)}
+.hero p{font-size:19px;max-width:52ch;margin:0;color:var(--ink-soft)}
+
+.deck-head{display:flex;align-items:baseline;gap:14px;margin:0 0 20px}
+.deck-head h2{font-family:var(--display);font-variation-settings:"wdth" 84;font-size:15px;letter-spacing:.14em;text-transform:uppercase;margin:0}
+.rule{flex:1;height:1px;background:var(--edge)}
+.count{font-family:var(--mono);font-size:12px;color:var(--ink-soft);margin:0}
+
+.deck{display:grid;grid-template-columns:repeat(auto-fill,minmax(288px,1fr));gap:18px;padding-bottom:12px}
+.card{
+  position:relative;
+  display:flex;flex-direction:column;
+  background:var(--paper);
+  border:1.5px solid var(--ink);
+  border-radius:14px;
+  padding:22px 22px 20px;
+  text-decoration:none;
+  color:inherit;
+  box-shadow:5px 5px 0 var(--ink);
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+.card.live:hover,.card.live:focus-visible{transform:translate(-3px,-3px) rotate(-.7deg);box-shadow:9px 9px 0 var(--ink)}
+.card:focus-visible{outline:3px solid var(--coral);outline-offset:4px}
+.card.soon{box-shadow:none;border-style:dashed;border-color:var(--ink-soft);background:transparent;cursor:default}
+.tag{align-self:flex-start;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:3px 9px;border-radius:999px;background:var(--mint);color:var(--ink);margin-bottom:18px}
+.card.soon .tag{background:transparent;border:1px solid var(--ink-soft);color:var(--ink-soft)}
+.card h3{font-size:30px;line-height:1.05;margin:0 0 8px;letter-spacing:-.02em}
+.card p{font-size:15px;color:var(--ink-soft);margin:0 0 20px}
+.card.soon h3,.card.soon p{color:var(--ink-soft)}
+.strip{margin-top:auto;min-height:44px;display:flex;align-items:center;gap:6px;border-top:1px solid var(--edge);padding-top:14px}
+.go{font-family:var(--mono);font-size:13px;margin-left:auto;color:var(--ink)}
+.card.soon .go{color:var(--ink-soft)}
+
+.card.fonts h3{font-family:"Playfair Display",serif}
+.spec{font-size:26px;line-height:1}
+.spec.s1{font-family:"Playfair Display",serif}
+.spec.s2{font-family:"Space Grotesk",sans-serif}
+.spec.s3{font-family:var(--mono)}
+.card.colour h3{font-family:var(--display);font-variation-settings:"wdth" 100,"wght" 800}
+.sw{width:26px;height:26px;border-radius:6px;border:1px solid var(--ink)}
+.card.scent h3{font-family:var(--display);font-variation-settings:"wdth" 62,"wght" 500}
+.card.shelf h3{font-family:var(--display);font-variation-settings:"wdth" 100,"wght" 400}
+.bar{width:9px;border-radius:2px;border:1px solid var(--ink)}
+
+.how{margin:64px 0 0;border-top:1px solid var(--edge);padding-top:34px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:26px;margin:22px 0 0;padding:0;list-style:none}
+.steps li{position:relative;padding-left:36px}
+.steps b{position:absolute;left:0;top:1px;font-family:var(--mono);font-size:13px;color:var(--coral)}
+.steps h4{font-family:var(--display);font-variation-settings:"wdth" 86;font-size:17px;margin:0 0 5px;letter-spacing:-.01em}
+.steps p{margin:0;font-size:15px;color:var(--ink-soft)}
+
+footer{margin-top:72px;border-top:1.5px solid var(--ink);padding:20px 0 40px;display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
+footer p{margin:0}
+footer a{color:var(--ink-soft)}
+
+@media (max-width:560px){
+  .hero{padding:52px 0 44px}
+  .card h3{font-size:26px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="mark">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-8-5.1-8-10.4A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 8 3.6C20 15.9 12 21 12 21z" fill="#FF5A6E" stroke="#1C1747" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <span>quizheart</span>
+    </div>
+    <p class="top-note">quizheart.life</p>
+  </header>
+
+  <section class="hero">
+    <p class="eyebrow">Quizzes about taste</p>
+    <h1>Your <span class="alt">taste</span> is a <span class="alt2">shape.</span> <u>Send it to someone.</u></h1>
+    <p>Pick a quiz. Answer with your gut. You get a result page and a link — send that link to a friend or a partner, and the site shows how closely the two of you match.</p>
+  </section>
+
+  <section>
+    <div class="deck-head">
+      <h2>The quizzes</h2>
+      <div class="rule"></div>
+      <p class="count">1 open &middot; 3 in progress</p>
+    </div>
+
+    <div class="deck">
+
+      <a class="card fonts live" href="/fonts">
+        <span class="tag">Open now</span>
+        <h3>Font Match</h3>
+        <p>Thirty-six typefaces, two at a time. Keep the one you like. Find out which style you actually lean on.</p>
+        <div class="strip">
+          <span class="spec s1">Aa</span>
+          <span class="spec s2">Aa</span>
+          <span class="spec s3">Aa</span>
+          <span class="go">Take it &rarr;</span>
+        </div>
+      </a>
+
+      <div class="card colour soon">
+        <span class="tag">Next up</span>
+        <h3>Colour Match</h3>
+        <p>Palettes, head to head. Find the room you would live in, and what to paint it.</p>
+        <div class="strip">
+          <span class="sw" style="background:#2E4B6B"></span>
+          <span class="sw" style="background:#E8B4A0"></span>
+          <span class="sw" style="background:#7FA37C"></span>
+          <span class="sw" style="background:#F2E3C4"></span>
+          <span class="go">Soon</span>
+        </div>
+      </div>
+
+      <div class="card scent soon">
+        <span class="tag">In progress</span>
+        <h3>Scent Match</h3>
+        <p>Smoke, citrus, salt or leather. Work out the note you keep coming back to.</p>
+        <div class="strip">
+          <span class="bar" style="height:12px;background:#E8B4A0"></span>
+          <span class="bar" style="height:24px;background:#FFD166"></span>
+          <span class="bar" style="height:34px;background:#57DFB4"></span>
+          <span class="bar" style="height:18px;background:#514B87"></span>
+          <span class="go">Soon</span>
+        </div>
+      </div>
+
+      <div class="card shelf soon">
+        <span class="tag">In progress</span>
+        <h3>Shelf Match</h3>
+        <p>Book covers, no titles shown. See what your eye picks before your brain does.</p>
+        <div class="strip">
+          <span class="bar" style="height:30px;background:#FF5A6E"></span>
+          <span class="bar" style="height:36px;background:#1C1747"></span>
+          <span class="bar" style="height:26px;background:#FFD166"></span>
+          <span class="bar" style="height:33px;background:#57DFB4"></span>
+          <span class="go">Soon</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="how">
+    <div class="deck-head">
+      <h2>How a match works</h2>
+      <div class="rule"></div>
+    </div>
+    <ol class="steps">
+      <li><b>01</b><h4>You take the quiz</h4><p>Two options at a time. No account, no email, nothing to sign up for.</p></li>
+      <li><b>02</b><h4>You get a link</h4><p>Your answers travel inside the link itself. Send it by message, or post it.</p></li>
+      <li><b>03</b><h4>They take it too</h4><p>They answer the same quiz. At the end, both results sit side by side with a match score.</p></li>
+    </ol>
+  </section>
+
+  <footer>
+    <p>quizheart.life</p>
+    <p><a href="/fonts">Font Match</a></p>
+  </footer>
+
+</div>
+</body>
+</html>
