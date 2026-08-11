@@ -6,910 +6,407 @@
 <title>Font Match — do your typefaces agree?</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@700&family=DM+Sans:wght@700&family=Space+Mono:wght@700&family=Cormorant+Garamond:wght@600&family=Bebas+Neue&family=Libre+Baskerville:wght@700&family=Caveat:wght@700&family=Oswald:wght@600&family=IBM+Plex+Mono:wght@600&family=Lora:wght@600&family=Alfa+Slab+One&family=Nunito+Sans:wght@700&family=Dancing+Script:wght@700&family=Barlow:wght@700&family=Big+Shoulders+Display:wght@700&family=Spectral:wght@600&family=UnifrakturMaguntia&family=Pirata+One&family=Great+Vibes&family=Parisienne&family=Tangerine:wght@700&family=Satisfy&family=Alex+Brush&family=Yellowtail&family=Rock+Salt&family=Monoton&family=Bangers&family=Lobster&family=Orbitron:wght@700&family=Shrikhand&family=Unbounded:wght@700&family=Chewy&family=Comfortaa:wght@700&family=Bodoni+Moda:wght@700&family=Silkscreen:wght@700&family=Cutive+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@700&family=DM+Sans:wght@700&family=Space+Mono:wght@700&family=Cormorant+Garamond:wght@600&family=Bebas+Neue&family=Libre+Baskerville:wght@700&family=Caveat:wght@700&family=Oswald:wght@600&family=IBM+Plex+Mono:wght@600&family=Lora:wght@600&family=Alfa+Slab+One&family=Nunito+Sans:wght@700&family=Dancing+Script:wght@700&family=Barlow:wght@700&family=Big+Shoulders+Display:wght@700&family=Spectral:wght@600&family=UnifrakturMaguntia&family=Pirata+One&family=Great+Vibes&family=Parisienne&family=Tangerine:wght@700&family=Alex+Brush&family=Yellowtail&family=Lobster&family=Orbitron:wght@700&family=Shrikhand&family=Unbounded:wght@700&family=Bodoni+Moda:wght@700&family=Silkscreen:wght@700&family=Cutive+Mono&family=Bangers&family=Comfortaa:wght@700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#F6F6F3;
-    --paper-shade:#ECEBE5;
-    --ink:#16151A;
-    --ink-soft:#5B5A56;
-    --line:#D9D7CF;
-    --accent:#2A4DE0;
-    --accent-soft:#E8ECFC;
-    --match:#E63462;
-    --match-soft:#FCE9EE;
-    --radius:4px;
-    --display: 'Fraunces', serif;
-    --body: 'Space Grotesk', sans-serif;
-    --mono: 'JetBrains Mono', monospace;
+    --paper:#F6F6F3; --paper-shade:#ECEBE5; --ink:#16151A; --ink-soft:#5B5A56;
+    --line:#D9D7CF; --accent:#2A4DE0; --accent-soft:#E8ECFC;
+    --match:#E63462; --match-soft:#FCE9EE; --radius:4px;
+    --display:'Fraunces',serif; --body:'Space Grotesk',sans-serif; --mono:'JetBrains Mono',monospace;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
-  body{
-    background:var(--paper);
-    color:var(--ink);
-    font-family:var(--body);
-    -webkit-font-smoothing:antialiased;
-    min-height:100vh;
-  }
+  body{background:var(--paper);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased;min-height:100vh;}
   a{color:var(--accent);}
   button{font-family:inherit;}
-  button:focus-visible, a:focus-visible, input:focus-visible{
-    outline:2px solid var(--accent);
-    outline-offset:3px;
-  }
-  @media (prefers-reduced-motion: reduce){
-    *{animation:none !important; transition:none !important;}
-  }
+  button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
 
-  .frame{
-    max-width:720px;
-    margin:0 auto;
-    padding:28px 20px 60px;
-    min-height:100vh;
-    display:flex;
-    flex-direction:column;
-  }
+  .frame{max-width:720px;margin:0 auto;padding:28px 20px 60px;min-height:100vh;display:flex;flex-direction:column;}
+  .topline{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:11px;
+    letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-soft);padding-bottom:16px;
+    border-bottom:1px solid var(--line);margin-bottom:36px;}
+  .topline a{color:inherit;text-decoration:none;}
+  .topline a:hover{color:var(--ink);}
+  .topline .mark{position:relative;width:14px;height:14px;}
+  .topline .mark::before,.topline .mark::after{content:"";position:absolute;background:var(--ink-soft);}
+  .topline .mark::before{left:50%;top:0;width:1px;height:100%;transform:translateX(-50%);}
+  .topline .mark::after{top:50%;left:0;height:1px;width:100%;transform:translateY(-50%);}
+  #app{flex:1;display:flex;flex-direction:column;justify-content:center;}
 
-  .topline{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    font-family:var(--mono);
-    font-size:11px;
-    letter-spacing:0.08em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    padding-bottom:16px;
-    border-bottom:1px solid var(--line);
-    margin-bottom:36px;
-  }
-  .topline .mark{position:relative; width:14px; height:14px;}
-  .topline .mark::before,.topline .mark::after{
-    content:"";
-    position:absolute;
-    background:var(--ink-soft);
-  }
-  .topline .mark::before{ left:50%; top:0; width:1px; height:100%; transform:translateX(-50%);}
-  .topline .mark::after{ top:50%; left:0; height:1px; width:100%; transform:translateY(-50%);}
-
-  #app{flex:1; display:flex; flex-direction:column; justify-content:center;}
-
-  /* ---------- Landing ---------- */
-  .landing h1{
-    font-family:var(--display);
-    font-weight:600;
-    font-size:clamp(40px,9vw,64px);
-    line-height:1.02;
-    margin:0 0 20px;
-    letter-spacing:-0.01em;
-  }
-  .landing p.lede{
-    font-size:17px;
-    line-height:1.55;
-    color:var(--ink-soft);
-    max-width:46ch;
-    margin:0 0 32px;
-  }
-  .cta{
-    font-family:var(--body);
-    font-weight:600;
-    font-size:15px;
-    background:var(--ink);
-    color:var(--paper);
-    border:none;
-    padding:15px 26px;
-    border-radius:var(--radius);
-    cursor:pointer;
-    letter-spacing:0.01em;
-    transition:transform .15s ease, background .15s ease;
-  }
+  .landing h1{font-family:var(--display);font-weight:600;font-size:clamp(40px,9vw,64px);line-height:1.02;
+    margin:0 0 20px;letter-spacing:-0.01em;}
+  .landing p.lede{font-size:17px;line-height:1.55;color:var(--ink-soft);max-width:46ch;margin:0 0 32px;}
+  .cta{font-family:var(--body);font-weight:600;font-size:15px;background:var(--ink);color:var(--paper);
+    border:none;padding:15px 26px;border-radius:var(--radius);cursor:pointer;letter-spacing:0.01em;
+    transition:transform .15s ease,background .15s ease;}
   .cta:hover{background:var(--accent);}
   .cta:active{transform:translateY(1px);}
-  .cta.ghost{
-    background:transparent;
-    color:var(--ink);
-    border:1px solid var(--ink);
-  }
-  .cta.ghost:hover{background:var(--ink); color:var(--paper);}
+  .cta.ghost{background:transparent;color:var(--ink);border:1px solid var(--ink);}
+  .cta.ghost:hover{background:var(--ink);color:var(--paper);}
+  .landing .cta{display:block;margin:0 auto;}
+  .challenge-banner{font-family:var(--mono);font-size:12px;letter-spacing:0.05em;text-transform:uppercase;
+    color:var(--accent);background:var(--accent-soft);display:inline-block;padding:6px 10px;
+    border-radius:var(--radius);margin-bottom:18px;}
 
-  .landing .cta{display:block; margin:0 auto;}
-
-  .challenge-banner{
-    font-family:var(--mono);
-    font-size:12px;
-    letter-spacing:0.05em;
-    text-transform:uppercase;
-    color:var(--accent);
-    background:var(--accent-soft);
-    display:inline-block;
-    padding:6px 10px;
-    border-radius:var(--radius);
-    margin-bottom:18px;
-  }
-
-  .comeback-note{
-    background:var(--accent-soft);
-    border-radius:var(--radius);
-    padding:12px 14px;
-    font-size:13px;
-    line-height:1.4;
-    color:var(--ink-soft);
-    margin-bottom:20px;
-  }
-  .comeback-note b{color:var(--ink);}
-
-  /* ---------- Quiz ---------- */
-  .ruler{
-    display:flex;
-    gap:3px;
-    margin-bottom:28px;
-    flex-wrap:wrap;
-  }
-  .tick{
-    flex:1;
-    min-width:6px;
-    height:4px;
-    background:var(--line);
-    border-radius:2px;
-    transition:background .2s ease;
-  }
+  .ruler{display:flex;gap:3px;margin-bottom:10px;flex-wrap:nowrap;}
+  .rgroup{display:flex;gap:2px;flex:var(--w,1);}
+  .tick{flex:1;min-width:3px;height:4px;background:var(--line);border-radius:2px;transition:background .2s ease;}
   .tick.done{background:var(--ink);}
   .tick.current{background:var(--accent);}
+  .round-name{font-family:var(--mono);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--accent);margin-bottom:4px;}
+  .round-label{font-family:var(--mono);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--ink-soft);margin-bottom:8px;}
+  .round-word{font-family:var(--mono);font-size:13px;color:var(--ink-soft);margin-bottom:22px;}
 
-  .round-label{
-    font-family:var(--mono);
-    font-size:12px;
-    letter-spacing:0.08em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    margin-bottom:8px;
-  }
-  .round-word{
-    font-family:var(--mono);
-    font-size:13px;
-    color:var(--ink-soft);
-    margin-bottom:22px;
-  }
-  .round-word b{color:var(--ink); font-weight:600;}
-
-  .specimens{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:14px;
-  }
-  @media (max-width:560px){
-    .specimens{grid-template-columns:1fr;}
-  }
-  .specimen{
-    background:var(--paper-shade);
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    padding:30px 21px 18px;
-    cursor:pointer;
-    text-align:center;
-    position:relative;
-    min-height:207px;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    transition:border-color .15s ease, background .15s ease, opacity .3s ease;
-  }
+  .specimens{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:560px){.specimens{grid-template-columns:1fr;}}
+  .specimen{background:var(--paper-shade);border:1px solid var(--line);border-radius:var(--radius);
+    padding:30px 21px 18px;cursor:pointer;text-align:center;position:relative;min-height:207px;
+    display:flex;flex-direction:column;justify-content:center;
+    transition:border-color .15s ease,background .15s ease,opacity .3s ease;}
   .specimen:hover{border-color:var(--ink);}
-  .specimen.chosen{
-    background:var(--accent-soft);
-    border-color:var(--accent);
-    animation:selectPulse .45s ease-out forwards;
-  }
-  .specimen.chosen::after{
-    content:"✓";
-    position:absolute;
-    top:12px;
-    right:12px;
-    width:28px;
-    height:28px;
-    border-radius:50%;
-    background:var(--accent);
-    color:var(--paper);
-    font-size:15px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    transform:scale(0);
-    animation:checkPop .35s cubic-bezier(.34,1.56,.64,1) .05s forwards;
-  }
-  .specimen.not-chosen{
-    opacity:.35;
-  }
-  @keyframes selectPulse{
-    0%{ transform:scale(1); box-shadow:0 0 0 0 rgba(42,77,224,.45); }
-    45%{ transform:scale(1.035); box-shadow:0 0 0 10px rgba(42,77,224,.12); }
-    100%{ transform:scale(1.015); box-shadow:0 0 0 14px rgba(42,77,224,0); }
-  }
-  @keyframes checkPop{
-    to{ transform:scale(1); }
-  }
-  .specimen .word{
-    word-break:break-word;
-    line-height:1.3;
-  }
-  .specimen-fontname{
-    font-family:var(--mono);
-    font-size:10px;
-    letter-spacing:0.04em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    margin-top:14px;
-  }
-  .specimen .pt{
-    font-family:var(--mono);
-    font-size:10px;
-    color:var(--ink-soft);
-    letter-spacing:0.06em;
-    margin-top:14px;
-  }
-
-  .specimen-badge{
-    font-family:var(--mono);
-    font-size:9px;
-    letter-spacing:0.06em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    margin-bottom:10px;
-  }
+  .specimen.chosen{background:var(--accent-soft);border-color:var(--accent);animation:selectPulse .45s ease-out forwards;}
+  .specimen.chosen::after{content:"\2713";position:absolute;top:12px;right:12px;width:28px;height:28px;
+    border-radius:50%;background:var(--accent);color:var(--paper);font-size:15px;display:flex;
+    align-items:center;justify-content:center;transform:scale(0);
+    animation:checkPop .35s cubic-bezier(.34,1.56,.64,1) .05s forwards;}
+  .specimen.not-chosen{opacity:.35;}
+  @keyframes selectPulse{0%{transform:scale(1);box-shadow:0 0 0 0 rgba(42,77,224,.45);}
+    45%{transform:scale(1.035);box-shadow:0 0 0 10px rgba(42,77,224,.12);}
+    100%{transform:scale(1.015);box-shadow:0 0 0 14px rgba(42,77,224,0);}}
+  @keyframes checkPop{to{transform:scale(1);}}
+  .specimen .word{word-break:break-word;line-height:1.3;}
+  .specimen-fontname{font-family:var(--mono);font-size:10px;letter-spacing:0.04em;text-transform:uppercase;
+    color:var(--ink-soft);margin-top:14px;}
+  .specimen-badge{font-family:var(--mono);font-size:9px;letter-spacing:0.06em;text-transform:uppercase;
+    color:var(--ink-soft);margin-bottom:10px;}
   .specimen.chosen .specimen-badge{color:var(--accent);}
 
-  .champion-showcase{
-    text-align:center;
-    margin-bottom:20px;
-  }
-  .champion-label{
-    font-family:var(--mono);
-    font-size:11px;
-    letter-spacing:0.08em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    margin-bottom:10px;
-  }
-  .champion-word{
-    font-size:52px;
-    line-height:1.05;
-    word-break:break-word;
-  }
-  .dominance-list{
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-    margin-bottom:4px;
-  }
-  .dominance-row{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    padding:10px 12px;
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-  }
-  .dominance-row.champion{background:var(--accent-soft); border-color:var(--accent);}
-  .dominance-rank{
-    font-family:var(--mono);
-    font-size:13px;
-    width:28px;
-    flex-shrink:0;
-    color:var(--ink-soft);
-    text-align:center;
-  }
+  .champion-showcase{text-align:center;margin-bottom:20px;}
+  .champion-label{font-family:var(--mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--ink-soft);margin-bottom:10px;}
+  .champion-word{font-size:52px;line-height:1.05;word-break:break-word;}
+  .dominance-list{display:flex;flex-direction:column;gap:8px;margin-bottom:4px;}
+  .dominance-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line);
+    border-radius:var(--radius);}
+  .dominance-row.champion{background:var(--accent-soft);border-color:var(--accent);}
+  .dominance-rank{font-family:var(--mono);font-size:13px;width:28px;flex-shrink:0;color:var(--ink-soft);text-align:center;}
   .dominance-row.champion .dominance-rank{font-size:16px;}
-  .dominance-name{flex:1; font-size:15px; color:var(--ink); overflow-wrap:anywhere;}
-  .dominance-wins{
-    font-family:var(--mono);
-    font-size:11px;
-    color:var(--ink-soft);
-    white-space:nowrap;
-  }
+  .dominance-name{flex:1;font-size:15px;color:var(--ink);overflow-wrap:anywhere;}
+  .dominance-wins{font-family:var(--mono);font-size:11px;color:var(--ink-soft);white-space:nowrap;}
+  .personality-text{font-size:14px;line-height:1.55;color:var(--ink-soft);margin:0;}
+  .lean-note{font-size:13px;line-height:1.5;color:var(--ink-soft);margin:10px 0 0;}
+  .lean-note b{color:var(--ink);}
 
-  .personality-text{
-    font-size:14px;
-    line-height:1.55;
-    color:var(--ink-soft);
-    margin:0;
-  }
+  .result-kicker{font-family:var(--display);font-weight:600;font-size:24px;color:var(--ink);
+    margin-bottom:16px;text-align:center;}
+  .result-sub{font-size:16px;color:var(--ink-soft);margin-bottom:28px;text-align:center;}
 
-  /* ---------- Results (shared) ---------- */
-  .result-kicker{
-    font-family:var(--display);
-    font-weight:600;
-    font-size:24px;
-    color:var(--ink);
-    margin-bottom:16px;
-    text-align:center;
-  }
-  .result-sub{
-    font-size:16px;
-    color:var(--ink-soft);
-    margin-bottom:28px;
-    text-align:center;
-  }
-  .result-sub b{color:var(--ink);}
-
-  .profile-tag{
-    font-family:var(--display);
-    font-style:italic;
-    font-size:22px;
-    margin:0 0 28px;
-  }
-
-  /* ---------- Compatibility breakdown: them | you (two columns) ---------- */
-  .match-breakdown{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:16px;
-    margin-bottom:12px;
-  }
-  .match-col{
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-    min-width:0;
-  }
-  .match-col .col-label{
-    font-family:var(--mono);
-    font-size:11px;
-    letter-spacing:0.08em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    margin-bottom:2px;
-  }
+  .match-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:12px;}
+  .match-col{display:flex;flex-direction:column;gap:6px;min-width:0;}
+  .match-col .col-label{font-family:var(--mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--ink-soft);margin-bottom:2px;}
   .match-col.them .col-label{text-align:left;}
   .match-col.you .col-label{text-align:right;}
-
-  .match-entry{
-    display:flex;
-    align-items:baseline;
-    gap:6px;
-    padding:9px 11px;
-    border-radius:var(--radius);
-    border:1px solid var(--line);
-    font-size:13px;
-    line-height:1.25;
-    overflow-wrap:anywhere;
-  }
+  .match-entry{display:flex;align-items:baseline;gap:6px;padding:9px 11px;border-radius:var(--radius);
+    border:1px solid var(--line);font-size:13px;line-height:1.25;overflow-wrap:anywhere;}
   .match-col.them .match-entry{justify-content:flex-start;}
   .match-col.you .match-entry{justify-content:flex-end;}
-  .match-entry.match{background:var(--match-soft); border-color:var(--match); color:var(--match); font-weight:600;}
-  .match-entry .w{
-    font-family:var(--mono);
-    font-size:9px;
-    letter-spacing:0.05em;
-    color:var(--ink-soft);
-    flex-shrink:0;
-  }
+  .match-entry.match{background:var(--match-soft);border-color:var(--match);color:var(--match);font-weight:600;}
+  .match-entry .w{font-family:var(--mono);font-size:9px;letter-spacing:0.05em;color:var(--ink-soft);flex-shrink:0;}
   .match-entry.match .w{color:var(--match);}
-
-  .match-center{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    padding:12px 0 28px;
-  }
-  .heart-wrap{
-    position:relative;
-    width:88px;
-    height:88px;
-    transform:scale(0.15);
-    opacity:0;
-    transition:transform .7s cubic-bezier(.32,1.6,.5,1), opacity .5s ease;
-  }
-  .heart-wrap.grown{
-    transform:scale(var(--heart-scale, 1));
-    opacity:1;
-  }
-  .heart-svg{position:absolute; inset:0; width:100%; height:100%;}
-  .heart-outline path{fill:none; stroke:var(--match); stroke-width:1.1;}
-  .heart-fill path{fill:var(--match); transition:opacity .8s ease .2s;}
-  .match-pct{
-    margin-top:14px;
-    font-family:var(--display);
-    font-weight:600;
-    font-size:36px;
-    color:var(--ink);
-    line-height:1;
-  }
-  .match-statement{
-    margin-top:10px;
-    font-size:12.5px;
-    line-height:1.4;
-    color:var(--ink-soft);
-    max-width:20ch;
-  }
-
-  @media (max-width:560px){
-    .match-breakdown{grid-template-columns:1fr;}
-    .match-col.you .col-label{text-align:left;}
-    .match-col.you .match-entry{justify-content:flex-start;}
-  }
+  .match-center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px 0 28px;}
+  .heart-wrap{position:relative;width:88px;height:88px;transform:scale(0.15);opacity:0;
+    transition:transform .7s cubic-bezier(.32,1.6,.5,1),opacity .5s ease;}
+  .heart-wrap.grown{transform:scale(var(--heart-scale,1));opacity:1;}
+  .heart-svg{position:absolute;inset:0;width:100%;height:100%;}
+  .heart-outline path{fill:none;stroke:var(--match);stroke-width:1.1;}
+  .heart-fill path{fill:var(--match);transition:opacity .8s ease .2s;}
+  .match-pct{margin-top:14px;font-family:var(--display);font-weight:600;font-size:36px;color:var(--ink);line-height:1;}
+  .match-statement{margin-top:10px;font-size:12.5px;line-height:1.4;color:var(--ink-soft);max-width:22ch;}
+  @media (max-width:560px){.match-breakdown{grid-template-columns:1fr;}
+    .match-col.you .col-label{text-align:left;}.match-col.you .match-entry{justify-content:flex-start;}}
 
   .name-box{margin-bottom:12px;}
-  .name-box input{
-    width:100%;
-    font-family:var(--body);
-    font-size:14px;
-    padding:12px 14px;
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    background:var(--paper);
-    color:var(--ink);
-  }
+  .name-box input{width:100%;font-family:var(--body);font-size:14px;padding:12px 14px;border:1px solid var(--line);
+    border-radius:var(--radius);background:var(--paper);color:var(--ink);}
   .name-box input::placeholder{color:var(--ink-soft);}
+  .share-box{display:flex;gap:8px;margin-bottom:14px;}
+  .share-box input{flex:1;font-family:var(--mono);font-size:12px;padding:12px;border:1px solid var(--line);
+    border-radius:var(--radius);background:var(--paper-shade);color:var(--ink-soft);}
+  .copy-note{font-family:var(--mono);font-size:11px;color:var(--accent);height:16px;margin-bottom:20px;}
+  .btn-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:6px;}
+  .affiliate-line{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;
+    color:var(--ink-soft);text-align:center;}
+  .stats-link{text-align:center;margin-top:14px;font-size:13px;}
 
-  .share-box{
-    display:flex;
-    gap:8px;
-    margin-bottom:14px;
-  }
-  .share-box input{
-    flex:1;
-    font-family:var(--mono);
-    font-size:12px;
-    padding:12px 12px;
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    background:var(--paper-shade);
-    color:var(--ink-soft);
-  }
-  .copy-note{
-    font-family:var(--mono);
-    font-size:11px;
-    color:var(--accent);
-    height:16px;
-    margin-bottom:20px;
-  }
-
-  .btn-row{display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:6px;}
-
-  .affiliate-line{
-    margin-top:36px;
-    padding-top:18px;
-    border-top:1px solid var(--line);
-    font-size:13px;
-    color:var(--ink-soft);
-    text-align:center;
-  }
-
-  .stats-link{
-    text-align:center;
-    margin-top:14px;
-    font-size:13px;
-  }
-
-  /* ---------- Group stats page ---------- */
-  .stats-loading{
-    text-align:center;
-    font-family:var(--mono);
-    font-size:12px;
-    color:var(--ink-soft);
-    padding:60px 0;
-  }
-  .stats-total{
-    font-family:var(--display);
-    font-weight:600;
-    font-size:28px;
-    text-align:center;
-    margin:4px 0 32px;
-  }
+  .stats-loading{text-align:center;font-family:var(--mono);font-size:12px;color:var(--ink-soft);padding:60px 0;}
+  .stats-total{font-family:var(--display);font-weight:600;font-size:28px;text-align:center;margin:4px 0 32px;}
   .stats-section{margin-bottom:28px;}
-  .stats-heading{
-    font-family:var(--mono);
-    font-size:11px;
-    letter-spacing:0.08em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    margin-bottom:12px;
-  }
-  .stats-bar-row{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-bottom:9px;
-    font-size:13px;
-  }
-  .stats-bar-label{width:150px; flex-shrink:0;}
-  .stats-bar-track{
-    flex:1;
-    height:8px;
-    background:var(--paper-shade);
-    border-radius:4px;
-    overflow:hidden;
-  }
-  .stats-bar-fill{height:100%; background:var(--accent); border-radius:4px;}
-  .stats-bar-pct{width:38px; text-align:right; font-family:var(--mono); font-size:11px; color:var(--ink-soft);}
-  .stats-callout{
-    background:var(--accent-soft);
-    border-radius:var(--radius);
-    padding:14px 16px;
-    font-size:13px;
-    margin-bottom:28px;
-  }
-  .stats-round-row{
-    display:flex;
-    justify-content:space-between;
-    gap:10px;
-    padding:9px 11px;
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    font-size:12px;
-    margin-bottom:6px;
-  }
-  .stats-round-row .w{font-family:var(--mono); color:var(--ink-soft); text-transform:uppercase; font-size:10px;}
-  .stats-round-row .pick{text-align:right; color:var(--ink-soft);}
-
-  footer{
-    font-family:var(--mono);
-    font-size:10px;
-    letter-spacing:0.05em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    text-align:center;
-    padding-top:40px;
-  }
+  .stats-heading{font-family:var(--mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--ink-soft);margin-bottom:12px;}
+  .stats-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:13px;}
+  .stats-bar-label{width:150px;flex-shrink:0;}
+  .stats-bar-track{flex:1;height:8px;background:var(--paper-shade);border-radius:4px;overflow:hidden;}
+  .stats-bar-fill{height:100%;background:var(--accent);border-radius:4px;}
+  .stats-bar-pct{width:38px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--ink-soft);}
+  .stats-callout{background:var(--accent-soft);border-radius:var(--radius);padding:14px 16px;font-size:13px;margin-bottom:28px;}
+  .stats-round-row{display:flex;justify-content:space-between;gap:10px;padding:9px 11px;border:1px solid var(--line);
+    border-radius:var(--radius);font-size:12px;margin-bottom:6px;}
+  .stats-round-row .pick{text-align:right;color:var(--ink-soft);white-space:nowrap;}
+  footer{font-family:var(--mono);font-size:10px;letter-spacing:0.05em;text-transform:uppercase;
+    color:var(--ink-soft);text-align:center;padding-top:40px;}
 </style>
 </head>
 <body>
 <div class="frame">
   <div class="topline">
-    <span>Font Match</span>
+    <span><a href="/">quizheart</a> / Font Match</span>
     <span class="mark" aria-hidden="true"></span>
   </div>
   <div id="app"></div>
   <footer>Pick your favorites. Find out your type. See who agrees with you.</footer>
 </div>
-
 <script>
-/* ---------------------------------------------------------
-   FONT POOL
-   16 fonts, each tied to a word, drawn from the original 22
-   pairs (kept the same visual "specimen" idea: both fonts in
-   a battle render the same word). Fixed order — every visitor
-   sees the same sequence, which is what makes the share link
-   and the group stats possible.
---------------------------------------------------------- */
+/* =========================================================
+   THE FONTS
+   32 typefaces across seven style categories. Fixed order and
+   fixed count — the share link replays a run against this exact
+   list, so changing it invalidates every link already sent out.
+========================================================= */
 const FONT_POOL = [
-  { word:"QUICKSILVER", font:"'Bebas Neue'", size:40, cat:"display" },
-  { word:"Marigold", font:"'Caveat'", size:50, cat:"script" },
-  { word:"Cobalt", font:"'Big Shoulders Display'", size:36, cat:"display" },
-  { word:"Halcyon", font:"'Dancing Script'", size:46, cat:"script" },
-  { word:"Neon", font:"'Monoton'", size:30, cat:"display" },
-  { word:"Cherish", font:"'Great Vibes'", size:46, cat:"script" },
-  { word:"Kaboom", font:"'Bangers'", size:38, cat:"display" },
-  { word:"Reverie", font:"'Parisienne'", size:44, cat:"script" },
-  { word:"Wanderlust", font:"'Playfair Display'", size:44, cat:"serif" },
-  { word:"Zephyr", font:"'Lobster'", size:36, cat:"display" },
-  { word:"Wanderlust", font:"'DM Sans'", size:38, cat:"sans" },
-  { word:"Elysian", font:"'Tangerine'", size:54, cat:"script" },
-  { word:"Nocturne", font:"'Cormorant Garamond'", size:46, cat:"serif" },
-  { word:"Vortex", font:"'Orbitron'", size:32, cat:"display" },
-  { word:"Nocturne", font:"'Space Mono'", size:34, cat:"mono" },
-  { word:"Marigold", font:"'Oswald'", size:36, cat:"sans" },
-  { word:"Breezy", font:"'Satisfy'", size:40, cat:"script" },
-  { word:"QUICKSILVER", font:"'Libre Baskerville'", size:30, cat:"serif" },
-  { word:"Carnival", font:"'Shrikhand'", size:34, cat:"display" },
-  { word:"Paradox", font:"'IBM Plex Mono'", size:32, cat:"mono" },
-  { word:"Ember", font:"'Nunito Sans'", size:34, cat:"sans" },
-  { word:"Velour", font:"'Alex Brush'", size:44, cat:"script" },
-  { word:"Paradox", font:"'Lora'", size:38, cat:"serif" },
-  { word:"Vanguard", font:"'UnifrakturMaguntia'", size:36, cat:"blackletter" },
-  { word:"Fracture", font:"'Unbounded'", size:30, cat:"display" },
-  { word:"Pixel", font:"'Silkscreen'", size:28, cat:"mono" },
-  { word:"Halcyon", font:"'Barlow'", size:36, cat:"sans" },
-  { word:"Sunbeam", font:"'Yellowtail'", size:38, cat:"script" },
-  { word:"Cobalt", font:"'Spectral'", size:38, cat:"serif" },
-  { word:"Wraith", font:"'Pirata One'", size:34, cat:"blackletter" },
-  { word:"Bubblegum", font:"'Chewy'", size:34, cat:"display" },
-  { word:"Vintage", font:"'Cutive Mono'", size:32, cat:"mono" },
-  { word:"Cloudy", font:"'Comfortaa'", size:34, cat:"sans" },
-  { word:"Rustic", font:"'Rock Salt'", size:34, cat:"script" },
-  { word:"Vogue", font:"'Bodoni Moda'", size:40, cat:"serif" },
-  { word:"Ember", font:"'Alfa Slab One'", size:32, cat:"slab" },
+  { font:"'Bebas Neue'", size:40, cat:"display" },
+  { font:"'Caveat'", size:50, cat:"script" },
+  { font:"'Big Shoulders Display'", size:36, cat:"display" },
+  { font:"'Dancing Script'", size:46, cat:"script" },
+  { font:"'Great Vibes'", size:46, cat:"script" },
+  { font:"'Bangers'", size:38, cat:"display" },
+  { font:"'Parisienne'", size:44, cat:"script" },
+  { font:"'Playfair Display'", size:44, cat:"serif" },
+  { font:"'Lobster'", size:36, cat:"display" },
+  { font:"'DM Sans'", size:38, cat:"sans" },
+  { font:"'Tangerine'", size:54, cat:"script" },
+  { font:"'Cormorant Garamond'", size:46, cat:"serif" },
+  { font:"'Orbitron'", size:32, cat:"display" },
+  { font:"'Space Mono'", size:34, cat:"mono" },
+  { font:"'Oswald'", size:36, cat:"sans" },
+  { font:"'Libre Baskerville'", size:30, cat:"serif" },
+  { font:"'Shrikhand'", size:34, cat:"display" },
+  { font:"'IBM Plex Mono'", size:32, cat:"mono" },
+  { font:"'Nunito Sans'", size:34, cat:"sans" },
+  { font:"'Alex Brush'", size:44, cat:"script" },
+  { font:"'Lora'", size:38, cat:"serif" },
+  { font:"'UnifrakturMaguntia'", size:36, cat:"blackletter" },
+  { font:"'Unbounded'", size:30, cat:"display" },
+  { font:"'Silkscreen'", size:28, cat:"mono" },
+  { font:"'Barlow'", size:36, cat:"sans" },
+  { font:"'Yellowtail'", size:38, cat:"script" },
+  { font:"'Spectral'", size:38, cat:"serif" },
+  { font:"'Pirata One'", size:34, cat:"blackletter" },
+  { font:"'Cutive Mono'", size:32, cat:"mono" },
+  { font:"'Comfortaa'", size:34, cat:"sans" },
+  { font:"'Bodoni Moda'", size:40, cat:"serif" },
+  { font:"'Alfa Slab One'", size:32, cat:"slab" },
 ];
 
-const TAG_LABEL = {
-  serif:"Classic & Serif-Leaning",
-  sans:"Clean & Modern",
-  display:"Bold & Maximalist",
-  script:"Playful & Expressive",
-  mono:"Technical & Precise",
-  slab:"Sturdy & Slab-Serif",
-  blackletter:"Dramatic & Gothic",
-};
-
-const CATEGORY_PHRASE = {
-  serif:"serif type",
-  sans:"clean sans-serif type",
-  display:"bold display type",
-  script:"playful script type",
-  mono:"technical monospace type",
-  slab:"sturdy slab type",
-  blackletter:"dramatic blackletter type",
-};
-
-const PERSONALITY_COPY = {
-  serif: "You're drawn to serif type — classic, dependable, built to be taken seriously. You probably value clear communication and don't go looking for unnecessary flash.",
-  sans: "You're drawn to clean sans-serif type — modern, minimal, no clutter. You likely value simplicity and directness over decoration.",
-  display: "You're drawn to bold display type — big, loud, impossible to ignore. You're probably artsy and a little eccentric, and you don't mind standing out.",
-  script: "You're drawn to script and cursive type — flowing, expressive, personal. You likely lead with feeling over rigid structure.",
-  mono: "You're drawn to monospace type — precise, technical, orderly. You probably think in systems and like things lined up just right.",
-  slab: "You're drawn to slab serif type — sturdy, confident, no-nonsense. You value reliability and don't waste time on subtlety.",
-  blackletter: "You're drawn to blackletter and gothic type — dramatic, intense, larger than life. You've got a flair for the theatrical.",
-};
-
-// Which type category this person actually preferred, weighted by how
-// decisively they won with fonts in that category — not just which
-// category the outright champion happened to belong to.
-function computeDominantCategory(records){
-  const totals = {};
-  records.forEach(r => {
-    if (r.status === "neutral") return;
-    totals[r.cat] = (totals[r.cat] || 0) + r.pickCount;
-  });
-  let best = null, bestVal = -1;
-  Object.keys(totals).forEach(cat => {
-    if (totals[cat] > bestVal) { best = cat; bestVal = totals[cat]; }
-  });
-  return best;
-}
-
-const HEART_PATH = "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z";
-
-// Same sentence shown every round, so the only thing changing between
-// two cards is the typeface itself — a classic type-specimen pangram.
-const SAMPLE_TEXT = "The quick brown fox jumps over the lazy dog";
-
-// Battle-display sizes are noticeably smaller than the original per-word
-// sizes, since a full sentence needs to wrap across a few lines.
-function sentenceSize(fontMeta){
-  return Math.max(16, Math.round(fontMeta.size * 0.55));
-}
-
-/* ---------------------------------------------------------
-   ROUND ENGINE
-   Font 0 starts as champion. Each font after it, in order,
-   challenges the current champion. Winner stays on. A neutral
-   pick leaves the champion in place and drops the challenger
-   out of that person's ranking entirely (no opinion recorded).
-
-   "outcomes" is an array of single-character codes, one per
-   battle: 'c' = champion kept it, 'x' = challenger won,
-   'n' = neutral. Replaying the same outcomes against the same
-   FONT_POOL always reproduces the same result — that's what
-   makes the compact share link possible.
---------------------------------------------------------- */
 const CATEGORY_ROTATION = ["serif","sans","display","script","mono","slab","blackletter"];
 
-function makeRemainingPools(){
-  const remaining = {};
-  CATEGORY_ROTATION.forEach(cat => { remaining[cat] = []; });
-  FONT_POOL.forEach((f, i) => { if (i !== 0) remaining[f.cat].push(i); });
-  return remaining;
+const TAG_LABEL = {
+  serif:"Classic & Serif-Leaning", sans:"Clean & Modern", display:"Bold & Maximalist",
+  script:"Playful & Expressive", mono:"Technical & Precise", slab:"Sturdy & Slab-Serif",
+  blackletter:"Dramatic & Gothic",
+};
+const CATEGORY_PHRASE = {
+  serif:"serif type", sans:"clean sans-serif type", display:"bold display type",
+  script:"playful script type", mono:"technical monospace type", slab:"sturdy slab type",
+  blackletter:"dramatic blackletter type",
+};
+const CATEGORY_SHORT = {
+  serif:"serif", sans:"sans-serif", display:"display", script:"script",
+  mono:"monospace", slab:"slab serif", blackletter:"blackletter",
+};
+const PERSONALITY_COPY = {
+  serif:"You're drawn to serif type — classic, dependable, built to be taken seriously. You probably value clear communication and don't go looking for unnecessary flash.",
+  sans:"You're drawn to clean sans-serif type — modern, minimal, no clutter. You likely value simplicity and directness over decoration.",
+  display:"You're drawn to bold display type — big, loud, impossible to ignore. You're probably artsy and a little eccentric, and you don't mind standing out.",
+  script:"You're drawn to script and cursive type — flowing, expressive, personal. You likely lead with feeling over rigid structure.",
+  mono:"You're drawn to monospace type — precise, technical, orderly. You probably think in systems and like things lined up just right.",
+  slab:"You're drawn to slab serif type — sturdy, confident, no-nonsense. You value reliability and don't waste time on subtlety.",
+  blackletter:"You're drawn to blackletter and gothic type — dramatic, intense, larger than life. You've got a flair for the theatrical.",
+};
+
+const HEART_PATH = "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z";
+const SAMPLE_TEXT = "The quick brown fox jumps over the lazy dog";
+function sentenceSize(f){ return Math.max(16, Math.round(f.size * 0.55)); }
+
+/* =========================================================
+   THE LADDER
+   Round 1 puts all 32 fonts into 16 fixed pairs, so every font
+   is judged at least once and nothing sits out. After that the
+   field halves: the best 16 play, then the best 8, 4, and 2.
+   Standing is by Elo rating across the whole pool, so a font
+   that loses a close battle to a strong opponent can still make
+   the next round. Pairing is strongest-against-weakest, which
+   keeps the two front-runners apart until the final.
+   31 battles in total.
+========================================================= */
+function buildOpeningPairs(){
+  const buckets = {};
+  CATEGORY_ROTATION.forEach(c => { buckets[c] = []; });
+  FONT_POOL.forEach((f,i) => buckets[f.cat].push(i));
+  const order = [];
+  let added = true;
+  while (added){
+    added = false;
+    for (const cat of CATEGORY_ROTATION){
+      if (buckets[cat].length){ order.push(buckets[cat].shift()); added = true; }
+    }
+  }
+  const pairs = [];
+  for (let k = 0; k < order.length; k += 2) pairs.push([order[k], order[k+1]]);
+  for (let k = 0; k < pairs.length - 1; k++){
+    if (FONT_POOL[pairs[k][0]].cat === FONT_POOL[pairs[k][1]].cat){
+      const t = pairs[k][1]; pairs[k][1] = pairs[k+1][1]; pairs[k+1][1] = t;
+    }
+  }
+  return pairs;
+}
+const OPENING_PAIRS = buildOpeningPairs();
+const LADDER_SIZES = [16, 8, 4, 2];
+const TOTAL_BATTLES = OPENING_PAIRS.length + LADDER_SIZES.reduce((s,n) => s + n/2, 0);
+const ROUND_NAMES = ["Opening round","Round of 16","Quarter-finals","Semi-finals","The final"];
+
+const ELO_START = 1000, ELO_K = 32;
+
+// Fonts that have played, best rating first; then anything not yet played.
+function rankByRating(rating, played){
+  const seen = [], unseen = [];
+  for (let i = 0; i < FONT_POOL.length; i++) (played[i] ? seen : unseen).push(i);
+  seen.sort((a,b) => rating[b] - rating[a] || a - b);
+  return seen.concat(unseen);
 }
 
-// Always hands back a font from a DIFFERENT category than the current
-// champion — cycling through serif, sans, display, script, mono, slab,
-// blackletter — so no style gets an easy or a repeatedly-unlucky run
-// just by chance. Only falls back to the champion's own category in the
-// rare case where every other category has already been used up.
-function pickNextChallenger(remaining, championCat){
-  const startIdx = CATEGORY_ROTATION.indexOf(championCat);
-  for (let offset = 1; offset <= CATEGORY_ROTATION.length; offset++) {
-    const cat = CATEGORY_ROTATION[(startIdx + offset) % CATEGORY_ROTATION.length];
-    if (cat === championCat) continue;
-    if (remaining[cat] && remaining[cat].length > 0) return remaining[cat].shift();
+// Which two fonts appear in a given battle. Depends only on the ratings
+// produced by earlier battles, so replaying an outcome string rebuilds
+// the identical schedule on someone else's screen.
+function scheduleFor(battleNo, rating, played){
+  if (battleNo <= OPENING_PAIRS.length){
+    const p = OPENING_PAIRS[battleNo - 1];
+    return { left:p[0], right:p[1], round:0 };
   }
-  if (remaining[championCat] && remaining[championCat].length > 0) return remaining[championCat].shift();
+  let n = battleNo - OPENING_PAIRS.length;
+  for (let r = 0; r < LADDER_SIZES.length; r++){
+    const size = LADDER_SIZES[r], count = size / 2;
+    if (n <= count){
+      const pool = rankByRating(rating, played).slice(0, size);
+      return { left:pool[n-1], right:pool[size-n], round:r+1 };
+    }
+    n -= count;
+  }
   return null;
 }
 
-const ELO_START = 1000;
-const ELO_K = 32;
-
+// Standard Elo, the same maths chess ratings use. Beating a proven
+// opponent gains a lot; beating an untested one barely moves anything.
+// This is what lets fonts that played different numbers of battles be
+// compared fairly against each other.
 function simulateRun(outcomes){
-  const wins = new Array(FONT_POOL.length).fill(0);
-  const pickCount = new Array(FONT_POOL.length).fill(0);
   const rating = new Array(FONT_POOL.length).fill(ELO_START);
-  const status = new Array(FONT_POOL.length).fill("pending");
-  const eliminatedAt = new Array(FONT_POOL.length).fill(null);
-  let championIndex = 0;
+  const wins = new Array(FONT_POOL.length).fill(0);
+  const losses = new Array(FONT_POOL.length).fill(0);
+  const pickCount = new Array(FONT_POOL.length).fill(0);
+  const played = new Array(FONT_POOL.length).fill(false);
 
-  const remaining = makeRemainingPools();
-  const mainBattleCount = FONT_POOL.length - 1;
-  const mainOutcomes = outcomes.slice(0, mainBattleCount);
-  const finalOutcomes = outcomes.slice(mainBattleCount);
-  let nextChallengerIndex = null;
-
-  // Standard Elo update — same math chess ratings use. Beating a proven,
-  // high-rated opponent gains a lot; beating a fresh, untested one barely
-  // moves the needle. Losing to a strong opponent barely costs anything;
-  // losing to an equally untested one costs more, because that result
-  // was actually informative. This is what makes the ranking fair even
-  // though different fonts end up playing very different numbers of
-  // games — chess ratings solve exactly this problem.
-  function applyEloBattle(a, b, aWon){
-    const expectedA = 1 / (1 + Math.pow(10, (rating[b] - rating[a]) / 400));
-    const actualA = aWon ? 1 : 0;
-    rating[a] += ELO_K * (actualA - expectedA);
-    rating[b] += ELO_K * ((1 - actualA) - (1 - expectedA));
+  function applyElo(a, b){
+    const expA = 1 / (1 + Math.pow(10, (rating[b] - rating[a]) / 400));
+    rating[a] += ELO_K * (1 - expA);
+    rating[b] += ELO_K * (0 - (1 - expA));
   }
 
-  mainOutcomes.forEach((code, idx) => {
-    const battle = idx + 1;
-    const championCat = FONT_POOL[championIndex].cat;
-    const challengerIndex = pickNextChallenger(remaining, championCat);
-    if (code === "c") {
-      // The player looked at both and chose to keep the champion.
-      applyEloBattle(championIndex, challengerIndex, true);
-      wins[championIndex] += 1;
-      pickCount[championIndex] += 1;
-      status[challengerIndex] = "eliminated";
-      eliminatedAt[challengerIndex] = battle;
-    } else if (code === "x") {
-      // The player chose the challenger over the champion.
-      applyEloBattle(championIndex, challengerIndex, false);
-      wins[challengerIndex] += 1;
-      pickCount[challengerIndex] += 1;
-      status[championIndex] = "eliminated";
-      eliminatedAt[championIndex] = battle;
-      championIndex = challengerIndex;
-    } else {
-      // Kept only so a link generated before the neutral option was
-      // removed still decodes instead of breaking outright.
-      status[challengerIndex] = "neutral";
+  let championIndex = null;
+  for (let b = 1; b <= TOTAL_BATTLES; b++){
+    const sched = scheduleFor(b, rating, played);
+    const code = outcomes[b-1];
+    if (code === undefined){
+      return { rating, wins, losses, pickCount, played, championIndex:null,
+               nextBattle:b, nextSchedule:sched, ranking:rankByRating(rating, played),
+               complete:false };
     }
-  });
-
-  if (mainOutcomes.length < mainBattleCount) {
-    const championCat = FONT_POOL[championIndex].cat;
-    nextChallengerIndex = pickNextChallenger(remaining, championCat);
+    const winner = code === "x" ? sched.right : sched.left;
+    const loser  = code === "x" ? sched.left  : sched.right;
+    played[sched.left] = true; played[sched.right] = true;
+    applyElo(winner, loser);
+    wins[winner] += 1; losses[loser] += 1; pickCount[winner] += 1;
+    championIndex = winner;
   }
-
-  // ---- Final round: the top 3 by rating face off directly, so the real
-  // favorite is confirmed head-to-head rather than just being whoever's
-  // rating happened to be highest when the rounds ran out. ----
-  function currentRanking(){
-    const indices = [];
-    for (let i = 0; i < FONT_POOL.length; i++) {
-      if (status[i] !== "neutral") indices.push(i);
-    }
-    indices.sort((a, b) => rating[b] - rating[a] || a - b);
-    return indices;
-  }
-
-  const finalists = currentRanking().slice(0, 3);
-
-  // Only run the head-to-head finals once the main rounds are complete.
-  // Mid-quiz, finalOutcomes is empty and the champion must stay exactly
-  // who the player last picked — not get snapped to the current #1 rank.
-  if (finalOutcomes.length > 0 && finalists.length >= 2) {
-    let finalBest = finalists[0];
-    for (let step = 1; step < finalists.length; step++) {
-      const finalChallenger = finalists[step];
-      const code = finalOutcomes[step - 1];
-      if (code === "c") {
-        applyEloBattle(finalBest, finalChallenger, true);
-        wins[finalBest] += 1;
-        pickCount[finalBest] += 1;
-        status[finalChallenger] = "eliminated";
-        eliminatedAt[finalChallenger] = mainBattleCount + step;
-      } else if (code === "x") {
-        applyEloBattle(finalBest, finalChallenger, false);
-        wins[finalChallenger] += 1;
-        pickCount[finalChallenger] += 1;
-        status[finalBest] = "eliminated";
-        eliminatedAt[finalBest] = mainBattleCount + step;
-        finalBest = finalChallenger;
-      }
-      // The battle hasn't been played yet: stop and leave the standing as is.
-      if (code === undefined) break;
-    }
-    championIndex = finalBest;
-  }
-
-  status[championIndex] = "champion";
-  return { wins, pickCount, rating, status, eliminatedAt, championIndex, finalists, nextChallengerIndex };
+  return { rating, wins, losses, pickCount, played, championIndex,
+           nextBattle:null, nextSchedule:null, ranking:rankByRating(rating, played),
+           complete:true };
 }
 
 function buildFontRecords(result){
-  return FONT_POOL.map((f, i) => ({
-    key: f.font,
-    cat: f.cat,
-    wins: result.wins[i],
-    pickCount: result.pickCount[i],
-    rating: result.rating[i],
-    status: result.status[i],
-    eliminatedAt: result.eliminatedAt[i],
+  return FONT_POOL.map((f,i) => ({
+    key:f.font, cat:f.cat, wins:result.wins[i], losses:result.losses[i],
+    pickCount:result.pickCount[i], rating:result.rating[i], played:result.played[i],
   }));
 }
 
-// Best → worst, excluding anything marked neutral or never-played. Ranked
-// by Elo rating — see simulateRun for why this is the fair signal, not
-// raw win or pick count.
 function computeRanking(records){
-  return records
-    .map((r, i) => ({
-      i,
-      rating: r.rating,
-      elim: r.eliminatedAt === null ? Infinity : r.eliminatedAt,
-      status: r.status,
-    }))
-    .filter(r => r.status !== "neutral" && r.status !== "pending")
-    .sort((a, b) => b.rating - a.rating || b.elim - a.elim || a.i - b.i)
+  return records.map((r,i) => ({ i, rating:r.rating, played:r.played }))
+    .filter(r => r.played)
+    .sort((a,b) => b.rating - a.rating || a.i - b.i)
     .map(r => r.i);
 }
 
-// Weighted rank agreement over whatever fonts both people actually
-// ranked (fonts either person marked neutral are left out of the
-// comparison for both). Agreement on a highly-ranked font counts for
-// much more than agreement further down the list.
-function computeCompatibility(mine, theirs){
-  const myRank = computeRanking(mine);
-  const theirRank = computeRanking(theirs);
-  const theirSet = new Set(theirRank);
-  const common = myRank.filter(i => theirSet.has(i));
-  const commonSet = new Set(common);
-  const myCommon = myRank.filter(i => commonSet.has(i));
-  const theirCommon = theirRank.filter(i => commonSet.has(i));
-  const M = myCommon.length;
-  if (M === 0) return null;
-
-  const myPos = {}, theirPos = {};
-  myCommon.forEach((idx, pos) => { myPos[idx] = pos + 1; });
-  theirCommon.forEach((idx, pos) => { theirPos[idx] = pos + 1; });
-
-  let weightedSum = 0, weightTotal = 0;
-  commonSet.forEach(idx => {
-    const rA = myPos[idx], rB = theirPos[idx];
-    const diff = Math.abs(rA - rB);
-    const similarity = M > 1 ? 1 - diff / (M - 1) : 1;
-    const weight = (M + 1) - Math.min(rA, rB);
-    weightedSum += similarity * weight;
-    weightTotal += weight;
-  });
-
-  return { pct: Math.round((weightedSum / weightTotal) * 100), M };
+// Which style this person actually leans on, measured across every battle
+// they won rather than just the category of the single winning font.
+function computeCategoryLeans(records){
+  const totals = {};
+  records.forEach(r => { if (r.played) totals[r.cat] = (totals[r.cat]||0) + r.pickCount; });
+  const order = Object.keys(totals).sort((a,b) => totals[b]-totals[a] || a.localeCompare(b));
+  const sum = Object.values(totals).reduce((s,v) => s+v, 0) || 1;
+  return order.map(cat => ({ cat, count:totals[cat], pct: Math.round(totals[cat]/sum*100) }));
 }
 
-/* ---------------------------------------------------------
+/* Compatibility is measured over the fonts either person rated in their
+   top 10 — the part of the list their answers actually tested. Comparing
+   the full 32 buried real agreement under noise from the bottom of the
+   list, where nobody has a strong opinion anyway. */
+const COMPAT_TOP = 10;
+function computeCompatibility(mine, theirs){
+  const A = computeRanking(mine), B = computeRanking(theirs);
+  if (!A.length || !B.length) return null;
+  const pa = {}, pb = {};
+  A.forEach((x,p) => { pa[x] = p+1; });
+  B.forEach((x,p) => { pb[x] = p+1; });
+  const pool = new Set([...A.slice(0,COMPAT_TOP), ...B.slice(0,COMPAT_TOP)]);
+  let ws = 0, wt = 0;
+  pool.forEach(i => {
+    const ra = pa[i] === undefined ? A.length+1 : pa[i];
+    const rb = pb[i] === undefined ? B.length+1 : pb[i];
+    const sim = Math.max(0, 1 - Math.abs(ra-rb)/COMPAT_TOP);
+    const w = (COMPAT_TOP*2 + 2) - Math.min(ra, rb);
+    ws += sim*w; wt += w;
+  });
+  return { pct: Math.round(ws/wt*100) };
+}
+
+/* =========================================================
    STATE
---------------------------------------------------------- */
+========================================================= */
 const params = new URLSearchParams(location.search);
 const incomingVs = params.get("vs");
 const incomingName = params.get("who") || "";
 
 let challenger = null;
-if (incomingVs && /^[cxn]+$/.test(incomingVs)) {
-  const mainBattles = FONT_POOL.length - 1;
-  if (incomingVs.length >= mainBattles && incomingVs.length <= mainBattles + 2) {
-    const result = simulateRun(incomingVs.split(""));
-    challenger = {
-      n: incomingName,
-      answers: buildFontRecords(result),
-      championIndex: result.championIndex,
-    };
-  }
+if (incomingVs && /^[cx]+$/.test(incomingVs) && incomingVs.length === TOTAL_BATTLES){
+  const result = simulateRun(incomingVs.split(""));
+  challenger = { n:incomingName, answers:buildFontRecords(result), championIndex:result.championIndex };
 }
 
-const state = {
-  mode: challenger ? "intro-challenge" : "landing",
-  battle: 1,
-  championIndex: 0,
-  outcomes: [],
-  answers: [],
-  finalsPool: [],
-  finalsStep: 1,
-};
-
-// Carries across "take it again" / "challenge someone else" in the same
-// sitting, so a person only has to type their name once per visit.
+const state = { mode: challenger ? "intro-challenge" : "landing", outcomes:[], answers:[], championIndex:null };
 let myName = "";
 
 function buildShareLink(outcomes, name){
@@ -920,9 +417,9 @@ function buildShareLink(outcomes, name){
   return url.toString();
 }
 
-/* ---------------------------------------------------------
+/* =========================================================
    RENDER
---------------------------------------------------------- */
+========================================================= */
 const app = document.getElementById("app");
 
 function render(){
@@ -933,35 +430,19 @@ function render(){
   if (state.mode === "results-challenge") return renderResultsChallenge();
   if (state.mode === "stats") return renderStats();
 }
-
-function goToStats(){
-  state.mode = "stats";
-  render();
-}
-
-function startQuiz(){
-  state.mode = "quiz";
-  state.battle = 1;
-  state.championIndex = 0;
-  state.outcomes = [];
-  state.answers = [];
-  state.finalsPool = [];
-  state.finalsStep = 1;
-  state.comebackNote = null;
-  render();
-}
+function goToStats(){ state.mode = "stats"; render(); }
+function startQuiz(){ state.mode = "quiz"; state.outcomes = []; state.answers = []; state.championIndex = null; render(); }
 
 function renderLanding(){
   app.innerHTML = `
     <div class="landing">
       <h1>What's your font&nbsp;personality?</h1>
-      <p class="lede">Pick your favorite in each round and we'll work out your type — classic, playful, bold, dramatic, and everything between. Once you're done, send the link to a friend and see how your taste compares.</p>
+      <p class="lede">Every one of ${FONT_POOL.length} typefaces gets judged, then the ones you liked play each other until a favourite is left standing. ${TOTAL_BATTLES} quick picks. Send the link to a friend afterwards and see how your taste compares.</p>
       <button class="cta" id="start-btn">Start the quiz</button>
-      <div class="stats-link"><a href="#" id="stats-link">See how everyone else has answered →</a></div>
-    </div>
-  `;
+      <div class="stats-link"><a href="#" id="stats-link">See how everyone else has answered &rarr;</a></div>
+    </div>`;
   document.getElementById("start-btn").addEventListener("click", startQuiz);
-  document.getElementById("stats-link").addEventListener("click", (e) => { e.preventDefault(); goToStats(); });
+  document.getElementById("stats-link").addEventListener("click", e => { e.preventDefault(); goToStats(); });
 }
 
 function renderChallengeIntro(){
@@ -970,153 +451,73 @@ function renderChallengeIntro(){
     <div class="landing">
       <div class="challenge-banner">Incoming challenge</div>
       <h1>${escapeHtml(name)} wants to know if your fonts match.</h1>
-      <p class="lede">Same ${FONT_POOL.length} fonts. Pick your favorites and we'll show you a compatibility score based on how closely your taste actually lines up.</p>
+      <p class="lede">Same ${FONT_POOL.length} fonts, same ${TOTAL_BATTLES} picks. We'll show you a compatibility score based on how closely your taste actually lines up.</p>
       <button class="cta" id="start-btn">Take the quiz</button>
-    </div>
-  `;
+    </div>`;
   document.getElementById("start-btn").addEventListener("click", startQuiz);
+}
+
+// The progress bar is split into round blocks, so it's visible that the
+// quiz narrows as it goes rather than being one flat run of battles.
+function renderRuler(currentBattle){
+  const blocks = [OPENING_PAIRS.length, ...LADDER_SIZES.map(n => n/2)];
+  let seen = 0;
+  return `<div class="ruler">` + blocks.map(count => {
+    const ticks = Array.from({length:count}, (_,k) => {
+      const n = seen + k + 1;
+      let cls = "tick";
+      if (n < currentBattle) cls += " done";
+      else if (n === currentBattle) cls += " current";
+      return `<div class="${cls}"></div>`;
+    }).join("");
+    seen += count;
+    return `<div class="rgroup" style="--w:${count}">${ticks}</div>`;
+  }).join("") + `</div>`;
 }
 
 function renderQuiz(){
   const soFar = simulateRun(state.outcomes);
-  const champion = FONT_POOL[soFar.championIndex];
-  const challengerFont = FONT_POOL[soFar.nextChallengerIndex];
-  const totalBattles = FONT_POOL.length - 1;
-  const ticks = Array.from({ length: totalBattles }, (_, i) => {
-    const battleNum = i + 1;
-    let cls = "tick";
-    if (battleNum < state.battle) cls += " done";
-    else if (battleNum === state.battle) cls += " current";
-    return `<div class="${cls}"></div>`;
-  }).join("");
-
-  const comebackHtml = state.comebackNote !== null ? `
-    <div class="comeback-note">
-      <b>${escapeHtml(FONT_POOL[state.comebackNote].font.replace(/'/g, ""))}</b> just lost, but you've picked it enough that it's still in your top 3 so far — it'll get another shot in the final round if that holds.
-    </div>
-  ` : "";
-  state.comebackNote = null;
+  const s = soFar.nextSchedule;
+  const battleNo = soFar.nextBattle;
+  const left = FONT_POOL[s.left], right = FONT_POOL[s.right];
+  const roundName = ROUND_NAMES[s.round];
+  const isLadder = s.round > 0;
 
   app.innerHTML = `
-    ${comebackHtml}
-    <div class="ruler">${ticks}</div>
-    <div class="round-label">Battle ${String(state.battle).padStart(2,"0")} / ${totalBattles}</div>
-    <div class="round-word">Which one feels more like you?</div>
+    ${renderRuler(battleNo)}
+    <div class="round-name">${roundName}</div>
+    <div class="round-label">Pick ${String(battleNo).padStart(2,"0")} / ${TOTAL_BATTLES}</div>
+    <div class="round-word">${isLadder ? "Both of these did well. Which one wins?" : "Which one feels more like you?"}</div>
     <div class="specimens">
-      <div class="specimen" data-choice="champion" tabindex="0" role="button" aria-label="Keep the current favorite">
-        <div class="specimen-badge">Your favorite so far</div>
-        <div class="word" style="font-family:${champion.font}; font-size:${sentenceSize(champion)}px;">${SAMPLE_TEXT}</div>
-        <div class="specimen-fontname">${escapeHtml(champion.font.replace(/'/g, ""))}</div>
+      <div class="specimen" data-choice="left" tabindex="0" role="button" aria-label="Choose the left typeface">
+        <div class="specimen-badge">${isLadder ? "Higher seed" : "&nbsp;"}</div>
+        <div class="word" style="font-family:${left.font};font-size:${sentenceSize(left)}px;">${SAMPLE_TEXT}</div>
+        <div class="specimen-fontname">${escapeHtml(left.font.replace(/'/g,""))}</div>
       </div>
-      <div class="specimen" data-choice="challenger" tabindex="0" role="button" aria-label="Switch to the new challenger">
-        <div class="specimen-badge">New challenger</div>
-        <div class="word" style="font-family:${challengerFont.font}; font-size:${sentenceSize(challengerFont)}px;">${SAMPLE_TEXT}</div>
-        <div class="specimen-fontname">${escapeHtml(challengerFont.font.replace(/'/g, ""))}</div>
+      <div class="specimen" data-choice="right" tabindex="0" role="button" aria-label="Choose the right typeface">
+        <div class="specimen-badge">${isLadder ? "Lower seed" : "&nbsp;"}</div>
+        <div class="word" style="font-family:${right.font};font-size:${sentenceSize(right)}px;">${SAMPLE_TEXT}</div>
+        <div class="specimen-fontname">${escapeHtml(right.font.replace(/'/g,""))}</div>
       </div>
-    </div>
-  `;
+    </div>`;
 
-  const cards = app.querySelectorAll(".specimen");
-  cards.forEach(card => {
+  app.querySelectorAll(".specimen").forEach(card => {
     const pick = () => choose(card.dataset.choice);
     card.addEventListener("click", pick);
-    card.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
+    card.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); pick(); } });
   });
 }
 
-function choose(outcome){
-  const code = outcome === "champion" ? "c" : "x";
-
-  const chosenCard = app.querySelector(`.specimen[data-choice="${outcome}"]`);
-  const otherCard = app.querySelector(`.specimen[data-choice="${outcome === "champion" ? "challenger" : "champion"}"]`);
-  if (chosenCard) chosenCard.classList.add("chosen");
-  if (otherCard) otherCard.classList.add("not-chosen");
-
-  const before = simulateRun(state.outcomes);
-  const eliminatedIdx = outcome === "champion" ? before.nextChallengerIndex : before.championIndex;
-
+function choose(side){
+  const code = side === "left" ? "c" : "x";
+  const chosen = app.querySelector(`.specimen[data-choice="${side}"]`);
+  const other = app.querySelector(`.specimen[data-choice="${side === "left" ? "right" : "left"}"]`);
+  if (chosen) chosen.classList.add("chosen");
+  if (other) other.classList.add("not-chosen");
   setTimeout(() => {
     state.outcomes.push(code);
-    state.battle += 1;
-
-    // If the font that just lost is still doing well enough to be in the
-    // running for the final three, flag it so the next screen can say so —
-    // losing a battle here doesn't mean it's out of the results.
-    const after = simulateRun(state.outcomes);
-    const eliminatedPicks = after.pickCount[eliminatedIdx];
-    const stillContending = eliminatedPicks > 0 && computeRanking(buildFontRecords(after)).slice(0, 3).includes(eliminatedIdx);
-    state.comebackNote = stillContending ? eliminatedIdx : null;
-
-    if (state.battle < FONT_POOL.length){
-      renderQuiz();
-    } else {
-      beginFinals();
-    }
-  }, 420);
-}
-
-function beginFinals(){
-  const provisional = simulateRun(state.outcomes);
-  state.finalsPool = provisional.finalists;
-  state.finalsStep = 1;
-  if (state.finalsPool.length < 2) {
-    finishRun();
-  } else {
-    renderFinals();
-  }
-}
-
-function renderFinals(){
-  const pool = state.finalsPool;
-  const step = state.finalsStep;
-  const soFar = simulateRun(state.outcomes);
-  const bestIdx = soFar.championIndex;
-  const challengerIdx = pool[step];
-  const bestFont = FONT_POOL[bestIdx];
-  const challengerFont = FONT_POOL[challengerIdx];
-
-  app.innerHTML = `
-    <div class="challenge-banner">Final round</div>
-    <div class="round-label">Confirming your real favorite</div>
-    <div class="round-word">Which one do you actually prefer?</div>
-    <div class="specimens">
-      <div class="specimen" data-choice="champion" tabindex="0" role="button" aria-label="Keep the current favorite">
-        <div class="specimen-badge">${step === 1 ? "Your top pick" : "Winner so far"}</div>
-        <div class="word" style="font-family:${bestFont.font}; font-size:${sentenceSize(bestFont)}px;">${SAMPLE_TEXT}</div>
-        <div class="specimen-fontname">${escapeHtml(bestFont.font.replace(/'/g, ""))}</div>
-      </div>
-      <div class="specimen" data-choice="challenger" tabindex="0" role="button" aria-label="Switch to the challenger">
-        <div class="specimen-badge">${step === 1 ? "Your #2 pick" : "Your #3 pick"}</div>
-        <div class="word" style="font-family:${challengerFont.font}; font-size:${sentenceSize(challengerFont)}px;">${SAMPLE_TEXT}</div>
-        <div class="specimen-fontname">${escapeHtml(challengerFont.font.replace(/'/g, ""))}</div>
-      </div>
-    </div>
-  `;
-
-  const cards = app.querySelectorAll(".specimen");
-  cards.forEach(card => {
-    const pick = () => chooseFinals(card.dataset.choice);
-    card.addEventListener("click", pick);
-    card.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
-  });
-}
-
-function chooseFinals(outcome){
-  const code = outcome === "champion" ? "c" : "x";
-
-  const chosenCard = app.querySelector(`.specimen[data-choice="${outcome}"]`);
-  const otherCard = app.querySelector(`.specimen[data-choice="${outcome === "champion" ? "challenger" : "champion"}"]`);
-  if (chosenCard) chosenCard.classList.add("chosen");
-  if (otherCard) otherCard.classList.add("not-chosen");
-
-  setTimeout(() => {
-    state.outcomes.push(code);
-    state.finalsStep += 1;
-    if (state.finalsStep < state.finalsPool.length){
-      renderFinals();
-    } else {
-      finishRun();
-    }
+    if (state.outcomes.length < TOTAL_BATTLES) renderQuiz();
+    else finishRun();
   }, 420);
 }
 
@@ -1130,66 +531,59 @@ function finishRun(){
 }
 
 function submitResult(answers, championIndex){
-  // Best-effort: adds this run's results to the anonymous group tallies.
-  // If the site isn't deployed with its database yet, this silently
-  // does nothing — the quiz itself never depends on it.
-  const champion = answers[championIndex];
-  const fonts = answers
-    .filter(a => a.status !== "neutral")
-    .map(a => ({
-      key: a.key.replace(/'/g, ""),
-      wins: a.wins,
-      isChampion: a.status === "champion",
-    }));
+  // Anonymous group tallies. Best-effort: if the database isn't reachable
+  // the quiz carries on regardless and nothing is lost but a statistic.
+  const fonts = answers.filter(a => a.played).map((a,i) => ({
+    key:a.key.replace(/'/g,""), wins:a.wins, losses:a.losses,
+    isChampion: answers.indexOf(a) === championIndex,
+  }));
   try {
     fetch("/api/submit", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
+      method:"POST", headers:{ "content-type":"application/json" },
       body: JSON.stringify({
         fonts,
-        championKey: champion.key.replace(/'/g, ""),
-        category: champion.cat,
+        championKey: answers[championIndex].key.replace(/'/g,""),
+        category: answers[championIndex].cat,
       }),
     }).catch(() => {});
   } catch (e) {}
 }
 
-function buildDominanceRows(result){
-  return result.finalists.map((idx, pos) => {
-    const font = FONT_POOL[idx];
-    const name = font.font.replace(/'/g, "");
-    const picks = result.pickCount[idx];
+function buildTopRows(result, records){
+  return result.ranking.slice(0,5).map((idx,pos) => {
+    const name = FONT_POOL[idx].font.replace(/'/g,"");
     const isChampion = idx === result.championIndex;
+    const plays = result.wins[idx] + result.losses[idx];
     return `
       <div class="dominance-row ${isChampion ? "champion" : ""}">
-        <div class="dominance-rank">${isChampion ? "🏆" : "#" + (pos + 1)}</div>
+        <div class="dominance-rank">${isChampion ? "\u{1F3C6}" : "#" + (pos+1)}</div>
         <div class="dominance-name" style="font-family:'${escapeHtml(name)}';">${escapeHtml(name)}</div>
-        <div class="dominance-wins">you picked it ${picks}×</div>
-      </div>
-    `;
+        <div class="dominance-wins">won ${result.wins[idx]} of ${plays}</div>
+      </div>`;
   }).join("");
 }
 
 function renderPersonalityBlock(result, records){
-  const championIdx = result.championIndex;
-  const champion = records[championIdx];
-  const championName = champion.key.replace(/'/g, "");
-  const dominantCategory = computeDominantCategory(records);
-
+  const champion = records[result.championIndex];
+  const championName = champion.key.replace(/'/g,"");
+  const leans = computeCategoryLeans(records);
+  const primary = leans[0], secondary = leans[1];
+  const secondLine = secondary && secondary.count > 0
+    ? `<p class="lean-note">Your picks were <b>${primary.pct}% ${CATEGORY_SHORT[primary.cat]}</b>, with <b>${CATEGORY_SHORT[secondary.cat]}</b> a clear second at ${secondary.pct}%.</p>` : "";
   return `
     <div class="champion-showcase">
-      <div class="champion-label">Your favorite</div>
+      <div class="champion-label">Your favourite</div>
       <div class="champion-word" style="font-family:${champion.key};">${escapeHtml(championName)}</div>
     </div>
     <div class="stats-section">
-      <div class="stats-heading">How it went</div>
-      <div class="dominance-list">${buildDominanceRows(result)}</div>
+      <div class="stats-heading">Your top five</div>
+      <div class="dominance-list">${buildTopRows(result, records)}</div>
     </div>
     <div class="stats-section">
       <div class="stats-heading">Your type personality</div>
-      <p class="personality-text">${PERSONALITY_COPY[dominantCategory] || ""}</p>
-    </div>
-  `;
+      <p class="personality-text">${PERSONALITY_COPY[primary.cat] || ""}</p>
+      ${secondLine}
+    </div>`;
 }
 
 function renderSharePrompt(){
@@ -1202,8 +596,7 @@ function renderSharePrompt(){
       <input id="share-input" type="text" readonly value="">
       <button class="cta" id="copy-btn">Copy link</button>
     </div>
-    <div class="copy-note" id="copy-note"></div>
-  `;
+    <div class="copy-note" id="copy-note"></div>`;
 }
 
 function renderResultsSolo(){
@@ -1212,30 +605,21 @@ function renderResultsSolo(){
     <div class="result-kicker">Your results</div>
     ${renderPersonalityBlock(result, state.answers)}
     ${renderSharePrompt()}
-    <div class="btn-row">
-      <button class="cta ghost" id="again-btn">Take it again</button>
-    </div>
+    <div class="btn-row"><button class="cta ghost" id="again-btn">Take it again</button></div>
     <div class="affiliate-line">
-      Curious about the typefaces you picked? <a id="explore-link" href="https://fonts.google.com" target="_blank" rel="noopener">Explore more type →</a>
-      <!-- AFFILIATE SLOT: once you're accepted into a font marketplace's affiliate program
-           (e.g. Adobe Fonts, Creative Market, MyFonts), swap the href above for your
-           affiliate link. Consider making it specific to the fonts they picked. -->
+      Curious about the typefaces you picked? <a href="https://fonts.google.com" target="_blank" rel="noopener">Explore more type &rarr;</a>
+      <!-- AFFILIATE SLOT: swap this href for your marketplace affiliate link once approved. -->
     </div>
-    <div class="stats-link"><a href="#" id="stats-link">See how everyone else has answered →</a></div>
-  `;
+    <div class="stats-link"><a href="#" id="stats-link">See how everyone else has answered &rarr;</a></div>`;
   wireShare(state.outcomes);
   document.getElementById("again-btn").addEventListener("click", startQuiz);
-  document.getElementById("stats-link").addEventListener("click", (e) => { e.preventDefault(); goToStats(); });
+  document.getElementById("stats-link").addEventListener("click", e => { e.preventDefault(); goToStats(); });
 }
 
-function buildStatement(myChampion, theirChampion, myChampionName, theirChampionName, theirPersonName){
-  if (myChampion.key === theirChampion.key){
-    return `You both fell hardest for ${myChampionName}.`;
-  }
-  if (myChampion.cat === theirChampion.cat){
-    return `Different favorites, but you're both ${CATEGORY_PHRASE[myChampion.cat]} people at heart.`;
-  }
-  return `${theirPersonName}'s favorite was ${theirChampionName}; yours was ${myChampionName}.`;
+function buildStatement(mine, theirs, myName_, theirName_, person){
+  if (mine.key === theirs.key) return `You both fell hardest for ${myName_}.`;
+  if (mine.cat === theirs.cat) return `Different favourites, but you're both ${CATEGORY_PHRASE[mine.cat]} people at heart.`;
+  return `${person}'s favourite was ${theirName_}; yours was ${myName_}.`;
 }
 
 function renderResultsChallenge(){
@@ -1243,43 +627,29 @@ function renderResultsChallenge(){
   const compat = computeCompatibility(state.answers, challenger.answers);
   const pct = compat ? compat.pct : 0;
   const name = challenger.n && challenger.n.trim() ? challenger.n.trim() : "Them";
-  const heartScale = (0.55 + (pct / 100) * 0.65).toFixed(2);
-
-  const myChampion = state.answers[state.championIndex];
-  const theirChampion = challenger.answers[challenger.championIndex];
-  const myChampionName = myChampion.key.replace(/'/g, "");
-  const theirChampionName = theirChampion.key.replace(/'/g, "");
-  const statement = compat
-    ? buildStatement(myChampion, theirChampion, myChampionName, theirChampionName, name)
-    : "Too many no-strong-preference picks between you to compare — try being a little more decisive next time.";
-
+  const heartScale = (0.55 + (pct/100)*0.65).toFixed(2);
+  const mine = state.answers[state.championIndex];
+  const theirs = challenger.answers[challenger.championIndex];
+  const statement = buildStatement(mine, theirs, mine.key.replace(/'/g,""), theirs.key.replace(/'/g,""), name);
   const myRank = computeRanking(state.answers);
   const theirRank = computeRanking(challenger.answers);
 
-  function renderRankList(rankOrder, records, otherRankOrder){
+  function rankList(order, records, otherOrder){
     const otherPos = {};
-    otherRankOrder.forEach((idx, pos) => { otherPos[idx] = pos + 1; });
-    return rankOrder.map((idx, pos) => {
-      const myPos = pos + 1;
-      const rec = records[idx];
-      const fontName = rec.key.replace(/'/g, "");
-      const otherRank = otherPos[idx];
-      const closelyMatched = otherRank !== undefined && Math.abs(otherRank - myPos) <= 2;
-      return `
-        <div class="match-entry ${closelyMatched ? "match" : ""}">
-          <span class="w">#${myPos}</span><span style="font-family:${rec.key};">${escapeHtml(fontName)}</span>
-        </div>
-      `;
+    otherOrder.forEach((idx,pos) => { otherPos[idx] = pos+1; });
+    return order.slice(0,10).map((idx,pos) => {
+      const mePos = pos+1, rec = records[idx];
+      const them = otherPos[idx];
+      const close = them !== undefined && Math.abs(them - mePos) <= 2;
+      return `<div class="match-entry ${close ? "match" : ""}">
+        <span class="w">#${mePos}</span><span style="font-family:${rec.key};">${escapeHtml(rec.key.replace(/'/g,""))}</span>
+      </div>`;
     }).join("");
   }
-
-  const theirEntries = renderRankList(theirRank, challenger.answers, myRank);
-  const yourEntries = renderRankList(myRank, state.answers, theirRank);
 
   app.innerHTML = `
     <div class="result-kicker">Your results</div>
     ${renderPersonalityBlock(myResult, state.answers)}
-
     <div class="result-kicker" style="margin-top:36px;">Your compatibility with ${escapeHtml(name)}</div>
     <div class="match-center">
       <div class="heart-wrap" id="heart-wrap" style="--heart-scale:${heartScale};">
@@ -1289,56 +659,39 @@ function renderResultsChallenge(){
       <div class="match-pct">${pct}%</div>
       <div class="match-statement">${escapeHtml(statement)}</div>
     </div>
-
     ${renderSharePrompt()}
-
-    <div class="stats-heading" style="margin-top:8px;">Here's your breakdown with ${escapeHtml(name)} →</div>
+    <div class="stats-heading" style="margin-top:8px;">Your top tens, side by side</div>
     <div class="match-breakdown">
-      <div class="match-col them">
-        <div class="col-label">${escapeHtml(name)}</div>
-        ${theirEntries}
-      </div>
-      <div class="match-col you">
-        <div class="col-label">You</div>
-        ${yourEntries}
-      </div>
+      <div class="match-col them"><div class="col-label">${escapeHtml(name)}</div>${rankList(theirRank, challenger.answers, myRank)}</div>
+      <div class="match-col you"><div class="col-label">You</div>${rankList(myRank, state.answers, theirRank)}</div>
     </div>
-
-    <div class="btn-row">
-      <button class="cta ghost" id="again-btn">Take it again</button>
-    </div>
+    <div class="btn-row"><button class="cta ghost" id="again-btn">Take it again</button></div>
     <div class="affiliate-line">
-      Curious about the typefaces you picked? <a href="https://fonts.google.com" target="_blank" rel="noopener">Explore more type →</a>
+      Curious about the typefaces you picked? <a href="https://fonts.google.com" target="_blank" rel="noopener">Explore more type &rarr;</a>
     </div>
-    <div class="stats-link"><a href="#" id="stats-link">See how everyone else has answered →</a></div>
-  `;
+    <div class="stats-link"><a href="#" id="stats-link">See how everyone else has answered &rarr;</a></div>`;
 
   wireShare(state.outcomes);
-
   requestAnimationFrame(() => {
     const hw = document.getElementById("heart-wrap");
     if (hw) requestAnimationFrame(() => hw.classList.add("grown"));
   });
-
   document.getElementById("again-btn").addEventListener("click", startQuiz);
-  document.getElementById("stats-link").addEventListener("click", (e) => { e.preventDefault(); goToStats(); });
+  document.getElementById("stats-link").addEventListener("click", e => { e.preventDefault(); goToStats(); });
 }
 
 function renderStats(){
-  app.innerHTML = `<div class="stats-loading">Tallying everyone's picks…</div>`;
-
+  app.innerHTML = `<div class="stats-loading">Tallying everyone's picks&hellip;</div>`;
   fetch("/api/stats")
     .then(r => { if (!r.ok) throw new Error("bad response"); return r.json(); })
     .then(renderStatsData)
     .catch(() => {
       app.innerHTML = `
         <div class="result-kicker">Group results</div>
-        <p class="result-sub">This page isn't connected to the results database yet. Once the site is deployed with D1 set up, it fills in on its own — nothing else to change here.</p>
-        <div class="btn-row"><button class="cta ghost" id="back-btn">Back</button></div>
-      `;
+        <p class="result-sub">The results database isn't answering right now. Nothing is lost — try again in a moment.</p>
+        <div class="btn-row"><button class="cta ghost" id="back-btn">Back</button></div>`;
       document.getElementById("back-btn").addEventListener("click", () => {
-        state.mode = challenger ? "intro-challenge" : "landing";
-        render();
+        state.mode = challenger ? "intro-challenge" : "landing"; render();
       });
     });
 }
@@ -1347,108 +700,62 @@ function renderStatsData(data){
   const totalPlayers = data.totalPlayers || 0;
   const fontRows = data.fonts || [];
 
-  const leaderboard = fontRows
-    .map(f => {
-      const battles = f.wins + f.losses;
-      const winRate = battles ? Math.round((f.wins / battles) * 100) : 0;
-      return { key: f.font_key, wins: f.wins, losses: f.losses, championCount: f.champion_count, winRate, battles };
-    })
-    .filter(f => f.battles > 0)
-    .sort((a, b) => b.winRate - a.winRate || b.battles - a.battles);
+  // Ranked by how often a font was somebody's outright favourite, as a
+  // share of everyone who played. Win rate was misleading here: it mostly
+  // measured how many battles a font happened to be handed.
+  const favourites = fontRows
+    .map(f => ({ key:f.font_key, champs:f.champion_count || 0,
+                 pct: totalPlayers ? Math.round((f.champion_count/totalPlayers)*100) : 0 }))
+    .filter(f => f.champs > 0)
+    .sort((a,b) => b.champs - a.champs || a.key.localeCompare(b.key));
 
-  const topFavorite = [...fontRows].sort((a, b) => b.champion_count - a.champion_count)[0];
-
-  const totalCategoryVotes = (data.categories || []).reduce((sum, c) => sum + c.count, 0);
+  const totalCat = (data.categories || []).reduce((s,c) => s + c.count, 0);
   const categoryBars = (data.categories || []).map(c => {
-    const pct = totalCategoryVotes ? Math.round((c.count / totalCategoryVotes) * 100) : 0;
-    return `
-      <div class="stats-bar-row">
-        <div class="stats-bar-label">${escapeHtml(TAG_LABEL[c.category] || c.category)}</div>
-        <div class="stats-bar-track"><div class="stats-bar-fill" style="width:${pct}%"></div></div>
-        <div class="stats-bar-pct">${pct}%</div>
-      </div>
-    `;
+    const pct = totalCat ? Math.round((c.count/totalCat)*100) : 0;
+    return `<div class="stats-bar-row">
+      <div class="stats-bar-label">${escapeHtml(TAG_LABEL[c.category] || c.category)}</div>
+      <div class="stats-bar-track"><div class="stats-bar-fill" style="width:${pct}%"></div></div>
+      <div class="stats-bar-pct">${pct}%</div></div>`;
   }).join("");
 
-  const leaderboardRows = leaderboard.slice(0, 8).map(f => `
+  const favRows = favourites.slice(0,8).map(f => `
     <div class="stats-round-row">
-      <div class="w" style="font-family:'${escapeHtml(f.key)}'; text-transform:none; font-size:13px; color:var(--ink);">${escapeHtml(f.key)}</div>
-      <div class="pick">${f.winRate}% win rate</div>
-    </div>
-  `).join("");
+      <div style="font-family:'${escapeHtml(f.key)}';font-size:14px;color:var(--ink);">${escapeHtml(f.key)}</div>
+      <div class="pick">${f.pct}% picked it</div>
+    </div>`).join("");
 
   app.innerHTML = `
     <div class="result-kicker">Group results</div>
     <div class="stats-total">${totalPlayers} ${totalPlayers === 1 ? "person has" : "people have"} taken the test</div>
-
-    ${totalCategoryVotes ? `
-      <div class="stats-section">
-        <div class="stats-heading">Favorite type personalities so far</div>
-        ${categoryBars}
-      </div>
-    ` : ""}
-
-    ${topFavorite && topFavorite.champion_count > 0 ? `
-      <div class="stats-callout">
-        <b>Most common favorite:</b> ${escapeHtml(topFavorite.font_key)} has been the top pick for ${topFavorite.champion_count} ${topFavorite.champion_count === 1 ? "person" : "people"} so far.
-      </div>
-    ` : ""}
-
-    ${leaderboardRows ? `
-      <div class="stats-section">
-        <div class="stats-heading">Font win rates, so far</div>
-        ${leaderboardRows}
-      </div>
-    ` : ""}
-
-    <div class="btn-row"><button class="cta ghost" id="back-btn">Back</button></div>
-  `;
+    ${totalCat ? `<div class="stats-section"><div class="stats-heading">Favourite type personalities so far</div>${categoryBars}</div>` : ""}
+    ${favourites.length ? `<div class="stats-callout"><b>Most common favourite:</b> ${escapeHtml(favourites[0].key)}, the top pick for ${favourites[0].champs} ${favourites[0].champs === 1 ? "person" : "people"}.</div>` : ""}
+    ${favRows ? `<div class="stats-section"><div class="stats-heading">How often each font won outright</div>${favRows}</div>` : ""}
+    <div class="btn-row"><button class="cta ghost" id="back-btn">Back</button></div>`;
 
   document.getElementById("back-btn").addEventListener("click", () => {
-    state.mode = challenger ? "intro-challenge" : "landing";
-    render();
+    state.mode = challenger ? "intro-challenge" : "landing"; render();
   });
 }
 
 function wireShare(outcomes){
   const nameInput = document.getElementById("name-input");
   const shareInput = document.getElementById("share-input");
-
-  function refreshLink(){
-    myName = nameInput.value.trim();
-    shareInput.value = buildShareLink(outcomes, myName);
-  }
-  refreshLink();
-  nameInput.addEventListener("input", refreshLink);
-
+  function refresh(){ myName = nameInput.value.trim(); shareInput.value = buildShareLink(outcomes, myName); }
+  refresh();
+  nameInput.addEventListener("input", refresh);
   document.getElementById("copy-btn").addEventListener("click", async () => {
     const note = document.getElementById("copy-note");
-    try {
-      await navigator.clipboard.writeText(shareInput.value);
-      note.textContent = "Link copied.";
-    } catch (e) {
-      shareInput.select();
-      note.textContent = "Press Ctrl/Cmd+C to copy.";
-    }
+    try { await navigator.clipboard.writeText(shareInput.value); note.textContent = "Link copied."; }
+    catch (e) { shareInput.select(); note.textContent = "Press Ctrl/Cmd+C to copy."; }
     setTimeout(() => { note.textContent = ""; }, 2500);
   });
 }
 
 function escapeHtml(str){
-  return String(str).replace(/[&<>"']/g, c => ({
-    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
-  }[c]));
+  return String(str).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 }
 
 render();
-
-/* ---------------------------------------------------------
-   AD SLOT
-   Once you're approved by an ad network (AdSense, Ezoic, etc.),
-   paste that network's script tag just before </body> in the
-   real deployed file — not here in the logic section.
---------------------------------------------------------- */
-
 </script>
 </body>
 </html>
