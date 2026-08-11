@@ -710,12 +710,15 @@ function pickNextChallenger(remaining, championCat){
   return null;
 }
 
+const ELO_START = 1000;
+const ELO_K = 32;
+
 function simulateRun(outcomes){
   const wins = new Array(FONT_POOL.length).fill(0);
   const pickCount = new Array(FONT_POOL.length).fill(0);
+  const rating = new Array(FONT_POOL.length).fill(ELO_START);
   const status = new Array(FONT_POOL.length).fill("pending");
   const eliminatedAt = new Array(FONT_POOL.length).fill(null);
-  const eliminatedBy = new Array(FONT_POOL.length).fill(null);
   let championIndex = 0;
 
   const remaining = makeRemainingPools();
@@ -724,24 +727,38 @@ function simulateRun(outcomes){
   const finalOutcomes = outcomes.slice(mainBattleCount);
   let nextChallengerIndex = null;
 
+  // Standard Elo update — same math chess ratings use. Beating a proven,
+  // high-rated opponent gains a lot; beating a fresh, untested one barely
+  // moves the needle. Losing to a strong opponent barely costs anything;
+  // losing to an equally untested one costs more, because that result
+  // was actually informative. This is what makes the ranking fair even
+  // though different fonts end up playing very different numbers of
+  // games — chess ratings solve exactly this problem.
+  function applyEloBattle(a, b, aWon){
+    const expectedA = 1 / (1 + Math.pow(10, (rating[b] - rating[a]) / 400));
+    const actualA = aWon ? 1 : 0;
+    rating[a] += ELO_K * (actualA - expectedA);
+    rating[b] += ELO_K * ((1 - actualA) - (1 - expectedA));
+  }
+
   mainOutcomes.forEach((code, idx) => {
     const battle = idx + 1;
     const championCat = FONT_POOL[championIndex].cat;
     const challengerIndex = pickNextChallenger(remaining, championCat);
     if (code === "c") {
       // The player looked at both and chose to keep the champion.
+      applyEloBattle(championIndex, challengerIndex, true);
       wins[championIndex] += 1;
       pickCount[championIndex] += 1;
       status[challengerIndex] = "eliminated";
       eliminatedAt[challengerIndex] = battle;
-      eliminatedBy[challengerIndex] = championIndex;
     } else if (code === "x") {
       // The player chose the challenger over the champion.
+      applyEloBattle(championIndex, challengerIndex, false);
       wins[challengerIndex] += 1;
       pickCount[challengerIndex] += 1;
       status[championIndex] = "eliminated";
       eliminatedAt[championIndex] = battle;
-      eliminatedBy[championIndex] = challengerIndex;
       championIndex = challengerIndex;
     } else {
       // Kept only so a link generated before the neutral option was
@@ -755,36 +772,15 @@ function simulateRun(outcomes){
     nextChallengerIndex = pickNextChallenger(remaining, championCat);
   }
 
-  // How much the player actually liked a font, in priority order:
-  //   1. pickCount — how many times they chose it head-to-head. This is
-  //      the most direct signal of preference and doesn't care when the
-  //      font entered or how the bracket happened to shake out.
-  //   2. fairnessScore — own wins plus the wins of whoever knocked it out,
-  //      so a tough loss to a strong opponent still counts. Breaks ties.
-  function fairnessScore(i){
-    const own = wins[i];
-    const viaOpponent = eliminatedBy[i] !== null ? wins[eliminatedBy[i]] : 0;
-    return own + viaOpponent;
-  }
-  function preferenceRank(a, b){
-    if (pickCount[b] !== pickCount[a]) return pickCount[b] - pickCount[a];
-    const fa = fairnessScore(a), fb = fairnessScore(b);
-    if (fb !== fa) return fb - fa;
-    const elimA = eliminatedAt[a] === null ? Infinity : eliminatedAt[a];
-    const elimB = eliminatedAt[b] === null ? Infinity : eliminatedAt[b];
-    if (elimB !== elimA) return elimB - elimA;
-    return a - b;
-  }
-
-  // ---- Final round: the top 3 performers face off directly, so the
-  // real favorite is confirmed head-to-head rather than just being
-  // "whoever happened to be undefeated when the rounds ran out." ----
+  // ---- Final round: the top 3 by rating face off directly, so the real
+  // favorite is confirmed head-to-head rather than just being whoever's
+  // rating happened to be highest when the rounds ran out. ----
   function currentRanking(){
     const indices = [];
     for (let i = 0; i < FONT_POOL.length; i++) {
       if (status[i] !== "neutral") indices.push(i);
     }
-    indices.sort(preferenceRank);
+    indices.sort((a, b) => rating[b] - rating[a] || a - b);
     return indices;
   }
 
@@ -799,17 +795,17 @@ function simulateRun(outcomes){
       const finalChallenger = finalists[step];
       const code = finalOutcomes[step - 1];
       if (code === "c") {
+        applyEloBattle(finalBest, finalChallenger, true);
         wins[finalBest] += 1;
         pickCount[finalBest] += 1;
         status[finalChallenger] = "eliminated";
         eliminatedAt[finalChallenger] = mainBattleCount + step;
-        eliminatedBy[finalChallenger] = finalBest;
       } else if (code === "x") {
+        applyEloBattle(finalBest, finalChallenger, false);
         wins[finalChallenger] += 1;
         pickCount[finalChallenger] += 1;
         status[finalBest] = "eliminated";
         eliminatedAt[finalBest] = mainBattleCount + step;
-        eliminatedBy[finalBest] = finalChallenger;
         finalBest = finalChallenger;
       }
       // The battle hasn't been played yet: stop and leave the standing as is.
@@ -819,7 +815,7 @@ function simulateRun(outcomes){
   }
 
   status[championIndex] = "champion";
-  return { wins, pickCount, status, eliminatedAt, eliminatedBy, championIndex, finalists, fairnessScore, nextChallengerIndex };
+  return { wins, pickCount, rating, status, eliminatedAt, championIndex, finalists, nextChallengerIndex };
 }
 
 function buildFontRecords(result){
@@ -828,31 +824,25 @@ function buildFontRecords(result){
     cat: f.cat,
     wins: result.wins[i],
     pickCount: result.pickCount[i],
+    rating: result.rating[i],
     status: result.status[i],
     eliminatedAt: result.eliminatedAt[i],
-    eliminatedBy: result.eliminatedBy[i],
   }));
 }
 
-// Best → worst, excluding anything marked neutral. Ranks by how many times
-// the player actually chose each font (pickCount) first, then by the same
-// fairness score used for finals selection as a tiebreaker — so a font the
-// player kept picking rises to the top regardless of when it entered.
+// Best → worst, excluding anything marked neutral or never-played. Ranked
+// by Elo rating — see simulateRun for why this is the fair signal, not
+// raw win or pick count.
 function computeRanking(records){
-  function fairnessScore(r){
-    const via = r.eliminatedBy !== null && records[r.eliminatedBy] ? records[r.eliminatedBy].wins : 0;
-    return r.wins + via;
-  }
   return records
     .map((r, i) => ({
       i,
-      pickCount: r.pickCount,
-      fairness: fairnessScore(r),
+      rating: r.rating,
       elim: r.eliminatedAt === null ? Infinity : r.eliminatedAt,
       status: r.status,
     }))
     .filter(r => r.status !== "neutral" && r.status !== "pending")
-    .sort((a, b) => b.pickCount - a.pickCount || b.fairness - a.fairness || b.elim - a.elim || a.i - b.i)
+    .sort((a, b) => b.rating - a.rating || b.elim - a.elim || a.i - b.i)
     .map(r => r.i);
 }
 
