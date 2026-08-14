@@ -3,822 +3,172 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Scent Match — what does your taste actually smell like?</title>
-<meta name="description" content="Pick between fragrance notes and find out which family you really belong to. Send the link to someone and see how your taste compares.">
+<title>quizheart — quizzes about taste</title>
+<meta name="description" content="Short quizzes about what you actually like. Take one, send the link, see how closely your taste matches someone else's.">
+<meta property="og:title" content="quizheart">
+<meta property="og:description" content="Quizzes about taste. Take one, send the link, see how well you match.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://quizheart.life/">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@700&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
 <style>
   :root{
     --paper:#F6F6F3; --paper-shade:#ECEBE5; --ink:#16151A; --ink-soft:#5B5A56;
-    --line:#D9D7CF; --accent:#7A4DB8; --accent-soft:#EFE8FA;
-    --match:#E63462; --match-soft:#FCE9EE; --radius:4px;
+    --line:#D9D7CF; --accent:#2A4DE0; --accent-soft:#E8ECFC;
+    --scent:#7A4DB8; --scent-soft:#EFE8FA;
+    --match:#E63462; --radius:4px;
     --display:'Fraunces',serif; --body:'Space Grotesk',sans-serif; --mono:'JetBrains Mono',monospace;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{background:var(--paper);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased;min-height:100vh;}
   a{color:var(--accent);}
-  button{font-family:inherit;}
-  button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
 
   .frame{max-width:720px;margin:0 auto;padding:28px 20px 60px;min-height:100vh;display:flex;flex-direction:column;}
-  .topline{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:11px;
-    letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-soft);padding-bottom:16px;
-    border-bottom:1px solid var(--line);margin-bottom:36px;}
-  .topline a{color:inherit;text-decoration:none;}
-  .topline a:hover{color:var(--ink);}
+
+  .topline{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);
+    font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-soft);
+    padding-bottom:16px;border-bottom:1px solid var(--line);margin-bottom:56px;}
   .topline .mark{position:relative;width:14px;height:14px;}
   .topline .mark::before,.topline .mark::after{content:"";position:absolute;background:var(--ink-soft);}
   .topline .mark::before{left:50%;top:0;width:1px;height:100%;transform:translateX(-50%);}
   .topline .mark::after{top:50%;left:0;height:1px;width:100%;transform:translateY(-50%);}
-  #app{flex:1;display:flex;flex-direction:column;justify-content:center;}
 
-  .landing h1{font-family:var(--display);font-weight:600;font-size:clamp(38px,8.5vw,60px);line-height:1.04;
-    margin:0 0 20px;letter-spacing:-0.01em;}
-  .landing p.lede{font-size:17px;line-height:1.55;color:var(--ink-soft);max-width:46ch;margin:0 0 32px;}
-  .cta{font-family:var(--body);font-weight:600;font-size:15px;background:var(--ink);color:var(--paper);
-    border:none;padding:15px 26px;border-radius:var(--radius);cursor:pointer;letter-spacing:0.01em;
-    transition:transform .15s ease,background .15s ease;}
-  .cta:hover{background:var(--accent);}
-  .cta:active{transform:translateY(1px);}
-  .cta.ghost{background:transparent;color:var(--ink);border:1px solid var(--ink);}
-  .cta.ghost:hover{background:var(--ink);color:var(--paper);}
-  .landing .cta{display:block;margin:0 auto;}
-  .challenge-banner{font-family:var(--mono);font-size:12px;letter-spacing:0.05em;text-transform:uppercase;
-    color:var(--accent);background:var(--accent-soft);display:inline-block;padding:6px 10px;
-    border-radius:var(--radius);margin-bottom:18px;}
+  main{flex:1;}
 
-  .ruler{display:flex;gap:3px;margin-bottom:10px;flex-wrap:nowrap;}
-  .rgroup{display:flex;gap:2px;flex:var(--w,1);}
-  .tick{flex:1;min-width:3px;height:4px;background:var(--line);border-radius:2px;transition:background .2s ease;}
-  .tick.done{background:var(--ink);}
-  .tick.current{background:var(--accent);}
-  .round-name{font-family:var(--mono);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;
-    color:var(--accent);margin-bottom:4px;}
-  .round-label{font-family:var(--mono);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;
-    color:var(--ink-soft);margin-bottom:8px;}
-  .round-word{font-family:var(--mono);font-size:13px;color:var(--ink-soft);margin-bottom:22px;}
+  .hero{margin-bottom:56px;}
+  .hero h1{font-family:var(--display);font-weight:600;font-size:clamp(40px,8.5vw,62px);
+    line-height:1.02;letter-spacing:-0.015em;margin:0 0 20px;max-width:15ch;}
+  .hero h1 em{font-style:italic;font-weight:500;}
+  .hero p{font-size:17px;line-height:1.55;color:var(--ink-soft);max-width:46ch;margin:0;}
 
-  .specimens{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-  @media (max-width:560px){.specimens{grid-template-columns:1fr;}}
-  .specimen{background:var(--paper-shade);border:1px solid var(--line);border-radius:var(--radius);
-    padding:26px 21px 20px;cursor:pointer;text-align:center;position:relative;min-height:196px;
-    display:flex;flex-direction:column;justify-content:center;overflow:hidden;
-    transition:border-color .15s ease,background .15s ease,opacity .3s ease;}
-  .specimen::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:var(--swatch,var(--line));}
-  .specimen:hover{border-color:var(--ink);}
-  .specimen.chosen{background:var(--accent-soft);border-color:var(--accent);animation:selectPulse .45s ease-out forwards;}
-  .specimen.chosen::after{content:"\2713";position:absolute;top:14px;right:12px;width:28px;height:28px;
-    border-radius:50%;background:var(--accent);color:var(--paper);font-size:15px;display:flex;
-    align-items:center;justify-content:center;transform:scale(0);
-    animation:checkPop .35s cubic-bezier(.34,1.56,.64,1) .05s forwards;}
-  .specimen.not-chosen{opacity:.35;}
-  @keyframes selectPulse{0%{transform:scale(1);box-shadow:0 0 0 0 rgba(122,77,184,.45);}
-    45%{transform:scale(1.035);box-shadow:0 0 0 10px rgba(122,77,184,.12);}
-    100%{transform:scale(1.015);box-shadow:0 0 0 14px rgba(122,77,184,0);}}
-  @keyframes checkPop{to{transform:scale(1);}}
-  .note-name{font-family:var(--display);font-weight:600;font-size:29px;line-height:1.1;
-    letter-spacing:-0.01em;word-break:break-word;}
-  .note-hint{font-size:14px;line-height:1.45;color:var(--ink-soft);margin-top:10px;max-width:24ch;
-    margin-left:auto;margin-right:auto;}
-  .note-fam{font-family:var(--mono);font-size:9px;letter-spacing:0.08em;text-transform:uppercase;
-    color:var(--ink-soft);margin-top:16px;}
-  .specimen.chosen .note-fam{color:var(--accent);}
+  .section-head{display:flex;align-items:baseline;gap:14px;margin-bottom:18px;}
+  .section-head h2{font-family:var(--mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--ink-soft);margin:0;font-weight:500;}
+  .rule{flex:1;height:1px;background:var(--line);}
+  .count{font-family:var(--mono);font-size:11px;color:var(--ink-soft);margin:0;letter-spacing:0.05em;}
 
-  .champion-showcase{text-align:center;margin-bottom:22px;}
-  .champion-label{font-family:var(--mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
-    color:var(--ink-soft);margin-bottom:10px;}
-  .champion-word{font-family:var(--display);font-weight:600;font-size:48px;line-height:1.05;
-    word-break:break-word;letter-spacing:-0.015em;}
-  .champion-hint{font-size:15px;color:var(--ink-soft);margin-top:8px;}
-  .dominance-list{display:flex;flex-direction:column;gap:8px;margin-bottom:4px;}
-  .dominance-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line);
-    border-radius:var(--radius);border-left:4px solid var(--swatch,var(--line));}
-  .dominance-row.champion{background:var(--accent-soft);border-color:var(--accent);
-    border-left-color:var(--swatch,var(--accent));}
-  .dominance-rank{font-family:var(--mono);font-size:13px;width:28px;flex-shrink:0;color:var(--ink-soft);text-align:center;}
-  .dominance-row.champion .dominance-rank{font-size:16px;}
-  .dominance-name{flex:1;font-size:15px;color:var(--ink);overflow-wrap:anywhere;}
-  .dominance-wins{font-family:var(--mono);font-size:10px;color:var(--ink-soft);white-space:nowrap;
-    text-transform:uppercase;letter-spacing:0.05em;}
-  .personality-text{font-size:14.5px;line-height:1.6;color:var(--ink-soft);margin:0 0 12px;}
-  .lean-note{font-size:13px;line-height:1.5;color:var(--ink-soft);margin:0 0 8px;}
-  .lean-note b{color:var(--ink);}
-  .wheel-bars{display:flex;flex-direction:column;gap:7px;margin-top:4px;}
-  .wheel-row{display:flex;align-items:center;gap:10px;font-size:13px;}
-  .wheel-label{width:120px;flex-shrink:0;color:var(--ink-soft);}
-  .wheel-track{flex:1;height:8px;background:var(--paper-shade);border-radius:4px;overflow:hidden;}
-  .wheel-fill{height:100%;border-radius:4px;}
-  .wheel-pct{width:36px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--ink-soft);}
-  .gourmand-flag{background:var(--accent-soft);border-radius:var(--radius);padding:13px 15px;
-    font-size:13.5px;line-height:1.5;color:var(--ink-soft);margin-top:12px;}
-  .gourmand-flag b{color:var(--ink);}
+  .deck{display:flex;flex-direction:column;gap:14px;margin-bottom:56px;}
+  .card{display:block;position:relative;background:var(--paper-shade);border:1px solid var(--line);
+    border-radius:var(--radius);padding:26px 24px 22px;text-decoration:none;color:inherit;overflow:hidden;
+    transition:border-color .15s ease,background .15s ease,transform .15s ease;}
+  .card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:var(--bar,var(--line));}
+  .card:hover{border-color:var(--ink);transform:translateY(-2px);}
+  .card .tag{font-family:var(--mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--tint,var(--ink-soft));margin-bottom:12px;display:block;}
+  .card h3{font-size:32px;line-height:1.05;margin:0 0 8px;letter-spacing:-0.015em;}
+  .card p{font-size:15px;line-height:1.5;color:var(--ink-soft);margin:0 0 20px;max-width:44ch;}
+  .strip{display:flex;align-items:center;gap:8px;border-top:1px solid var(--line);padding-top:16px;}
+  .go{font-family:var(--mono);font-size:12px;margin-left:auto;color:var(--ink);letter-spacing:0.03em;}
 
-  .result-kicker{font-family:var(--display);font-weight:600;font-size:24px;color:var(--ink);
-    margin-bottom:16px;text-align:center;}
-  .result-sub{font-size:16px;color:var(--ink-soft);margin-bottom:28px;text-align:center;}
-  .stats-section{margin-bottom:28px;}
-  .stats-heading{font-family:var(--mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
-    color:var(--ink-soft);margin-bottom:12px;}
+  .card.fonts{--bar:#2A4DE0;--tint:#2A4DE0;}
+  .card.fonts h3{font-family:'Playfair Display',serif;}
+  .spec{font-size:26px;line-height:1;}
+  .spec.s1{font-family:'Playfair Display',serif;}
+  .spec.s2{font-family:var(--body);font-weight:700;}
+  .spec.s3{font-family:'Space Mono',monospace;font-weight:700;}
 
-  .match-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:12px;}
-  .match-col{display:flex;flex-direction:column;gap:6px;min-width:0;}
-  .match-col .col-label{font-family:var(--mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
-    color:var(--ink-soft);margin-bottom:2px;}
-  .match-col.them .col-label{text-align:left;}
-  .match-col.you .col-label{text-align:right;}
-  .match-entry{display:flex;align-items:baseline;gap:6px;padding:9px 11px;border-radius:var(--radius);
-    border:1px solid var(--line);font-size:13px;line-height:1.25;overflow-wrap:anywhere;}
-  .match-col.them .match-entry{justify-content:flex-start;}
-  .match-col.you .match-entry{justify-content:flex-end;}
-  .match-entry.match{background:var(--match-soft);border-color:var(--match);color:var(--match);font-weight:600;}
-  .match-entry .w{font-family:var(--mono);font-size:9px;letter-spacing:0.05em;color:var(--ink-soft);flex-shrink:0;}
-  .match-entry.match .w{color:var(--match);}
-  .match-center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px 0 28px;}
-  .heart-wrap{position:relative;width:88px;height:88px;transform:scale(0.15);opacity:0;
-    transition:transform .7s cubic-bezier(.32,1.6,.5,1),opacity .5s ease;}
-  .heart-wrap.grown{transform:scale(var(--heart-scale,1));opacity:1;}
-  .heart-svg{position:absolute;inset:0;width:100%;height:100%;}
-  .heart-outline path{fill:none;stroke:var(--match);stroke-width:1.1;}
-  .heart-fill path{fill:var(--match);}
-  .match-pct{margin-top:14px;font-family:var(--display);font-weight:600;font-size:36px;color:var(--ink);line-height:1;}
-  .match-statement{margin-top:10px;font-size:12.5px;line-height:1.4;color:var(--ink-soft);max-width:24ch;}
-  @media (max-width:560px){.match-breakdown{grid-template-columns:1fr;}
-    .match-col.you .col-label{text-align:left;}.match-col.you .match-entry{justify-content:flex-start;}}
+  .card.scent{--bar:#7A4DB8;--tint:#7A4DB8;}
+  .card.scent h3{font-family:var(--display);font-weight:600;font-style:italic;}
+  .sw{width:24px;height:24px;border-radius:3px;}
 
-  .name-box{margin-bottom:12px;}
-  .name-box input{width:100%;font-family:var(--body);font-size:14px;padding:12px 14px;border:1px solid var(--line);
-    border-radius:var(--radius);background:var(--paper);color:var(--ink);}
-  .name-box input::placeholder{color:var(--ink-soft);}
-  .share-box{display:flex;gap:8px;margin-bottom:14px;}
-  .share-box input{flex:1;font-family:var(--mono);font-size:12px;padding:12px;border:1px solid var(--line);
-    border-radius:var(--radius);background:var(--paper-shade);color:var(--ink-soft);}
-  .copy-note{font-family:var(--mono);font-size:11px;color:var(--accent);height:16px;margin-bottom:20px;}
-  .btn-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:6px;}
-  .affiliate-line{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;
-    line-height:1.55;color:var(--ink-soft);text-align:center;}
-  .stats-link{text-align:center;margin-top:14px;font-size:13px;}
-  .stats-loading{text-align:center;font-family:var(--mono);font-size:12px;color:var(--ink-soft);padding:60px 0;}
-  .stats-total{font-family:var(--display);font-weight:600;font-size:28px;text-align:center;margin:4px 0 32px;}
-  .stats-round-row{display:flex;justify-content:space-between;gap:10px;padding:9px 11px;border:1px solid var(--line);
-    border-radius:var(--radius);font-size:13px;margin-bottom:6px;}
-  .stats-round-row .pick{text-align:right;color:var(--ink-soft);white-space:nowrap;font-family:var(--mono);font-size:11px;}
-  .stats-callout{background:var(--accent-soft);border-radius:var(--radius);padding:14px 16px;font-size:13px;margin-bottom:28px;}
+  .steps{display:flex;flex-direction:column;gap:20px;margin:0 0 56px;padding:0;list-style:none;}
+  .steps li{position:relative;padding-left:38px;}
+  .steps .n{position:absolute;left:0;top:2px;font-family:var(--mono);font-size:12px;color:var(--match);}
+  .steps h4{font-size:16px;margin:0 0 4px;font-weight:600;letter-spacing:-0.005em;}
+  .steps p{margin:0;font-size:14.5px;line-height:1.5;color:var(--ink-soft);max-width:48ch;}
+
   footer{font-family:var(--mono);font-size:10px;letter-spacing:0.05em;text-transform:uppercase;
-    color:var(--ink-soft);text-align:center;padding-top:40px;}
+    color:var(--ink-soft);text-align:center;padding-top:40px;border-top:1px solid var(--line);}
+  footer a{color:var(--ink-soft);}
+
+  @media (max-width:560px){
+    .topline{margin-bottom:40px;}
+    .hero{margin-bottom:44px;}
+    .card h3{font-size:27px;}
+  }
 </style>
 </head>
 <body>
 <div class="frame">
+
   <div class="topline">
-    <span><a href="/">quizheart</a> / Scent Match</span>
+    <span>quizheart</span>
     <span class="mark" aria-hidden="true"></span>
   </div>
-  <div id="app"></div>
-  <footer>Pick what you like the smell of. Find out your family. See who agrees.</footer>
-</div>
-<script>
-const NOTE_POOL = [
 
-  // --- FLORAL group ---
-  { note:"Rose Petals",      hint:"soft, romantic, unmistakable",     fam:"floral",         grp:"floral",   gen:"fem" },
-  { note:"Peony",            hint:"dewy, pink, just-opened",          fam:"floral",         grp:"floral",   gen:"uni" },
-  { note:"Geranium",         hint:"crisp, green-edged, a bit minty",  fam:"floral",         grp:"floral",   gen:"masc" },
+  <main>
 
-  { note:"Iris Powder",      hint:"cool, silky, like face powder",    fam:"softfloral",     grp:"floral",   gen:"fem" },
-  { note:"Soft Musk",        hint:"warm skin, clean laundry",         fam:"softfloral",     grp:"floral",   gen:"uni" },
-  { note:"Violet Leaf",      hint:"green, sharp, faintly metallic",   fam:"softfloral",     grp:"floral",   gen:"masc" },
+    <section class="hero">
+      <h1>Your taste is a shape. <em>Send it to someone.</em></h1>
+      <p>Short quizzes about what you actually like. Answer with your gut, get a result, then send the link to a friend or a partner and find out how closely the two of you match.</p>
+    </section>
 
-  { note:"Orange Blossom",   hint:"honeyed white flowers, heady",     fam:"floraloriental", grp:"floral",   gen:"fem" },
-  { note:"Ylang-Ylang",      hint:"creamy, tropical, almost banana",  fam:"floraloriental", grp:"floral",   gen:"uni" },
-  { note:"Cardamom & Jasmine", hint:"spiced petals, warm and green",  fam:"floraloriental", grp:"floral",   gen:"masc" },
-
-  // --- ORIENTAL group ---
-  { note:"Amber",            hint:"golden, resinous, glowing",        fam:"softoriental",   grp:"oriental", gen:"fem" },
-  { note:"Frankincense",     hint:"cool smoke, church air",           fam:"softoriental",   grp:"oriental", gen:"uni" },
-  { note:"Myrrh",            hint:"bitter resin, dark and dry",       fam:"softoriental",   grp:"oriental", gen:"masc" },
-
-  { note:"Vanilla",          hint:"sweet, edible, comforting",        fam:"oriental",       grp:"oriental", gen:"fem" },
-  { note:"Tonka Bean",       hint:"almond, hay, warm dessert",        fam:"oriental",       grp:"oriental", gen:"uni" },
-  { note:"Labdanum",         hint:"sticky, leathery, honeyed resin",  fam:"oriental",       grp:"oriental", gen:"masc" },
-
-  { note:"Sandalwood Cream", hint:"soft milky wood",                  fam:"woodyoriental",  grp:"oriental", gen:"fem" },
-  { note:"Patchouli",        hint:"earthy, damp, a little dirty",     fam:"woodyoriental",  grp:"oriental", gen:"uni" },
-  { note:"Oud",              hint:"dense, animalic, expensive",       fam:"woodyoriental",  grp:"oriental", gen:"masc" },
-
-  // --- WOODY group ---
-  { note:"Cashmere Wood",    hint:"blurred, soft, sweater-like",      fam:"woods",          grp:"woody",    gen:"fem" },
-  { note:"Cedarwood",        hint:"pencil shavings, dry and clean",   fam:"woods",          grp:"woody",    gen:"uni" },
-  { note:"Vetiver",          hint:"rooty, smoky, grassy",             fam:"woods",          grp:"woody",    gen:"masc" },
-
-  { note:"Mossy Amber",      hint:"warm damp bark",                   fam:"mossywoods",     grp:"woody",    gen:"fem" },
-  { note:"Fern",             hint:"cool green shade, barbershop",     fam:"mossywoods",     grp:"woody",    gen:"uni" },
-  { note:"Oakmoss",          hint:"forest floor after rain",          fam:"mossywoods",     grp:"woody",    gen:"masc" },
-
-  { note:"Suede",            hint:"soft dry hide, powdery",           fam:"drywoods",       grp:"woody",    gen:"fem" },
-  { note:"Cedar Smoke",      hint:"a fire that has gone out",         fam:"drywoods",       grp:"woody",    gen:"uni" },
-  { note:"Leather",          hint:"tannin, jacket, saddle",           fam:"drywoods",       grp:"woody",    gen:"masc" },
-
-  // --- FRESH group ---
-  { note:"Chamomile",        hint:"warm herbal tea, soothing",        fam:"aromatic",       grp:"fresh",    gen:"fem" },
-  { note:"Rosemary & Sage",  hint:"sharp kitchen herbs",              fam:"aromatic",       grp:"fresh",    gen:"uni" },
-  { note:"Lavender",         hint:"clean, camphorous, classic",       fam:"aromatic",       grp:"fresh",    gen:"masc" },
-
-  { note:"Mandarin",         hint:"sweet, round, sunny",              fam:"citrus",         grp:"fresh",    gen:"fem" },
-  { note:"Lemon Zest",       hint:"bright, sharp, just-peeled",       fam:"citrus",         grp:"fresh",    gen:"uni" },
-  { note:"Bergamot",         hint:"bitter citrus, earl grey",         fam:"citrus",         grp:"fresh",    gen:"masc" },
-
-  { note:"Water Lily",       hint:"cool petals on a pond",            fam:"water",          grp:"fresh",    gen:"fem" },
-  { note:"Rain on Stone",    hint:"wet pavement, ozone",              fam:"water",          grp:"fresh",    gen:"uni" },
-  { note:"Sea Salt",         hint:"cold spray, mineral air",          fam:"water",          grp:"fresh",    gen:"masc" },
-
-  { note:"Green Tea",        hint:"pale, bitter, calm",               fam:"green",          grp:"fresh",    gen:"fem" },
-  { note:"Cut Grass",        hint:"sap, summer lawns",                fam:"green",          grp:"fresh",    gen:"uni" },
-  { note:"Galbanum",         hint:"fierce green, snapped stems",      fam:"green",          grp:"fresh",    gen:"masc" },
-
-  { note:"Peach Skin",       hint:"fuzzy, nectarous, ripe",           fam:"fruity",         grp:"fresh",    gen:"fem" },
-  { note:"Blackcurrant",     hint:"tart, dark, slightly sour",        fam:"fruity",         grp:"fresh",    gen:"uni" },
-  { note:"Fig",              hint:"milky, green, sun-warmed",         fam:"fruity",         grp:"fresh",    gen:"masc" },
-];
-
-const FAMILY_LABEL = {
-  floral:"Floral", softfloral:"Soft Floral", floraloriental:"Floral Oriental",
-  softoriental:"Soft Oriental", oriental:"Oriental", woodyoriental:"Woody Oriental",
-  woods:"Woods", mossywoods:"Mossy Woods", drywoods:"Dry Woods",
-  aromatic:"Aromatic", citrus:"Citrus", water:"Water", green:"Green", fruity:"Fruity",
-};
-const GROUP_LABEL = { floral:"Floral", oriental:"Oriental", woody:"Woody", fresh:"Fresh" };
-const GROUP_COLOR = { floral:"#E8467C", oriental:"#A8322F", woody:"#8A7A46", fresh:"#3E8FA8" };
-const GENDER_LABEL = { fem:"feminine", uni:"unisex", masc:"masculine" };
-
-const FAMILY_COPY = {
-  floral:"You go straight for flowers as flowers — rose, peony, geranium, no apology and no disguise. It's the most classic thing you can wear and you know it.",
-  softfloral:"You like flowers blurred rather than sharp: powder, musk, the soft focus of an old photograph. Understated, close to the skin, a little nostalgic.",
-  floraloriental:"You want flowers with heat behind them — orange blossom over spice. Sweet but not innocent, and it carries across a room.",
-  softoriental:"Incense and amber. You're drawn to resin and smoke, to scents that feel ceremonial rather than pretty.",
-  oriental:"Rich, warm and unabashedly sweet — vanilla, tonka, resin. This is comfort worn on the skin, and it lingers for hours.",
-  woodyoriental:"Sandalwood, patchouli, oud. Deep and a bit animal. You like a scent with weight and a slightly dirty edge.",
-  woods:"Dry, clean wood — cedar and vetiver. Composed, grown-up, quietly expensive. Never trying too hard.",
-  mossywoods:"Oakmoss and damp bark: the smell of a forest floor. Green but shadowed, and rather old-fashioned in the best way.",
-  drywoods:"Leather, suede, cold smoke. You like scents with texture and a little bite — the opposite of fresh.",
-  aromatic:"Lavender, herbs, clean edges. Crisp and slightly medicinal, the most reliably fresh-smelling thing on the wheel.",
-  citrus:"Bright, sharp, awake. Citrus is the first thing anyone smells and the first to go — you like the burst more than the lingering.",
-  water:"Salt, rain, ozone. Cool and open and a bit weightless, more atmosphere than substance.",
-  green:"Cut grass, snapped stems, galbanum. Sharp and vegetal — the smell of things growing rather than things blooming.",
-  fruity:"Peach, blackcurrant, fig. Juicy and a little tart, playful without being childish.",
-};
-const GROUP_COPY = {
-  floral:"Your taste sits in the floral half of the wheel.",
-  oriental:"Your taste sits in the oriental half of the wheel — warm, resinous, and rich.",
-  woody:"Your taste sits in the woody half of the wheel — dry, grounded, textural.",
-  fresh:"Your taste sits in the fresh half of the wheel — bright, cool and airy.",
-};
-const GENDER_COPY = {
-  fem:"Your picks lean towards notes traditionally marketed as feminine, though the wheel doesn't care and neither should you.",
-  masc:"Your picks lean towards notes traditionally marketed as masculine — which in practice mostly means drier and less sweet.",
-  uni:"Your picks sit squarely in unisex territory, which is where most of the interesting perfumery has been happening anyway.",
-};
-// Gourmand isn't a wheel family — it's a modern label for the edible corner
-// of Oriental. Only used when someone's top picks really are the sweet ones.
-const GOURMAND_NOTES = ["Vanilla","Tonka Bean","Peach Skin","Amber"];
-
-function computeLeans(records){
-  const famPicks = {}, famSize = {}, genPicks = {}, genSize = {};
-  records.forEach(r => {
-    famSize[r.fam] = (famSize[r.fam]||0) + 1;
-    genSize[r.gen] = (genSize[r.gen]||0) + 1;
-    if (!r.played) return;
-    famPicks[r.fam] = (famPicks[r.fam]||0) + r.pickCount;
-    genPicks[r.gen] = (genPicks[r.gen]||0) + r.pickCount;
-  });
-  const famTotal = Object.values(famPicks).reduce((s,v)=>s+v,0) || 1;
-  const families = Object.keys(famSize)
-    .map(f => ({ key:f, count:famPicks[f]||0, pct: Math.round((famPicks[f]||0)/famTotal*100) }))
-    .sort((a,b) => b.count - a.count || a.key.localeCompare(b.key));
-
-  // Group score is the AVERAGE of its families' scores, not the sum. The wheel
-  // gives Fresh five families and the others three, so summing would report
-  // "Fresh" for almost everyone regardless of what they actually picked.
-  const GRP_OF = {};
-  records.forEach(r => { GRP_OF[r.fam] = r.grp; });
-  const grpSum = {}, grpFams = {};
-  Object.keys(famSize).forEach(f => {
-    const g = GRP_OF[f];
-    grpSum[g] = (grpSum[g]||0) + (famPicks[f]||0);
-    grpFams[g] = (grpFams[g]||0) + 1;
-  });
-  const groupsRaw = Object.keys(grpSum).map(g => ({ key:g, avg: grpSum[g]/grpFams[g] }));
-  const avgTotal = groupsRaw.reduce((s,g)=>s+g.avg,0) || 1;
-  const groups = groupsRaw
-    .map(g => ({ key:g.key, avg:g.avg, pct: Math.round(g.avg/avgTotal*100) }))
-    .sort((a,b) => b.avg - a.avg || a.key.localeCompare(b.key));
-
-  const genTotal = Object.values(genPicks).reduce((s,v)=>s+v,0) || 1;
-  const genders = Object.keys(genSize)
-    .map(g => ({ key:g, count:genPicks[g]||0, pct: Math.round((genPicks[g]||0)/genTotal*100) }))
-    .sort((a,b) => b.count - a.count || a.key.localeCompare(b.key));
-
-  return { families, groups, genders };
-}
-
-function isGourmand(ranking, records){
-  const top5 = ranking.slice(0,5).map(i => records[i].note);
-  return top5.filter(n => GOURMAND_NOTES.indexOf(n) !== -1).length >= 2;
-}
-
-
-const FAMILY_ROTATION = ["floral","softoriental","woods","citrus","softfloral","oriental",
-  "mossywoods","water","floraloriental","woodyoriental","drywoods","green","aromatic","fruity"];
-
-function buildOpeningPairs(){
-  const buckets = {};
-  FAMILY_ROTATION.forEach(f => { buckets[f] = []; });
-  NOTE_POOL.forEach((n,i) => buckets[n.fam].push(i));
-  const order = [];
-  let added = true;
-  while (added){
-    added = false;
-    for (const fam of FAMILY_ROTATION){
-      if (buckets[fam].length){ order.push(buckets[fam].shift()); added = true; }
-    }
-  }
-  const pairs = [];
-  for (let k = 0; k < order.length; k += 2) pairs.push([order[k], order[k+1]]);
-  for (let k = 0; k < pairs.length - 1; k++){
-    if (NOTE_POOL[pairs[k][0]].fam === NOTE_POOL[pairs[k][1]].fam){
-      const t = pairs[k][1]; pairs[k][1] = pairs[k+1][1]; pairs[k+1][1] = t;
-    }
-  }
-  return pairs;
-}
-const OPENING_PAIRS = buildOpeningPairs();
-const LADDER_SIZES = [16, 8, 4, 2];
-const TOTAL_BATTLES = OPENING_PAIRS.length + LADDER_SIZES.reduce((s,n)=>s+n/2,0);
-const ROUND_NAMES = ["Opening round","Round of 16","Quarter-finals","Semi-finals","The final"];
-const ELO_START = 1000, ELO_K = 32;
-
-// Tie-breaking needs care. After the opening round every winner has beaten one
-// untested note, so all 21 hold an identical rating and the cut to the best 16
-// is decided purely by the tie-break. Breaking ties by position in the pool
-// would hand those places to whichever families and genders happen to be listed
-// first — the same fault that made blackletter vanish from Font Match. Ties are
-// broken by taking one note from each family in turn, and the gender that goes
-// first is rotated family by family, so neither dimension gets a head start.
-const FAM_ORDER = i => FAMILY_ROTATION.indexOf(NOTE_POOL[i].fam);
-const TIE_SLOT = (() => {
-  const c = {}, slot = [];
-  NOTE_POOL.forEach((n,i) => { c[n.fam] = c[n.fam] || 0; slot[i] = c[n.fam]++; });
-  // shift each family's starting gender by its position in the rotation
-  return NOTE_POOL.map((n,i) => (slot[i] + FAM_ORDER(i)) % 3);
-})();
-
-function rankByRating(rating, played){
-  const seen=[], unseen=[];
-  for (let i=0;i<NOTE_POOL.length;i++) (played[i]?seen:unseen).push(i);
-  seen.sort((a,b)=> rating[b]-rating[a] || TIE_SLOT[a]-TIE_SLOT[b] || FAM_ORDER(a)-FAM_ORDER(b) || a-b);
-  return seen.concat(unseen);
-}
-function scheduleFor(battleNo, rating, played){
-  if (battleNo <= OPENING_PAIRS.length){
-    const p = OPENING_PAIRS[battleNo-1];
-    return { left:p[0], right:p[1], round:0 };
-  }
-  let n = battleNo - OPENING_PAIRS.length;
-  for (let r=0;r<LADDER_SIZES.length;r++){
-    const size = LADDER_SIZES[r], count = size/2;
-    if (n <= count){
-      const pool = rankByRating(rating, played).slice(0,size);
-      return { left:pool[n-1], right:pool[size-n], round:r+1 };
-    }
-    n -= count;
-  }
-  return null;
-}
-function simulateRun(outcomes){
-  const rating=new Array(NOTE_POOL.length).fill(ELO_START);
-  const wins=new Array(NOTE_POOL.length).fill(0);
-  const losses=new Array(NOTE_POOL.length).fill(0);
-  const pickCount=new Array(NOTE_POOL.length).fill(0);
-  const played=new Array(NOTE_POOL.length).fill(false);
-  function applyElo(a,b){
-    const expA = 1/(1+Math.pow(10,(rating[b]-rating[a])/400));
-    rating[a] += ELO_K*(1-expA); rating[b] += ELO_K*(0-(1-expA));
-  }
-  let championIndex=null;
-  for (let b=1;b<=TOTAL_BATTLES;b++){
-    const sched=scheduleFor(b,rating,played);
-    const code=outcomes[b-1];
-    if (code===undefined) return {rating,wins,losses,pickCount,played,championIndex:null,
-      nextBattle:b,nextSchedule:sched,ranking:rankByRating(rating,played),complete:false};
-    const w = code==="x"?sched.right:sched.left, l = code==="x"?sched.left:sched.right;
-    played[sched.left]=true; played[sched.right]=true;
-    applyElo(w,l); wins[w]+=1; losses[l]+=1; pickCount[w]+=1; championIndex=w;
-  }
-  return {rating,wins,losses,pickCount,played,championIndex,nextBattle:null,nextSchedule:null,
-    ranking:rankByRating(rating,played),complete:true};
-}
-function buildRecords(r){
-  return NOTE_POOL.map((n,i)=>({note:n.note,hint:n.hint,fam:n.fam,grp:n.grp,gen:n.gen,
-    wins:r.wins[i],losses:r.losses[i],pickCount:r.pickCount[i],rating:r.rating[i],played:r.played[i]}));
-}
-function computeRanking(records){
-  return records.map((r,i)=>({i,rating:r.rating,played:r.played})).filter(r=>r.played)
-    .sort((a,b)=>b.rating-a.rating||a.i-b.i).map(r=>r.i);
-}
-const COMPAT_TOP=10;
-function computeCompatibility(mine,theirs){
-  const A=computeRanking(mine),B=computeRanking(theirs);
-  if(!A.length||!B.length) return null;
-  const pa={},pb={}; A.forEach((x,p)=>pa[x]=p+1); B.forEach((x,p)=>pb[x]=p+1);
-  const pool=new Set([...A.slice(0,COMPAT_TOP),...B.slice(0,COMPAT_TOP)]);
-  let ws=0,wt=0;
-  pool.forEach(i=>{
-    const ra=pa[i]===undefined?A.length+1:pa[i], rb=pb[i]===undefined?B.length+1:pb[i];
-    const sim=Math.max(0,1-Math.abs(ra-rb)/COMPAT_TOP);
-    const w=(COMPAT_TOP*2+2)-Math.min(ra,rb);
-    ws+=sim*w; wt+=w;
-  });
-  return {pct:Math.round(ws/wt*100)};
-}
-
-const HEART_PATH = "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z";
-
-/* =========================================================
-   STATE
-========================================================= */
-const params = new URLSearchParams(location.search);
-const incomingVs = params.get("vs");
-const incomingName = params.get("who") || "";
-
-let challenger = null;
-if (incomingVs && /^[cx]+$/.test(incomingVs) && incomingVs.length === TOTAL_BATTLES){
-  const result = simulateRun(incomingVs.split(""));
-  challenger = { n:incomingName, answers:buildRecords(result), championIndex:result.championIndex, result };
-}
-
-const state = { mode: challenger ? "intro-challenge" : "landing", outcomes:[], answers:[], championIndex:null };
-let myName = "";
-
-function buildShareLink(outcomes, name){
-  const url = new URL(location.href);
-  url.search = "";
-  url.searchParams.set("vs", outcomes.join(""));
-  if (name) url.searchParams.set("who", name);
-  return url.toString();
-}
-
-/* =========================================================
-   RENDER
-========================================================= */
-const app = document.getElementById("app");
-
-function render(){
-  if (state.mode === "landing") return renderLanding();
-  if (state.mode === "intro-challenge") return renderChallengeIntro();
-  if (state.mode === "quiz") return renderQuiz();
-  if (state.mode === "results-solo") return renderResultsSolo();
-  if (state.mode === "results-challenge") return renderResultsChallenge();
-  if (state.mode === "stats") return renderStats();
-}
-function goToStats(){ state.mode = "stats"; render(); }
-function startQuiz(){ state.mode = "quiz"; state.outcomes = []; state.answers = []; state.championIndex = null; render(); }
-
-function renderLanding(){
-  app.innerHTML = `
-    <div class="landing">
-      <h1>What does your taste actually&nbsp;smell like?</h1>
-      <p class="lede">${NOTE_POOL.length} fragrance notes, three from each of the fourteen families on the classic fragrance wheel. Pick the one you'd rather smell, ${TOTAL_BATTLES} times. You'll get the family you really belong to — and a link to send someone.</p>
-      <button class="cta" id="start-btn">Start the quiz</button>
-      <div class="stats-link"><a href="#" id="stats-link">See how everyone else has answered &rarr;</a></div>
-      <div class="stats-link"><a href="/">&larr; More quizzes on quizheart</a></div>
-    </div>`;
-  document.getElementById("start-btn").addEventListener("click", startQuiz);
-  document.getElementById("stats-link").addEventListener("click", e => { e.preventDefault(); goToStats(); });
-}
-
-function renderChallengeIntro(){
-  const name = challenger.n && challenger.n.trim() ? challenger.n.trim() : "Someone";
-  app.innerHTML = `
-    <div class="landing">
-      <div class="challenge-banner">Incoming challenge</div>
-      <h1>${escapeHtml(name)} wants to know if your noses agree.</h1>
-      <p class="lede">Same ${NOTE_POOL.length} notes, same ${TOTAL_BATTLES} picks. At the end you'll see how closely your taste in fragrance actually lines up.</p>
-      <button class="cta" id="start-btn">Take the quiz</button>
-    </div>`;
-  document.getElementById("start-btn").addEventListener("click", startQuiz);
-}
-
-function renderRuler(currentBattle){
-  const blocks = [OPENING_PAIRS.length, ...LADDER_SIZES.map(n => n/2)];
-  let seen = 0;
-  return `<div class="ruler">` + blocks.map(count => {
-    const ticks = Array.from({length:count}, (_,k) => {
-      const n = seen + k + 1;
-      let cls = "tick";
-      if (n < currentBattle) cls += " done";
-      else if (n === currentBattle) cls += " current";
-      return `<div class="${cls}"></div>`;
-    }).join("");
-    seen += count;
-    return `<div class="rgroup" style="--w:${count}">${ticks}</div>`;
-  }).join("") + `</div>`;
-}
-
-function noteCard(idx, side){
-  const n = NOTE_POOL[idx];
-  return `
-    <div class="specimen" data-choice="${side}" tabindex="0" role="button"
-         style="--swatch:${GROUP_COLOR[n.grp]}" aria-label="Choose ${escapeHtml(n.note)}">
-      <div class="note-name">${escapeHtml(n.note)}</div>
-      <div class="note-hint">${escapeHtml(n.hint)}</div>
-      <div class="note-fam">${escapeHtml(FAMILY_LABEL[n.fam])}</div>
-    </div>`;
-}
-
-function renderQuiz(){
-  const soFar = simulateRun(state.outcomes);
-  const s = soFar.nextSchedule;
-  const battleNo = soFar.nextBattle;
-  const isLadder = s.round > 0;
-  app.innerHTML = `
-    ${renderRuler(battleNo)}
-    <div class="round-name">${ROUND_NAMES[s.round]}</div>
-    <div class="round-label">Pick ${String(battleNo).padStart(2,"0")} / ${TOTAL_BATTLES}</div>
-    <div class="round-word">${isLadder ? "Both of these did well. Which would you rather smell?" : "Which would you rather smell?"}</div>
-    <div class="specimens">${noteCard(s.left,"left")}${noteCard(s.right,"right")}</div>`;
-  app.querySelectorAll(".specimen").forEach(card => {
-    const pick = () => choose(card.dataset.choice);
-    card.addEventListener("click", pick);
-    card.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); pick(); } });
-  });
-}
-
-function choose(side){
-  const code = side === "left" ? "c" : "x";
-  const chosen = app.querySelector(`.specimen[data-choice="${side}"]`);
-  const other = app.querySelector(`.specimen[data-choice="${side === "left" ? "right" : "left"}"]`);
-  if (chosen) chosen.classList.add("chosen");
-  if (other) other.classList.add("not-chosen");
-  setTimeout(() => {
-    state.outcomes.push(code);
-    if (state.outcomes.length < TOTAL_BATTLES) renderQuiz();
-    else finishRun();
-  }, 400);
-}
-
-function finishRun(){
-  const result = simulateRun(state.outcomes);
-  state.answers = buildRecords(result);
-  state.championIndex = result.championIndex;
-  state.result = result;
-  submitResult(state.answers, result);
-  state.mode = challenger ? "results-challenge" : "results-solo";
-  render();
-}
-
-function submitResult(answers, result){
-  const leans = computeLeans(answers);
-  const notes = answers.filter(a => a.played).map(a => ({
-    key:a.note, wins:a.wins, losses:a.losses,
-    isChampion: a.note === answers[result.championIndex].note,
-  }));
-  try {
-    fetch("/api/submit", {
-      method:"POST", headers:{ "content-type":"application/json" },
-      body: JSON.stringify({
-        quiz:"scent", fonts:notes,
-        championKey: answers[result.championIndex].note,
-        category: leans.families[0].key,
-      }),
-    }).catch(() => {});
-  } catch (e) {}
-}
-
-function buildTopRows(result, records){
-  return result.ranking.slice(0,5).map((idx,pos) => {
-    const r = records[idx];
-    const isChampion = idx === result.championIndex;
-    const plays = r.wins + r.losses;
-    return `
-      <div class="dominance-row ${isChampion ? "champion" : ""}" style="--swatch:${GROUP_COLOR[r.grp]}">
-        <div class="dominance-rank">${isChampion ? "\u{1F3C6}" : "#" + (pos+1)}</div>
-        <div class="dominance-name">${escapeHtml(r.note)}</div>
-        <div class="dominance-wins">${escapeHtml(FAMILY_LABEL[r.fam])}</div>
-      </div>`;
-  }).join("");
-}
-
-function renderPersonalityBlock(result, records){
-  const champion = records[result.championIndex];
-  const leans = computeLeans(records);
-  const fam = leans.families[0], fam2 = leans.families[1];
-  const grp = leans.groups[0], gen = leans.genders[0];
-  const gourmand = isGourmand(result.ranking, records);
-
-  const wheelBars = leans.groups.map(g => `
-    <div class="wheel-row">
-      <div class="wheel-label">${escapeHtml(GROUP_LABEL[g.key])}</div>
-      <div class="wheel-track"><div class="wheel-fill" style="width:${g.pct}%;background:${GROUP_COLOR[g.key]}"></div></div>
-      <div class="wheel-pct">${g.pct}%</div>
-    </div>`).join("");
-
-  const secondLine = fam2 && fam2.count > 0
-    ? `<p class="lean-note">Strongest in <b>${escapeHtml(FAMILY_LABEL[fam.key])}</b> at ${fam.pct}%, with <b>${escapeHtml(FAMILY_LABEL[fam2.key])}</b> behind it at ${fam2.pct}%.</p>` : "";
-
-  const gourmandLine = gourmand
-    ? `<div class="gourmand-flag">Your top picks are the edible ones — vanilla, tonka, that sort of thing. The wheel files those under Oriental, but the trade has a word for this corner specifically: <b>gourmand</b>. You want to smell like something someone would want to eat.</div>` : "";
-
-  return `
-    <div class="champion-showcase">
-      <div class="champion-label">Your favourite note</div>
-      <div class="champion-word">${escapeHtml(champion.note)}</div>
-      <div class="champion-hint">${escapeHtml(champion.hint)}</div>
-    </div>
-    <div class="stats-section">
-      <div class="stats-heading">Your top five</div>
-      <div class="dominance-list">${buildTopRows(result, records)}</div>
-    </div>
-    <div class="stats-section">
-      <div class="stats-heading">Your fragrance family</div>
-      <p class="personality-text">${FAMILY_COPY[fam.key]}</p>
-      ${secondLine}
-      <p class="lean-note">${GROUP_COPY[grp.key]} ${GENDER_COPY[gen.key]}</p>
-      ${gourmandLine}
-    </div>
-    <div class="stats-section">
-      <div class="stats-heading">Where you sit on the wheel</div>
-      <div class="wheel-bars">${wheelBars}</div>
-    </div>`;
-}
-
-function renderSharePrompt(){
-  return `
-    <p class="result-sub">Share this link with someone to see how compatible your noses are.</p>
-    <div class="name-box">
-      <input id="name-input" type="text" maxlength="24" placeholder="Your name (shown on the link)" value="${escapeHtml(myName)}">
-    </div>
-    <div class="share-box">
-      <input id="share-input" type="text" readonly value="">
-      <button class="cta" id="copy-btn">Copy link</button>
-    </div>
-    <div class="copy-note" id="copy-note"></div>`;
-}
-
-function affiliateBlock(){
-  return `
-    <div class="affiliate-line">
-      If you'd like to support quizheart, consider buying through one of our affiliate links &mdash; carefully curated to your taste, based on your results &lt;3
-      <!-- AFFILIATE SLOT: paste the merchant links here once approved. Australian law
-           requires the commercial relationship to be disclosed, which the line above does. -->
-    </div>`;
-}
-
-function renderResultsSolo(){
-  const result = state.result;
-  app.innerHTML = `
-    <div class="result-kicker">Your results</div>
-    ${renderPersonalityBlock(result, state.answers)}
-    ${renderSharePrompt()}
-    <div class="btn-row"><button class="cta ghost" id="again-btn">Take it again</button><a class="cta ghost" href="/" style="text-decoration:none;">More quizzes</a></div>
-    ${affiliateBlock()}
-    <div class="stats-link"><a href="#" id="stats-link">See how everyone else has answered &rarr;</a></div>`;
-  wireShare(state.outcomes);
-  document.getElementById("again-btn").addEventListener("click", startQuiz);
-  document.getElementById("stats-link").addEventListener("click", e => { e.preventDefault(); goToStats(); });
-}
-
-function buildStatement(mine, theirs, person, myLeans, theirLeans){
-  if (mine.note === theirs.note) return `You both went for ${mine.note} in the end.`;
-  if (myLeans.families[0].key === theirLeans.families[0].key)
-    return `Different favourites, but you're both ${FAMILY_LABEL[myLeans.families[0].key]} people underneath.`;
-  if (myLeans.groups[0].key === theirLeans.groups[0].key)
-    return `You both live on the ${GROUP_LABEL[myLeans.groups[0].key]} side of the wheel.`;
-  return `${person} went ${FAMILY_LABEL[theirLeans.families[0].key]}; you went ${FAMILY_LABEL[myLeans.families[0].key]}.`;
-}
-
-function renderResultsChallenge(){
-  const result = state.result;
-  const compat = computeCompatibility(state.answers, challenger.answers);
-  const pct = compat ? compat.pct : 0;
-  const name = challenger.n && challenger.n.trim() ? challenger.n.trim() : "Them";
-  const heartScale = (0.55 + (pct/100)*0.65).toFixed(2);
-  const myLeans = computeLeans(state.answers), theirLeans = computeLeans(challenger.answers);
-  const statement = buildStatement(state.answers[state.championIndex],
-    challenger.answers[challenger.championIndex], name, myLeans, theirLeans);
-  const myRank = computeRanking(state.answers), theirRank = computeRanking(challenger.answers);
-
-  function rankList(order, records, otherOrder){
-    const otherPos = {};
-    otherOrder.forEach((idx,pos) => { otherPos[idx] = pos+1; });
-    return order.slice(0,10).map((idx,pos) => {
-      const mePos = pos+1, rec = records[idx], them = otherPos[idx];
-      const close = them !== undefined && Math.abs(them - mePos) <= 2;
-      return `<div class="match-entry ${close ? "match" : ""}">
-        <span class="w">#${mePos}</span><span>${escapeHtml(rec.note)}</span></div>`;
-    }).join("");
-  }
-
-  app.innerHTML = `
-    <div class="result-kicker">Your results</div>
-    ${renderPersonalityBlock(result, state.answers)}
-    <div class="result-kicker" style="margin-top:36px;">Your compatibility with ${escapeHtml(name)}</div>
-    <div class="match-center">
-      <div class="heart-wrap" id="heart-wrap" style="--heart-scale:${heartScale};">
-        <svg class="heart-svg heart-outline" viewBox="0 0 24 24" aria-hidden="true"><path d="${HEART_PATH}"/></svg>
-        <svg class="heart-svg heart-fill" viewBox="0 0 24 24" aria-hidden="true" style="opacity:${pct/100};"><path d="${HEART_PATH}"/></svg>
+    <section>
+      <div class="section-head">
+        <h2>The quizzes</h2>
+        <div class="rule"></div>
+        <p class="count">2 open</p>
       </div>
-      <div class="match-pct">${pct}%</div>
-      <div class="match-statement">${escapeHtml(statement)}</div>
-    </div>
-    ${renderSharePrompt()}
-    <div class="stats-heading" style="margin-top:8px;">Your top tens, side by side</div>
-    <div class="match-breakdown">
-      <div class="match-col them"><div class="col-label">${escapeHtml(name)}</div>${rankList(theirRank, challenger.answers, myRank)}</div>
-      <div class="match-col you"><div class="col-label">You</div>${rankList(myRank, state.answers, theirRank)}</div>
-    </div>
-    <div class="btn-row"><button class="cta ghost" id="again-btn">Take it again</button><a class="cta ghost" href="/" style="text-decoration:none;">More quizzes</a></div>
-    ${affiliateBlock()}
-    <div class="stats-link"><a href="#" id="stats-link">See how everyone else has answered &rarr;</a></div>`;
 
-  wireShare(state.outcomes);
-  requestAnimationFrame(() => {
-    const hw = document.getElementById("heart-wrap");
-    if (hw) requestAnimationFrame(() => hw.classList.add("grown"));
-  });
-  document.getElementById("again-btn").addEventListener("click", startQuiz);
-  document.getElementById("stats-link").addEventListener("click", e => { e.preventDefault(); goToStats(); });
-}
+      <div class="deck">
 
-function renderStats(){
-  app.innerHTML = `<div class="stats-loading">Tallying everyone's picks&hellip;</div>`;
-  fetch("/api/stats?quiz=scent")
-    .then(r => { if (!r.ok) throw new Error("bad"); return r.json(); })
-    .then(renderStatsData)
-    .catch(() => {
-      app.innerHTML = `
-        <div class="result-kicker">Group results</div>
-        <p class="result-sub">The results database isn't answering right now. Nothing is lost &mdash; try again in a moment.</p>
-        <div class="btn-row"><button class="cta ghost" id="back-btn">Back</button></div>`;
-      document.getElementById("back-btn").addEventListener("click", () => {
-        state.mode = challenger ? "intro-challenge" : "landing"; render();
-      });
-    });
-}
+        <a class="card fonts" href="/fonts">
+          <span class="tag">Open now</span>
+          <h3>Font Match</h3>
+          <p>Forty-eight typefaces, two at a time. Keep the one you like. Find out which style you actually lean on — classic, technical, dramatic, or soft and rounded.</p>
+          <div class="strip">
+            <span class="spec s1">Aa</span>
+            <span class="spec s2">Aa</span>
+            <span class="spec s3">Aa</span>
+            <span class="go">Take it &rarr;</span>
+          </div>
+        </a>
 
-function renderStatsData(data){
-  const totalPlayers = data.totalPlayers || 0;
-  const rows = data.fonts || [];
-  const favourites = rows
-    .map(f => ({ key:f.font_key, champs:f.champion_count || 0,
-                 pct: totalPlayers ? Math.round((f.champion_count/totalPlayers)*100) : 0 }))
-    .filter(f => f.champs > 0)
-    .sort((a,b) => b.champs - a.champs || a.key.localeCompare(b.key));
-  const totalCat = (data.categories || []).reduce((s,c) => s + c.count, 0);
-  const famBars = (data.categories || []).map(c => {
-    const pct = totalCat ? Math.round((c.count/totalCat)*100) : 0;
-    const label = FAMILY_LABEL[c.category] || c.category;
-    const grp = (NOTE_POOL.find(n => n.fam === c.category) || {}).grp;
-    return `<div class="wheel-row">
-      <div class="wheel-label">${escapeHtml(label)}</div>
-      <div class="wheel-track"><div class="wheel-fill" style="width:${pct}%;background:${GROUP_COLOR[grp] || "#999"}"></div></div>
-      <div class="wheel-pct">${pct}%</div></div>`;
-  }).join("");
-  const favRows = favourites.slice(0,8).map(f => `
-    <div class="stats-round-row"><div>${escapeHtml(f.key)}</div><div class="pick">${f.pct}% picked it</div></div>`).join("");
+        <a class="card scent" href="/scent">
+          <span class="tag">Open now</span>
+          <h3>Scent Match</h3>
+          <p>Smoke, citrus, salt or leather. Forty-two fragrance notes from across the classic wheel, and the corner of it you actually live in.</p>
+          <div class="strip">
+            <span class="sw" style="background:#E8467C"></span>
+            <span class="sw" style="background:#A8322F"></span>
+            <span class="sw" style="background:#8A7A46"></span>
+            <span class="sw" style="background:#3E8FA8"></span>
+            <span class="go">Take it &rarr;</span>
+          </div>
+        </a>
 
-  app.innerHTML = `
-    <div class="result-kicker">Group results</div>
-    <div class="stats-total">${totalPlayers} ${totalPlayers === 1 ? "person has" : "people have"} taken the test</div>
-    ${totalCat ? `<div class="stats-section"><div class="stats-heading">Favourite families so far</div><div class="wheel-bars">${famBars}</div></div>` : ""}
-    ${favourites.length ? `<div class="stats-callout"><b>Most common favourite:</b> ${escapeHtml(favourites[0].key)}, the top note for ${favourites[0].champs} ${favourites[0].champs === 1 ? "person" : "people"}.</div>` : ""}
-    ${favRows ? `<div class="stats-section"><div class="stats-heading">How often each note won outright</div>${favRows}</div>` : ""}
-    <div class="btn-row"><button class="cta ghost" id="back-btn">Back</button><a class="cta ghost" href="/" style="text-decoration:none;">More quizzes</a></div>`;
-  document.getElementById("back-btn").addEventListener("click", () => {
-    state.mode = challenger ? "intro-challenge" : "landing"; render();
-  });
-}
+      </div>
+    </section>
 
-function wireShare(outcomes){
-  const nameInput = document.getElementById("name-input");
-  const shareInput = document.getElementById("share-input");
-  function refresh(){ myName = nameInput.value.trim(); shareInput.value = buildShareLink(outcomes, myName); }
-  refresh();
-  nameInput.addEventListener("input", refresh);
-  document.getElementById("copy-btn").addEventListener("click", async () => {
-    const note = document.getElementById("copy-note");
-    try { await navigator.clipboard.writeText(shareInput.value); note.textContent = "Link copied."; }
-    catch (e) { shareInput.select(); note.textContent = "Press Ctrl/Cmd+C to copy."; }
-    setTimeout(() => { note.textContent = ""; }, 2500);
-  });
-}
+    <section>
+      <div class="section-head">
+        <h2>How a match works</h2>
+        <div class="rule"></div>
+      </div>
+      <ol class="steps">
+        <li><span class="n">01</span>
+          <h4>You take the quiz</h4>
+          <p>Two options at a time, no right answers. No account, no email, nothing to sign up for.</p></li>
+        <li><span class="n">02</span>
+          <h4>You get a link</h4>
+          <p>Your answers travel inside the link itself, so there's nothing stored against your name. Send it by message, or post it.</p></li>
+        <li><span class="n">03</span>
+          <h4>They take it too</h4>
+          <p>They answer the same quiz. At the end, both results sit side by side with a compatibility score.</p></li>
+      </ol>
+    </section>
 
-function escapeHtml(str){
-  return String(str).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
-}
+  </main>
 
-render();
-</script>
+  <footer>
+    <p><a href="/fonts">Font Match</a> &middot; <a href="/scent">Scent Match</a></p>
+  </footer>
+
+</div>
 </body>
 </html>
